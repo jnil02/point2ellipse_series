@@ -6,7 +6,7 @@ coefficients of:
 
 <b>Nilsson, J.-O. Point-to-ellipse Fourier series. doi:
 [https://doi.org/10.48550/arXiv.2507.08807](https://doi.org/10.48550/arXiv.2507.08807)
-arXiv: 2506.xxxxx [math.ag]</b>
+arXiv: 2507.08807 [math.ag]</b>
 
 <i>Note, a copy of the article is found here in the repo,
 [2507.08807v1.pdf](2507.08807v1.pdf).</i>
