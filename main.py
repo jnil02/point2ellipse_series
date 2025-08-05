@@ -33,7 +33,7 @@ if __name__ == "__main__":
     mp_phi = mp.mpf(43.099999999999504)/mp.mpf(180.) * mp.pi  # "Latitude".
     mp_h = mp.mpf(10000.)  # "Altitude".
     mp_x, mp_y = mp_ellipse_to_cartesian(mp_phi, mp_h)  # Cartesian coordinate.
-    mp_psi = mp.atan2(mp_y / mp_x)  # Polar angle.
+    mp_psi = mp.atan2(mp_y , mp_x)  # Polar angle.
     mp_rho = mp.sqrt(mp_x * mp_x + mp_y * mp_y)  # Radius.
     mp_varrho = mp_a / mp.sqrt(mp_x * mp_x + mp_y * mp_y)
 
