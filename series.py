@@ -158,3 +158,62 @@ def cos_phi_in_sin_pow(n_max, k_max):
             for l in range(max(k,n), n+k):
                 d = d + d_cos(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d
+
+def sigma(j_max, delta):
+    """ Symbolic "sigma" series up to given order.
+
+    :param j_max: Maximum delta power.
+    :param delta: Expression for delta.
+    :return: Symbolic representation of the series.
+    """
+    d = sp.Integer(0)
+    for j in range(0, j_max, 2):
+        j2 = j / 2
+        d = d + sp.Rational(sp.Integer(-1) ** j2, sp.factorial(j)) * delta ** j2
+    return d
+
+def tau(j_max, omega, delta):
+    """ Symbolic "tau" series up to given order.
+
+    :param j_max: Maximum delta power.
+    :param omega: Expression for "omega".
+    :param delta: Expression for delta.
+    :return: Symbolic representation of the series.
+    """
+    d = sp.Integer(0)
+    for j in range(1, j_max, 2):
+        j2 = (j - 1) / 2
+        d = d + sp.Rational(sp.Integer(-1) ** j2, sp.factorial(j)) * delta ** j2
+    return omega * d
+
+def sin_phi_in_sin_pow2(n_max, k_max, j_max):
+    """Symbolic sin-power series expansion of sin(phi)/sin(psi) up to given order.
+
+    Using sigma and tau series.
+
+    :param n_max: Maximum sin²-power.
+    :param k_max: Maximum varrho power.
+    :return: Symbolic representation of the series.
+    """
+    sin_psi2 = sin_psi ** 2
+    o = phi_in_sin_pow(n_max, k_max)
+    d = sin_psi2 * (sp.Integer(1) - sin_psi2) * o ** 2
+    s = sigma(j_max, d)
+    t = tau(j_max, o, d)
+    return s + (sp.Integer(1) - sin_psi2) * t
+
+def cos_phi_in_sin_pow2(n_max, k_max, j_max):
+    """Symbolic sin-power series expansion of sin(phi)/sin(psi) up to given order.
+
+    Using sigma and tau series.
+
+    :param n_max: Maximum sin²-power.
+    :param k_max: Maximum varrho power.
+    :return: Symbolic representation of the series.
+    """
+    sin_psi2 = sin_psi ** 2
+    o = phi_in_sin_pow(n_max, k_max)
+    d = sin_psi2 * (sp.Integer(1) - sin_psi2) * o ** 2
+    s = sigma(j_max, d)
+    t = tau(j_max, o, d)
+    return s - sin_psi2 * t
