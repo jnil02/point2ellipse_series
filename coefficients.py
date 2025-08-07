@@ -16,7 +16,7 @@ import polynomials
 import util
 
 @lru_cache(maxsize=None)
-def d_phi(n, k, u):
+def d_phi(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute phi-psi sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -29,17 +29,17 @@ def d_phi(n, k, u):
         for m in range(k - 1 - r + 1):
             for q in range(floor(r / 2) + 1):
                 for p in range(floor(m / 2) + 1):
-                    for t in range(min(u - k, r - q) + 1):
-                        d = (d + sp.Rational(sp.Integer((-1) ** (2 * p + n - u - k)) * 2 ** (r - 2 * q) *
-                            sp.functions.combinatorial.factorials.RisingFactorial(sp.Rational(k, 2), r - q),
-                            sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
-                               * sp.binomial(r - q, t) * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
-                               * sp.binomial(sp.Rational(k, 2) + r - q + u - k - t - 1, u - k - t)
-                               * sp.binomial(p, n - (m + r - q + u - k - t - p)))
+                    for t in range(min(l - k, r - q) + 1):
+                        d = (d + sp.Rational(sp.Integer((-1) ** (2 * p + n - l - k)) * 2 ** (r - 2 * q) *
+                                             sp.functions.combinatorial.factorials.RisingFactorial(sp.Rational(k, 2), r - q),
+                                             sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
+                             * sp.binomial(r - q, t) * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
+                             * sp.binomial(sp.Rational(k, 2) + r - q + l - k - t - 1, l - k - t)
+                             * sp.binomial(p, n - (m + r - q + l - k - t - p)))
     return d
 
 @lru_cache(maxsize=None)
-def d_phi2(n, k, u):
+def d_phi2(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute phi-psi sin-power series expansion coefficients __with cos-sin factor integrated in the series__.
 
     :param n: sin-power.
@@ -52,17 +52,17 @@ def d_phi2(n, k, u):
         for m in range(k - 1 - r + 1):
             for q in range(floor(r / 2) + 1):
                 for p in range(floor(m / 2) + 1):
-                    for t in range(max(u - k, r - q) + 1):
-                        d = (d + sp.Rational(sp.Integer((-1) ** (2*p+n-u - k)) * 2 ** (r - 2*q) *
-                            sp.functions.combinatorial.factorials.RisingFactorial(sp.Rational(k, 2), r - q),
-                            sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
-                               * sp.binomial(r - q, t) * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
-                               * sp.binomial(sp.Rational(k, 2) + r - q + u-k-t - 1, u-k-t)
-                               * sp.binomial(p+sp.Rational(1,2), n - (m+r-q+u-k-t-p)))
+                    for t in range(max(l - k, r - q) + 1):
+                        d = (d + sp.Rational(sp.Integer((-1) ** (2 * p + n - l - k)) * 2 ** (r - 2 * q) *
+                                             sp.functions.combinatorial.factorials.RisingFactorial(sp.Rational(k, 2), r - q),
+                                             sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
+                             * sp.binomial(r - q, t) * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
+                             * sp.binomial(sp.Rational(k, 2) + r - q + l - k - t - 1, l - k - t)
+                             * sp.binomial(p + sp.Rational(1,2), n - (m + r - q + l - k - t - p)))
     return d
 
 @lru_cache(maxsize=None)
-def c_phi(n, k, l):
+def c_phi(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute phi-psi Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.
@@ -96,7 +96,7 @@ def c_phi(n, k, l):
     return h
 
 @lru_cache(maxsize=None)
-def d_phi_pow(n, k, l, i):
+def d_phi_pow(n : int, k : int, l : int, i : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (phi-psi)^i sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -114,7 +114,7 @@ def d_phi_pow(n, k, l, i):
     return sp.expand(tmp).coeff(util.e2, l)  # Extract the l:th power of the series.
 
 @lru_cache(maxsize=None)
-def d_sin_pow(n, k, l, i):
+def d_sin_pow(n : int, k : int, l : int, i : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (sin(phi)/sin(psi)-1)^i sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -132,7 +132,7 @@ def d_sin_pow(n, k, l, i):
     return sp.expand(tmp).coeff(util.e2, l)  # Extract the l:th power of the series.
 
 @lru_cache(maxsize=None)
-def d_N_nkl(n,k,l):
+def d_N_nkl(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute inverse radius of curvature sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -148,7 +148,7 @@ def d_N_nkl(n,k,l):
     return d
 
 @lru_cache(maxsize=None)
-def bp_nkl(n,k,l):
+def bp_nkl(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute cos(phi-psi) sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -163,7 +163,7 @@ def bp_nkl(n,k,l):
     return c
 
 @lru_cache(maxsize=None)
-def d_sin(n, k, l):
+def d_sin(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute sin(phi)/sin(psi)-1 sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -179,7 +179,7 @@ def d_sin(n, k, l):
     return d
 
 @lru_cache(maxsize=None)
-def c_sin(n,k,l):
+def c_sin(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute sin(phi)/sin(psi)-1 Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.
@@ -190,7 +190,7 @@ def c_sin(n,k,l):
     return util.sin_pow_to_cos_mul(n, k, l, d_sin, 0, 0)
 
 @lru_cache(maxsize=None)
-def d_cos(n, k, l):
+def d_cos(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute cos(phi)/cos(psi)-1 sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -206,7 +206,7 @@ def d_cos(n, k, l):
     return d
 
 @lru_cache(maxsize=None)
-def c_cos(n,k,l):
+def c_cos(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute cos(phi)/cos(psi)-1 Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.
@@ -217,7 +217,7 @@ def c_cos(n,k,l):
     return util.sin_pow_to_cos_mul(n, k, l, d_cos, 0, -1)
 
 @lru_cache(maxsize=None)
-def d_h(n, k, l):
+def d_h(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (h+a-rho)/a sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -231,7 +231,7 @@ def d_h(n, k, l):
         return bp_nkl(n,k+1,l) - d_N_nkl(n,k,l)
 
 @lru_cache(maxsize=None)
-def c_h(n,k,l):
+def c_h(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (h+a-rho)/a Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.

@@ -1,6 +1,7 @@
 
 """Ellipse parameters and Ellipse to Cartesian coordinate transformation.
 """
+import typing
 
 # External include
 from mpmath import mp
@@ -12,7 +13,7 @@ mp_f = mp.mpf(1.0) / mp.mpf(298.257223563)  # Flattening. f = (a - b) / a
 mp_b = mp_a - mp_f * mp_a  # Semi-minor axis / Earth polar radius.
 mp_e2 = mp.mpf(1.0) - (mp_b * mp_b) / (mp_a * mp_a)  # First eccentricity squared.
 
-def mp_ellipse_to_cartesian(phi, h):
+def mp_ellipse_to_cartesian(phi : mp.mpf, h : mp.mpf) -> typing.Tuple[mp.mpf, mp.mpf]:
     """Multi-precision elliptical to Cartesian coordinate transformation.
 
     :param phi: Angle between semi-major axis and normal at foot point.

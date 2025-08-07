@@ -11,7 +11,7 @@ import sympy as sp
 from symbols import varrho, psi, sin_psi, cos_psi, e2
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h
 
-def phi_in_sin_pow(n_max, k_max):
+def phi_in_sin_pow(n_max : int, k_max : int) -> sp.core.Expr:
     """Symbolic sin-power series expansion of phi-psi up to given order.
 
     :param n_max: Maximum sin²-power.
@@ -25,7 +25,7 @@ def phi_in_sin_pow(n_max, k_max):
                 d = d + d_phi(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d
 
-def phi_in_sin_pow2(n_max, k_max):
+def phi_in_sin_pow2(n_max : int, k_max : int) -> sp.core.Expr:
     """Symbolic sin-power series expansion of phi-psi up to given order.
 
     Series with the proceeding cos incorporated into the series.
@@ -42,7 +42,7 @@ def phi_in_sin_pow2(n_max, k_max):
                 d = d + d_phi2(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n + 1)
     return d
 
-def phi_in_sin_mul(n_max, k_max, l_max):
+def phi_in_sin_mul(n_max : int, k_max : int, l_max : int) -> sp.core.Expr:
     """Symbolic sin (Fourier) series expansion of phi-psi up to given order.
 
     :param n_max: Maximum sin-multiple.
@@ -57,7 +57,7 @@ def phi_in_sin_mul(n_max, k_max, l_max):
                 d = d + c_phi(n,k,l) * e2 ** l * varrho ** k * sp.sin(2 * n * psi)
     return d
 
-def phi_pow_in_sin_pow(i, n_max, k_max):
+def phi_pow_in_sin_pow(i, n_max : int, k_max : int) -> sp.core.Expr:
     """Symbolic sin-power series expansion of (phi-psi)^i up to given order.
 
     :param i: The power exponent.
@@ -72,7 +72,7 @@ def phi_pow_in_sin_pow(i, n_max, k_max):
                 d = d + d_phi_pow(n, k, l, i) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d * cos_psi ** i * sin_psi ** i
 
-def h_in_cos_mul(n_max, k_max, l_max):
+def h_in_cos_mul(n_max : int, k_max : int, l_max : int) -> sp.core.Expr:
     """Symbolic cos (Fourier) series expansion of (h+a-rho)/a up to given order.
 
     :param n_max: Maximum cos-multiple.
@@ -87,7 +87,7 @@ def h_in_cos_mul(n_max, k_max, l_max):
                 d = d + c_h(n,k,l) * e2 ** l * varrho ** k * sp.cos(2 * n * psi)
     return d
 
-def h_in_sin_pow(n_max, k_max):
+def h_in_sin_pow(n_max : int, k_max : int) -> sp.core.Expr:
     """Symbolic sin-power series expansion of (h+a-rho)/a up to given order.
 
     :param n_max: Maximum sin²-power.
@@ -101,7 +101,7 @@ def h_in_sin_pow(n_max, k_max):
                 d = d + d_h(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d
 
-def sin_phi_in_cos_mul(n_max, k_max, l_max):
+def sin_phi_in_cos_mul(n_max : int, k_max : int, l_max : int) -> sp.core.Expr:
     """Symbolic cos (Fourier) series expansion of sin(phi)/sin(psi) - 1 up to given order.
 
     :param n_max: Maximum cos-multiple.
@@ -116,7 +116,7 @@ def sin_phi_in_cos_mul(n_max, k_max, l_max):
                 d = d + c_sin(n,k,l) * e2 ** l * varrho ** k * sp.cos(2 * n * psi)
     return d
 
-def sin_phi_in_sin_pow(n_max, k_max):
+def sin_phi_in_sin_pow(n_max : int, k_max : int) -> sp.core.Expr:
     """Symbolic sin-power series expansion of sin(phi)/sin(psi) - 1 up to given order.
 
     :param n_max: Maximum sin²-power.
@@ -130,7 +130,7 @@ def sin_phi_in_sin_pow(n_max, k_max):
                 d = d + d_sin(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d
 
-def cos_phi_in_cos_mul(n_max, k_max, l_max):
+def cos_phi_in_cos_mul(n_max : int, k_max : int, l_max : int) -> sp.core.Expr:
     """Symbolic cos (Fourier) series expansion of cos(phi)/cos(psi) - 1 up to given order.
 
     :param n_max: Maximum cos-multiple.
@@ -145,7 +145,7 @@ def cos_phi_in_cos_mul(n_max, k_max, l_max):
                 d = d + c_cos(n,k,l) * e2 ** l * varrho ** k * sp.cos(2 * n * psi)
     return d
 
-def cos_phi_in_sin_pow(n_max, k_max):
+def cos_phi_in_sin_pow(n_max : int, k_max : int) -> sp.core.Expr:
     """Symbolic sin-power series expansion of cos(phi)/cos(psi) - 1 up to given order.
 
     :param n_max: Maximum sin²-power.
@@ -159,7 +159,7 @@ def cos_phi_in_sin_pow(n_max, k_max):
                 d = d + d_cos(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d
 
-def sigma(j_max, delta):
+def sigma(j_max : int, delta : sp.core.Expr) -> sp.core.Expr:
     """ Symbolic "sigma" series up to given order.
 
     :param j_max: Maximum delta power.
@@ -172,7 +172,7 @@ def sigma(j_max, delta):
         d = d + sp.Rational(sp.Integer(-1) ** j2, sp.factorial(j)) * delta ** j2
     return d
 
-def tau(j_max, omega, delta):
+def tau(j_max : int, omega : sp.core.Expr, delta : sp.core.Expr):
     """ Symbolic "tau" series up to given order.
 
     :param j_max: Maximum delta power.
@@ -186,7 +186,7 @@ def tau(j_max, omega, delta):
         d = d + sp.Rational(sp.Integer(-1) ** j2, sp.factorial(j)) * delta ** j2
     return omega * d
 
-def sin_phi_in_sin_pow2(n_max, k_max, j_max):
+def sin_phi_in_sin_pow2(n_max : int, k_max : int, j_max : int):
     """Symbolic sin-power series expansion of sin(phi)/sin(psi) up to given order.
 
     Using sigma and tau series.
@@ -202,7 +202,7 @@ def sin_phi_in_sin_pow2(n_max, k_max, j_max):
     t = tau(j_max, o, d)
     return s + (sp.Integer(1) - sin_psi2) * t
 
-def cos_phi_in_sin_pow2(n_max, k_max, j_max):
+def cos_phi_in_sin_pow2(n_max : int, k_max : int, j_max : int):
     """Symbolic sin-power series expansion of sin(phi)/sin(psi) up to given order.
 
     Using sigma and tau series.
