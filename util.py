@@ -67,7 +67,6 @@ class Series(SeriesBase):
             # Cauchy product.
             return Series(lambda n: sum([self[l] * other[n - l] for l in range(n + 1)]))
         elif isinstance(other, SeriesFactor):
-            # Series Factor
             return Series(lambda n: self[n] * other[0])
         else:
             return Series(lambda n: self[n] * other)
@@ -119,7 +118,7 @@ class SeriesEmpty(SeriesBase):
 
 
 @lru_cache(maxsize=None)
-def poly_bell_substitution(p, b):
+def poly_bell_substitution(p : sp.core.Expr, b : str) -> SeriesBase:
     """Expand a polynomial p(a_0,...,a_n) by substituting Bell polynomials for a_n^i.
 
     p is a multidimensional polynomial in variables a_n. (The assumption is
@@ -165,7 +164,7 @@ def poly_bell_substitution(p, b):
     return seqTot
 
 @lru_cache(maxsize=None)
-def a_nk_sub(p, n_offset, d_nkl):
+def a_nk_sub(p : sp.core.Expr, n_offset : int, d_nkl : Callable[[int, int, int], sp.core.Expr]) -> sp.core.Expr:
     """Substitute a_{n,k} for \sum_{l=\max(k,n+n_offset)}^{n+k} d_{n,k,l} e²^l in a polynomial.
 
     a_{n,k} is the arguments of the Bell polynomial.
@@ -192,7 +191,7 @@ def a_nk_sub(p, n_offset, d_nkl):
                 n = int(ix.split('_')[1])
                 k = int(ix.split('_')[2])
                 a_nk = sp.Integer(0)
-                for l in range(max(k,n+n_offset), n+k+1):
+                for l in range(max(k, n + n_offset), n + k + 1):
                     a_nk = a_nk + d_nkl(n, k, l) * e2 ** l
                 pTerm = pTerm * a_nk ** base_exp[1]
             else:
@@ -200,7 +199,8 @@ def a_nk_sub(p, n_offset, d_nkl):
         pTot = pTot + pTerm
     return pTot
 
-def sin_pow_to_cos_mul(n, k, l, d_nkl, n_min, k_pp):
+def sin_pow_to_cos_mul(n : int, k : int, l : int, d_nkl : Callable[[int, int, int], sp.core.Expr],
+                       n_min : int, k_pp : int) -> sp.core.Rational | sp.core.Integer:
     """Fourier multiple-angle cos series coefficient from sin-power series.
 
     :param n: sin-multiple.
