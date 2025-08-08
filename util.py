@@ -3,7 +3,6 @@
 """
 
 # External includes.
-import abc
 from collections.abc import Callable
 import sympy as sp
 from functools import lru_cache
@@ -11,114 +10,11 @@ from functools import lru_cache
 # Internal includes.
 import polynomials
 from symbols import e2
-
-class SeriesBase(abc.ABC):
-    """Abstract base class for lazy series computations.
-
-    This class and the typing could really be removed, but it has been
-    introduced, at least partially, to support in C++ conversion.
-    """
-    @abc.abstractmethod
-    def __getitem__(self, n : int) -> sp.core.Expr:
-        """Compute the n:th series item.
-        :param n: Series index.
-        :return: n:th series item.
-        """
-        pass
-
-    @abc.abstractmethod
-    def __mul__(self, other : 'SeriesBase | sp.core.Expr') -> 'SeriesBase':
-        """Multiply series with series or factor.
-        :param other: Factor or series.
-        :return: resulting series.
-        """
-        pass
-
-    @abc.abstractmethod
-    def __add__(self, other : 'SeriesBase') -> 'SeriesBase':
-        """Add series to series.
-        :param other: Other series.
-        :return: resulting series.
-        """
-        pass
-
-
-class Series(SeriesBase):
-    """Class for representing a series and implement related series arithmetics.
-    """
-
-    def __init__(self, gen : Callable[[int], sp.core.Expr]):
-        self.gen = gen  # Function taking an integer and returning coefficient.
-        # Add 16 items in the cache to start with.
-        self.items = [None] * 16
-
-    def __getitem__(self, n : int) -> sp.core.Expr:
-        # Double length of items cache while too short.
-        while len(self.items) <= n:
-            self.items = self.items + [None]*(len(self.items))
-        # Compute and cache item if not cached.
-        if self.items[n] is None:
-            self.items[n] = self.gen(n)
-        # Return cached item.
-        return self.items[n]
-
-    def __mul__(self, other : SeriesBase | sp.core.Expr) -> SeriesBase:
-        if isinstance(other, Series):
-            # Cauchy product.
-            return Series(lambda n: sum([self[l] * other[n - l] for l in range(n + 1)]))
-        elif isinstance(other, SeriesFactor):
-            return Series(lambda n: self[n] * other[0])
-        else:
-            return Series(lambda n: self[n] * other)
-
-    def __add__(self, other : SeriesBase) -> SeriesBase:
-        return Series(lambda n: self[n] + other[n])
-
-
-class SeriesFactor(SeriesBase):
-    """Constant factor of a series as of The Series class.
-    """
-
-    def __init__(self, a : sp.core.Expr):
-        self.a = a
-
-    def __getitem__(self, n : int) -> sp.core.Expr:
-        # A factor is also a series with only a constant term.
-        if n == 0:
-            return self.a
-        return sp.Integer(0)
-
-    def __mul__(self, other : SeriesBase | sp.core.Expr) -> SeriesBase:
-        if isinstance(other, Series):
-            return other * self.a
-        elif isinstance(other, SeriesFactor):
-            return SeriesFactor(self.a * other.a)
-        else:
-            return SeriesFactor(self.a * other)
-
-    def __add__(self, other : SeriesBase) -> SeriesBase:
-        # We could support this (see __getitem__) but it does not make sense.
-        raise Exception("Cannot add to SeriesFactor.")
-
-class SeriesEmpty(SeriesBase):
-    """ Empty series object with the only supported operation being addition.
-    """
-
-    def __init__(self):
-        pass
-
-    def __getitem__(self, n : int):
-        raise Exception("No series item available for empty series.")
-
-    def __mul__(self, other : SeriesBase | sp.core.Expr) -> SeriesBase:
-        raise Exception("Multiplication not defined for empty series.")
-
-    def __add__(self, other : SeriesBase) -> SeriesBase:
-        return other
+import series
 
 
 @lru_cache(maxsize=None)
-def poly_bell_substitution(p : sp.core.Expr, b : str) -> SeriesBase:
+def poly_bell_substitution(p : sp.core.Expr, b : str) -> series.SeriesBase:
     """Expand a polynomial p(a_0,...,a_n) by substituting Bell polynomials for a_n^i.
 
     p is a multidimensional polynomial in variables a_n. (The assumption is
@@ -141,10 +37,10 @@ def poly_bell_substitution(p : sp.core.Expr, b : str) -> SeriesBase:
     :param b: The variable name of series coefficients.
     :return: A coefficient sequence representing the substituted polynomial.
     """
-    seqTot = SeriesEmpty()  # Sequence for the whole polynomial.
+    seqTot = series.SeriesEmpty()  # Sequence for the whole polynomial.
     # Split the polynomial in terms, handle each term and add the results.
     for polyTerm in sp.Add.make_args(sp.expand(p)):
-        seqTerm = SeriesFactor(1)  # Sequence for term.
+        seqTerm = series.SeriesFactor(1)  # Sequence for term.
         # Split the term in factors, handle each factor and multiply the results.
         for termFactor in sp.Mul.make_args(polyTerm):
             # Handle each factor type.
@@ -157,7 +53,7 @@ def poly_bell_substitution(p : sp.core.Expr, b : str) -> SeriesBase:
                 ix = base_exp[0].name[base_exp[0].name.find('_'):]
                 def bellLambdaGen(j, x):
                     return lambda n : polynomials.partial_ordinary_bell_polynomial(n, j, x) if n >= j else 0
-                seqTerm = seqTerm * Series(bellLambdaGen(base_exp[1], b + ix))
+                seqTerm = seqTerm * series.Series(bellLambdaGen(base_exp[1], b + ix))
             else:
                 raise Exception("Unhandled factor in sympy expression:" + str(termFactor))
         seqTot = seqTot + seqTerm
