@@ -31,9 +31,11 @@ The main entry-point is the main.py which show-case the series by computing a
 number of point-to-ellipse relations. The actual implementations are found in
 the following packages:
 
-- series.py -- Symbolic implementations of the (truncated) Fourier and sin-power series.
+- fourier_series.py -- Symbolic implementations of the (truncated) Fourier and sin-power series.
 - coefficients.py -- Computations of rational series coefficients.
 - ellipse.py -- Ellipse parameters for which the series are computed and some related utility functions.
+- series.py -- Series classes for series arithmetics.
+- series_substitution.py -- Functions for substituting series into polynomials.
 - util.py -- Various utility functions.
 - symbols.py -- Definition of sympy symbols used in the code.
 

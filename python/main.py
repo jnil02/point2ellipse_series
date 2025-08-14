@@ -12,8 +12,9 @@ Finally, their values and the original reference values are printed for
 comparison.
 """
 
-# Multiprecision arithmetics.
+# External includes
 from mpmath import mp
+import time
 
 # Set the number of digits of precision for the calculations.
 mp.dps = 50
@@ -37,7 +38,9 @@ if __name__ == "__main__":
     mp_rho = mp.sqrt(mp_x * mp_x + mp_y * mp_y)  # Radius.
     mp_varrho = mp_a / mp.sqrt(mp_x * mp_x + mp_y * mp_y)
 
-    # For each series quentity:
+    t = time.time()
+
+    # For each series quantity:
     # 1. compute and print reference value,
     # 2. compute symbolic series up to given order,
     # 3. and substitute numerica values in series and print numeric value.
@@ -112,4 +115,6 @@ if __name__ == "__main__":
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(varrho, mp_varrho) * mp_a + mp_rho - mp_a)
+
+    print(time.time() - t)
 
