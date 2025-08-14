@@ -9,13 +9,15 @@ import sympy as sp
 def cantor_pairing_function(k : int, l : int) -> int:
     """Cantor pairing function.
 
-    :param k: An integer.
-    :param l: Another integer.
-    :return: A unique bijection from k and l to another integer.
+    :param k: A positive integer.
+    :param l: Another positive integer.
+    :return: A unique bijection from k and l to another positive integer.
     """
     return int( (k + l) * (k + l + 1) / 2 + l )
 
 class ii_cache:
+    """Dual integer argument function cache decorator.
+    """
     def __init__(self, f):
         self.f = f
         self.cache = {}
@@ -28,6 +30,8 @@ class ii_cache:
         return res
 
 class iii_cache:
+    """Triple integer argument function cache decorator.
+    """
     def __init__(self, f):
         self.f = f
         self.cache = {}
@@ -40,6 +44,8 @@ class iii_cache:
         return res
 
 class iiii_cache:
+    """Quad integer argument function cache decorator.
+    """
     def __init__(self, f):
         self.f = f
         self.cache = {}
@@ -52,6 +58,8 @@ class iiii_cache:
         return res
 
 class iis_cache:
+    """Dual integer and string argument function cache decorator.
+    """
     def __init__(self, f):
         self.f = f
         self.cache = {}
