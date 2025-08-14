@@ -8,7 +8,7 @@ import sympy as sp
 # Internal includes.
 import util
 
-@util.iis_cache
+@util.ints_cache
 def partial_ordinary_bell_polynomial(k : int, i : int, a : str) -> sp.core.Expr:
     """Partial ordinary Bell polynomial.
 
@@ -26,7 +26,7 @@ def partial_ordinary_bell_polynomial(k : int, i : int, a : str) -> sp.core.Expr:
         tmp = tmp + sp.symbols(a + "_" + str(j)) * partial_ordinary_bell_polynomial(k - j, i - 1, a)
     return sp.expand(tmp)
 
-@util.iis_cache
+@util.ints_cache
 def power_of_power_series_coefficient_polynomial(n : int, i : int, a : str) -> sp.core.Expr:
     """Power of power-series series coefficient polynomial.
 

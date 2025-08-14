@@ -51,13 +51,13 @@ def poly_bell_substitution(p : sp.core.Expr) -> series.SeriesBase:
                 ix = base_exp[0].name[base_exp[0].name.find('_'):]
                 def bellLambdaGen(j, x):
                     return lambda n : polynomials.partial_ordinary_bell_polynomial(n, j, x) if n >= j else 0
-                seqTerm = seqTerm * series.Series(bellLambdaGen(base_exp[1], 'a' + ix))
+                seqTerm = seqTerm * series.Series(bellLambdaGen(int(base_exp[1]), 'a' + ix))
             else:
                 raise Exception("Unhandled factor in sympy expression:" + str(termFactor))
         seqTot = seqTot + seqTerm
     return seqTot
 
-@util.ii_cache
+@util.ints_cache
 def power_of_double_power_series_coefficient_polynomial(n : int, i : int) -> series.SeriesBase:
     """Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
 
