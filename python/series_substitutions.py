@@ -13,7 +13,7 @@ from symbols import e2
 import series
 
 
-def poly_bell_substitution(p : sp.core.Expr) -> series.SeriesBase:
+def poly_bell_substitution(p: sp.core.Expr) -> series.SeriesBase:
     """Expand a polynomial p(a_0,...,a_n) by substituting Bell polynomials for a_n^i.
 
     p is a multidimensional polynomial in variables a_n. (The assumption is
@@ -50,7 +50,7 @@ def poly_bell_substitution(p : sp.core.Expr) -> series.SeriesBase:
                 # Retrieve the indices of the coefficient, e.g. "_0" for "a_0".
                 ix = base_exp[0].name[base_exp[0].name.find('_'):]
                 def bellLambdaGen(j, x):
-                    return lambda n : polynomials.partial_ordinary_bell_polynomial(n, j, x) if n >= j else 0
+                    return lambda n: polynomials.partial_ordinary_bell_polynomial(n, j, x) if n >= j else 0
                 seqTerm = seqTerm * series.Series(bellLambdaGen(int(base_exp[1]), 'a' + ix))
             else:
                 raise Exception("Unhandled factor in sympy expression:" + str(termFactor))
@@ -58,7 +58,7 @@ def poly_bell_substitution(p : sp.core.Expr) -> series.SeriesBase:
     return seqTot
 
 @util.ints_cache
-def power_of_double_power_series_coefficient_polynomial(n : int, i : int) -> series.SeriesBase:
+def power_of_double_power_series_coefficient_polynomial(n: int, i: int) -> series.SeriesBase:
     """Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
 
     :param n: First index of resulting series coefficients.
@@ -70,7 +70,7 @@ def power_of_double_power_series_coefficient_polynomial(n : int, i : int) -> ser
     # Polynomial for the varrho^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
     return poly_bell_substitution(b_ni)
 
-def a_nk_sub(p : sp.core.Expr, n_offset : int, d_nkl : Callable[[int, int, int], sp.core.Expr]) -> sp.core.Expr:
+def a_nk_sub(p: sp.core.Expr, n_offset: int, d_nkl: Callable[[int, int, int], sp.core.Expr]) -> sp.core.Expr:
     """Substitute a_{n,k} for \sum_{l=\max(k,n+n_offset)}^{n+k} d_{n,k,l} e²^l in a polynomial.
 
     a_{n,k} is the arguments of the Bell polynomial.

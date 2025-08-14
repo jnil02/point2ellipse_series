@@ -57,8 +57,8 @@ class ints_cache:
         self.cache[key] = res
         return res
 
-def sin_pow_to_cos_mul(n : int, k : int, l : int, d_nkl : Callable[[int, int, int], sp.core.Expr],
-                       n_min : int, k_pp : int) -> sp.core.Rational | sp.core.Integer:
+def sin_pow_to_cos_mul(n: int, k: int, l: int, d_nkl: Callable[[int, int, int], sp.core.Expr],
+                       n_min: int, k_pp: int) -> sp.core.Rational | sp.core.Integer:
     """Fourier multiple-angle cos series coefficient from sin-power series.
 
     :param n: sin-multiple.

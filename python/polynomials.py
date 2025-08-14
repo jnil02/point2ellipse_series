@@ -9,7 +9,7 @@ import sympy as sp
 import util
 
 @util.ints_cache
-def partial_ordinary_bell_polynomial(k : int, i : int, a : str) -> sp.core.Expr:
+def partial_ordinary_bell_polynomial(k: int, i: int, a: str) -> sp.core.Expr:
     """Partial ordinary Bell polynomial.
 
     :param k: Power index of polynomial.
@@ -27,7 +27,7 @@ def partial_ordinary_bell_polynomial(k : int, i : int, a : str) -> sp.core.Expr:
     return sp.expand(tmp)
 
 @util.ints_cache
-def power_of_power_series_coefficient_polynomial(n : int, i : int, a : str) -> sp.core.Expr:
+def power_of_power_series_coefficient_polynomial(n: int, i: int, a: str) -> sp.core.Expr:
     """Power of power-series series coefficient polynomial.
 
     Polynomial for n:th series coefficient of i:th power of an infinite series.

@@ -16,7 +16,7 @@ import util
 import symbols
 
 @util.ints_cache
-def d_phi(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute phi-psi sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -39,7 +39,7 @@ def d_phi(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbe
     return d
 
 @util.ints_cache
-def d_phi2(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_phi2(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute phi-psi sin-power series expansion coefficients __with cos-sin factor integrated in the series__.
 
     :param n: sin-power.
@@ -62,7 +62,7 @@ def d_phi2(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numb
     return d
 
 @util.ints_cache
-def c_phi(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute phi-psi Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.
@@ -96,7 +96,7 @@ def c_phi(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbe
     return h
 
 @util.ints_cache
-def d_phi_pow_polynomial(n : int, k : int, i : int) -> sp.core.Expr:
+def d_phi_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
     tmp = series_substitutions.power_of_double_power_series_coefficient_polynomial(n, i)[k]
     # Polynomial for the varrho^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
@@ -104,7 +104,7 @@ def d_phi_pow_polynomial(n : int, k : int, i : int) -> sp.core.Expr:
     return tmp
 
 @util.ints_cache
-def d_phi_pow(n : int, k : int, l : int, i : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_phi_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (phi-psi)^i sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -117,7 +117,7 @@ def d_phi_pow(n : int, k : int, l : int, i : int) -> sp.core.numbers.Rational | 
     return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
 
 @util.ints_cache
-def d_sin_pow_polynomial(n : int, k : int, i : int) -> sp.core.Expr:
+def d_sin_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
     tmp = series_substitutions.power_of_double_power_series_coefficient_polynomial(n, i)[k]
     # Polynomial for the delta^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
@@ -125,7 +125,7 @@ def d_sin_pow_polynomial(n : int, k : int, i : int) -> sp.core.Expr:
     return tmp
 
 @util.ints_cache
-def d_sin_pow(n : int, k : int, l : int, i : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_sin_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (sin(phi)/sin(psi)-1)^i sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -138,7 +138,7 @@ def d_sin_pow(n : int, k : int, l : int, i : int) -> sp.core.numbers.Rational | 
     return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
 
 @util.ints_cache
-def d_N_nkl(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_N_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute inverse radius of curvature sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -154,7 +154,7 @@ def d_N_nkl(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.num
     return d
 
 @util.ints_cache
-def bp_nkl(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def bp_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute cos(phi-psi) sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -169,7 +169,7 @@ def bp_nkl(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numb
     return c
 
 @util.ints_cache
-def d_sin(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute sin(phi)/sin(psi)-1 sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -185,7 +185,7 @@ def d_sin(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbe
     return d
 
 @util.ints_cache
-def c_sin(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def c_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute sin(phi)/sin(psi)-1 Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.
@@ -196,7 +196,7 @@ def c_sin(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbe
     return util.sin_pow_to_cos_mul(n, k, l, d_sin, 0, 0)
 
 @util.ints_cache
-def d_cos(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute cos(phi)/cos(psi)-1 sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -212,7 +212,7 @@ def d_cos(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbe
     return d
 
 @util.ints_cache
-def c_cos(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def c_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute cos(phi)/cos(psi)-1 Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.
@@ -223,7 +223,7 @@ def c_cos(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbe
     return util.sin_pow_to_cos_mul(n, k, l, d_cos, 0, -1)
 
 @util.ints_cache
-def d_h(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def d_h(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (h+a-rho)/a sin-power series expansion coefficients.
 
     :param n: sin-power.
@@ -237,7 +237,7 @@ def d_h(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers
         return bp_nkl(n,k+1,l) - d_N_nkl(n,k,l)
 
 @util.ints_cache
-def c_h(n : int, k : int, l : int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
+def c_h(n: int, k: int, l: int) -> sp.core.numbers.Rational | sp.core.numbers.Integer:
     """Compute (h+a-rho)/a Fourier series expansion coefficients.
 
     :param n: Fourier sin-multiple.
