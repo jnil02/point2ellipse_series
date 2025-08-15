@@ -8,7 +8,7 @@ import sympy as sp
 
 # Internal includes.
 import polynomials
-import util
+import cache
 from symbols import e2
 import series
 
@@ -57,7 +57,7 @@ def poly_bell_substitution(p: sp.core.Expr) -> series.SeriesBase:
         seqTot = seqTot + seqTerm
     return seqTot
 
-@util.ints_cache
+@cache.ints_cache
 def power_of_double_power_series_coefficient_polynomial(n: int, i: int) -> series.SeriesBase:
     """Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
 
