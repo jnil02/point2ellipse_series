@@ -1,6 +1,5 @@
 
-""" Various Utility functions for point-to-ellipse series expansions.
-"""
+"""Various Utility functions for point-to-ellipse series expansions."""
 
 # External includes.
 from collections.abc import Callable
@@ -8,12 +7,12 @@ import sympy as sp
 
 
 def sin_pow_to_cos_mul(n: int, k: int, l: int, d_nkl: Callable[[int, int, int], sp.core.Expr],
-                       n_min: int, k_pp: int) -> sp.core.Rational | sp.core.Integer:
+                       n_min: int, k_pp: int) -> sp.core.Rational:
     """Fourier multiple-angle cos series coefficient from sin-power series.
 
     :param n: sin-multiple.
     :param k: rho power.
-    :param l: e³ power.
+    :param l: e² power.
     :param d_nkl: Sin-power series coefficients.
     :param n_min: Lowest sin-power.
     :param k_pp: Maximum e² power offset in sin-power series.
