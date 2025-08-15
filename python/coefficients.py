@@ -12,7 +12,7 @@ import sympy as sp
 
 # Internal includes.
 import series_substitutions
-import util
+import polynomials
 import cache
 import symbols
 
@@ -194,7 +194,7 @@ def c_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
-    return util.sin_pow_to_cos_mul(n, k, l, d_sin, 0, 0)
+    return polynomials.sin_pow_to_cos_mul(n, k, l, d_sin, 0, 0)
 
 @cache.ints_cache
 def d_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
@@ -221,7 +221,7 @@ def c_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
-    return util.sin_pow_to_cos_mul(n, k, l, d_cos, 0, -1)
+    return polynomials.sin_pow_to_cos_mul(n, k, l, d_cos, 0, -1)
 
 @cache.ints_cache
 def d_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
@@ -246,4 +246,4 @@ def c_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
-    return util.sin_pow_to_cos_mul(n, k, l, d_h, 1, 0)
+    return polynomials.sin_pow_to_cos_mul(n, k, l, d_h, 1, 0)
