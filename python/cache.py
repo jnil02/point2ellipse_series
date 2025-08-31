@@ -1,25 +1,27 @@
 
-"""Function decorator for caching."""
+"""
+Caching utilities for function taking unsigned integer arguments.
+"""
 
 # External includes.
 from collections.abc import Hashable
 
 
-def cantor_pairing_function(k: int, l: int) -> int:
+def cantor_pairing_two(k: int, l: int) -> int:
     """Cantor pairing for two non-negative integers."""
     assert k >= 0, "k must be >= 0"
     assert l >= 0, "l must be >= 0"
     return (k + l) * (k + l + 1) // 2 + l
 
-def cantor_tuple(*args: int) -> int:
-    """Cantor pairing extended to n non-negative integers."""
+def cantor_pairing(*args: int) -> int:
+    """Chained Cantor pairing for an arbitrary number of non-negative integers."""
     if not args:
         raise ValueError("At least one integer required")
     assert all(isinstance(a, int) and a >= 0 for a in args), \
         "All arguments must be non-negative integers"
     key = args[0]
     for next_val in args[1:]:
-        key = cantor_pairing_function(key, next_val)
+        key = cantor_pairing_two(key, next_val)
     return key
 
 def split_args(*args):
@@ -44,7 +46,7 @@ class ints_cache:
     def __call__(self, *args):
         ints, others = split_args(*args)
         if ints:
-            int_key = cantor_tuple(*ints)
+            int_key = cantor_pairing(*ints)
             key = (int_key,) + others
         else:
             key = others

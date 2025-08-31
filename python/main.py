@@ -17,7 +17,10 @@ from mpmath import mp
 import time
 
 # Set the number of digits of precision for the calculations.
+# NOTE, this has to be set before "ellipse" is imported.
 mp.dps = 50
+
+import ellipse
 
 # Utility stuff.
 from ellipse import mp_ellipse_to_cartesian, mp_e2, mp_a
@@ -26,17 +29,34 @@ from symbols import varrho, psi, sin_psi, cos_psi, e2
 # The actual series.
 import fourier_series
 
+
 if __name__ == "__main__":
     # Number of terms in each series.
     max_order = 7
 
     # Multi-precision reference/input values.
-    mp_phi = mp.mpf(43.099999999999504)/mp.mpf(180.) * mp.pi  # "Latitude".
-    mp_h = mp.mpf(10000.)  # "Altitude".
+    mp_phi = mp.mpf("43.1")/mp.mpf("180.") * mp.pi  # "Latitude".
+    mp_h = mp.mpf("10000.")                         # "Altitude".
     mp_x, mp_y = mp_ellipse_to_cartesian(mp_phi, mp_h)  # Cartesian coordinate.
     mp_psi = mp.atan2(mp_y , mp_x)  # Polar angle.
     mp_rho = mp.sqrt(mp_x * mp_x + mp_y * mp_y)  # Radius.
     mp_varrho = mp_a / mp.sqrt(mp_x * mp_x + mp_y * mp_y)
+    print("mp_a: " + str(mp_a))
+    print("mp_phi: " + str(mp_phi))
+    print("mp_h: " + str(mp_h))
+    print("mp_x: " + str(mp_x))
+    print("mp_y: " + str(mp_y))
+    print("mp_psi: " + str(mp_psi))
+    print("mp_rho: " + str(mp_rho))
+    print("mp_varrho: " + str(mp_varrho))
+
+    # Check that the reference conversion work
+    mp_phi2, mp_h2 = ellipse.mp_cartesian_to_ellipse(mp_x, mp_y)
+    print("Ref conversion:")
+    print(mp_phi)
+    print(mp_phi2)
+    print(mp_h)
+    print(mp_h2)
 
     t = time.time()
 
@@ -47,17 +67,15 @@ if __name__ == "__main__":
 
     print("phi - psi (ref/sin-mul/sin-pow):")
     print(mp_phi-mp_psi)
-    expr = fourier_series.phi_in_sin_mul(max_order, max_order, max_order)
-    print(expr.subs(e2, mp_e2)
-          .subs(psi, mp_psi)
-          .subs(varrho, mp_varrho))
     expr = fourier_series.phi_in_sin_pow(max_order, max_order) * sin_psi * cos_psi
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(cos_psi, mp.cos(mp_psi))
           .subs(varrho, mp_varrho))
-
-    print("psi in sin pow with cos-factor integrated")
+    expr = fourier_series.phi_in_sin_mul(max_order, max_order, max_order)
+    print(expr.subs(e2, mp_e2)
+          .subs(psi, mp_psi)
+          .subs(varrho, mp_varrho))
     expr = fourier_series.phi_in_sin_pow2(max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))

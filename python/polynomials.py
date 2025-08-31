@@ -10,8 +10,7 @@ from collections.abc import Callable
 import cache
 
 
-def sin_pow_to_cos_mul(n: int, k: int, l: int, d_nkl: Callable[[int, int, int], sp.core.Expr],
-                       n_min: int, k_pp: int) -> sp.core.Rational:
+def sin_pow_to_cos_mul(n: int, k: int, l: int, n_min: int, k_pp: int, d_nkl: Callable[[int, int, int], sp.core.Expr]) -> sp.core.Rational:
     """Fourier multiple-angle cos series coefficient from sin-power series.
 
     :param n: sin-multiple.
@@ -47,7 +46,7 @@ def partial_ordinary_bell_polynomial(k: int, i: int, a: str) -> sp.core.Expr:
     return sp.expand(tmp)
 
 @cache.ints_cache
-def power_of_power_series_coefficient_polynomial(n: int, i: int, a: str) -> sp.core.Expr:
+def ordinary_potential_polynomial(n: int, i: int, a: str) -> sp.core.Expr:
     """Power of power-series series coefficient polynomial.
 
     Polynomial for n:th series coefficient of i:th power of an infinite series.
@@ -82,5 +81,5 @@ def power_of_power_series_coefficient_polynomial(n: int, i: int, a: str) -> sp.c
     clj = 0
     for k in range(1, n+1):
         clj = (clj + (k * i - n + k) * sp.symbols(a + "_" + str(k)) *
-               power_of_power_series_coefficient_polynomial(n - k, i, a))
+               ordinary_potential_polynomial(n - k, i, a))
     return clj / (n * x0)

@@ -7,11 +7,11 @@ import typing
 from mpmath import mp
 
 # Defining WGS84 constants.
-mp_a = mp.mpf(6378137.0)  # Semi-major axis / Earth equatorial radius.
-mp_f = mp.mpf(1.0) / mp.mpf(298.257223563)  # Flattening. f = (a - b) / a
+mp_a = mp.mpf("6378137.0")  # Semi-major axis / Earth equatorial radius.
+mp_f = mp.mpf(1.0) / mp.mpf("298.257223563")  # Flattening. f = (a - b) / a
 # Derived WGS84 constants.
 mp_b = mp_a - mp_f * mp_a  # Semi-minor axis / Earth polar radius.
-mp_e2 = mp.mpf(1.0) - (mp_b * mp_b) / (mp_a * mp_a)  # First eccentricity squared.
+mp_e2 = mp.mpf(1) - (mp_b * mp_b) / (mp_a * mp_a)  # First eccentricity squared.
 
 def mp_ellipse_to_cartesian(phi: mp.mpf, h: mp.mpf) -> typing.Tuple[mp.mpf, mp.mpf]:
     """Multi-precision elliptical to Cartesian coordinate transformation.
@@ -21,9 +21,9 @@ def mp_ellipse_to_cartesian(phi: mp.mpf, h: mp.mpf) -> typing.Tuple[mp.mpf, mp.m
     :return: Cartesian coordinates (x,y).
     """
     sin_lat = mp.sin(phi)
-    N = mp_a / mp.sqrt(mp.mpf(1.0) - mp_e2 * sin_lat * sin_lat)
+    N = mp_a / mp.sqrt(mp.mpf(1) - mp_e2 * sin_lat * sin_lat)
     x = (N + h) * mp.cos(phi)
-    y = ((mp.mpf(1.0) - mp_e2) * N + h) * sin_lat
+    y = ((mp.mpf(1) - mp_e2) * N + h) * sin_lat
     return x, y
 
 def mp_polar_to_cartesian(psi: mp.mpf, rho: mp.mpf) -> typing.Tuple[mp.mpf, mp.mpf]:
@@ -42,18 +42,16 @@ e4 = mp_e2 * mp_e2
 b2am2 = b2 / a2
 a3 = a2 * mp_a
 a4 = a2 * a2
-am2 = mp.mpf(1.) / a2
-bam2 = mp_b / a2
+am2 = mp.mpf(1) / a2
 b2am4 = b2 / a4
-inv_6 = mp.mpf(1.) / mp.mpf(6.)
+inv_6 = mp.mpf(1) / mp.mpf(6)
 e2_2 = mp_e2 / mp.mpf(2)
 e2bam3 = mp_e2 * mp_b / a3
-M_PI_6 = mp.pi / mp.mpf(6.)
-M_2_3 = mp.mpf(2.) / mp.mpf(3.)
+M_PI_6 = mp.pi / mp.mpf(6)
+M_2_3 = mp.mpf(2) / mp.mpf(3)
 bam1 = mp_b / mp_a  # = 1 - f
 bem1 = mp_b / mp.sqrt(mp_e2)
 e2bm1 = mp_e2 / mp_b
-c = mp.sqrt(mp.mpf(2)) - mp.mpf(1.)
 
 def mp_cartesian_to_ellipse(x, z):
     """Multiprecision Cartesian (ECEF) to geodetic (ellipse) coordinate transformation by Vermeille.

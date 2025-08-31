@@ -1,9 +1,6 @@
 
-"""Point-to-ellipse Fourier and sin-power expansion coefficients.
-
-For further details see
-Nilsson, John-Olof. Point-to-ellipse Fourier series. DOI:
-https://doi.org/10.48550/arXiv.2506.XXXXX.
+"""
+Point-to-ellipse Fourier and sin-power series expansion coefficients.
 """
 
 # External includes.
@@ -15,10 +12,12 @@ import series_substitutions
 import polynomials
 import cache
 import symbols
+from util import rf_half
+
 
 @cache.ints_cache
 def d_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute phi-psi sin-power series expansion coefficients.
+    """(phi - psi) sin-power series expansion coefficients.
 
     :param n: sin-power.
     :param k: varrho power of inner power series.
@@ -30,9 +29,9 @@ def d_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
         for m in range(k - 1 - r + 1):
             for q in range(floor(r / 2) + 1):
                 for p in range(floor(m / 2) + 1):
-                    for t in range(min(l - k, r - q) + 1):
+                    for t in range(l - n - k + m + r - p - q, min(l - k, r - q) + 1):
                         d = (d + sp.Rational(sp.Integer((-1) ** (2 * p + n - l - k)) * 2 ** (r - 2 * q) *
-                                             sp.functions.combinatorial.factorials.RisingFactorial(sp.Rational(k, 2), r - q),
+                                             rf_half(k, r - q),
                                              sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
                              * sp.binomial(r - q, t) * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
                              * sp.binomial(sp.Rational(k, 2) + r - q + l - k - t - 1, l - k - t)
@@ -53,11 +52,13 @@ def d_phi2(n: int, k: int, l: int) -> sp.core.numbers.Rational:
         for m in range(k - 1 - r + 1):
             for q in range(floor(r / 2) + 1):
                 for p in range(floor(m / 2) + 1):
-                    for t in range(max(l - k, r - q) + 1):
-                        d = (d + sp.Rational(sp.Integer((-1) ** (2 * p + n - l - k)) * 2 ** (r - 2 * q) *
-                                             sp.functions.combinatorial.factorials.RisingFactorial(sp.Rational(k, 2), r - q),
+                    for t in range(l - n - k + m + r - p - q, min(l - k, r - q) + 1):
+                        d = (d + sp.Rational(rf_half(k, r - q)
+                                             * sp.Integer((-1) ** (2 * p + n - l - k)) * 2 ** (r - 2 * q),
                                              sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
-                             * sp.binomial(r - q, t) * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
+                             * sp.binomial(r - q, t)
+                             * sp.binomial(k - 1, m + r)
+                             * sp.binomial(m + 1, 2 * p + 1)
                              * sp.binomial(sp.Rational(k, 2) + r - q + l - k - t - 1, l - k - t)
                              * sp.binomial(p + sp.Rational(1,2), n - (m + r - q + l - k - t - p)))
     return d
@@ -81,15 +82,15 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
                         sum = sp.Integer(0)
                         for i in range(max(0,p-n+1), min(p, p-n+1+w) + 1):  # Empty if w < 0.
                             j = w+p-i+1-n
-                            sum = sum + sp.binomial(2*p+1, i) * sp.binomial(1 + 2*w, j) * sp.Integer((-1)**j)
+                            sum = sum + sp.binomial(2 * p + 1, i) * sp.binomial(1 + 2 * w, j) * sp.Integer((-1)**j)
                         for i in range(p-w+n, p + 1): # Empty if p-w+n > p.
                             j = w-p+i-n
-                            sum = sum + sp.binomial(2*p+1, i) * sp.binomial(1 + 2*w, j) * sp.Integer((-1)**j)
+                            sum = sum + sp.binomial(2 * p + 1, i) * sp.binomial(1 + 2 * w, j) * sp.Integer((-1)**j)
                         for i in range(p-w-n, p-n + 1):  # Empty if p-n < 0
                             j = w-p+i+n
-                            sum = sum - sp.binomial(2*p+1, i) * sp.binomial(1 + 2*w, j) * sp.Integer((-1)**j)
+                            sum = sum - sp.binomial(2 * p + 1, i) * sp.binomial(1 + 2 * w, j) * sp.Integer((-1)**j)
                         h = (h + sum * sp.Integer((-1) ** (l - k)) * sp.Rational(
-                            sp.functions.combinatorial.factorials.RisingFactorial(sp.Rational(k, 2), r - q),
+                            rf_half(k, r - q),
                             sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r) * 2 ** (2 * (m + l - k - t) + r + 1))
                             * sp.binomial(r - q, t)
                             * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
@@ -99,7 +100,7 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 @cache.ints_cache
 def d_phi_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
-    tmp = series_substitutions.power_of_double_power_series_coefficient_polynomial(n, i)[k]
+    tmp = series_substitutions.double_series_power_coeff(n, i)[k]
     # Polynomial for the varrho^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
     tmp = series_substitutions.a_nk_sub(tmp, 1, d_phi)
     return tmp
@@ -120,7 +121,7 @@ def d_phi_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
 @cache.ints_cache
 def d_sin_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
-    tmp = series_substitutions.power_of_double_power_series_coefficient_polynomial(n, i)[k]
+    tmp = series_substitutions.double_series_power_coeff(n, i)[k]
     # Polynomial for the delta^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
     tmp = series_substitutions.a_nk_sub(tmp, 0, d_sin)
     return tmp
@@ -194,7 +195,7 @@ def c_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
-    return polynomials.sin_pow_to_cos_mul(n, k, l, d_sin, 0, 0)
+    return polynomials.sin_pow_to_cos_mul(n, k, l, 0, 0, d_sin)
 
 @cache.ints_cache
 def d_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
@@ -221,7 +222,7 @@ def c_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
-    return polynomials.sin_pow_to_cos_mul(n, k, l, d_cos, 0, -1)
+    return polynomials.sin_pow_to_cos_mul(n, k, l, 0, -1, d_cos)
 
 @cache.ints_cache
 def d_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
@@ -246,4 +247,4 @@ def c_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
-    return polynomials.sin_pow_to_cos_mul(n, k, l, d_h, 1, 0)
+    return polynomials.sin_pow_to_cos_mul(n, k, l, 1, 0, d_h)

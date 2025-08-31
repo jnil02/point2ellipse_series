@@ -58,7 +58,7 @@ def poly_bell_substitution(p: sp.core.Expr) -> series.SeriesBase:
     return seqTot
 
 @cache.ints_cache
-def power_of_double_power_series_coefficient_polynomial(n: int, i: int) -> series.SeriesBase:
+def double_series_power_coeff(n: int, i: int) -> series.SeriesBase:
     """Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
 
     :param n: First index of resulting series coefficients.
@@ -66,7 +66,7 @@ def power_of_double_power_series_coefficient_polynomial(n: int, i: int) -> serie
     :return: Series representing the coefficient.
     """
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
-    b_ni = polynomials.power_of_power_series_coefficient_polynomial(n, i, "a")
+    b_ni = polynomials.ordinary_potential_polynomial(n, i, "a")
     # Polynomial for the varrho^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
     return poly_bell_substitution(b_ni)
 
