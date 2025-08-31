@@ -1,2 +1,6 @@
 python/dev/
 python/.idea/
+cpp/.idea/
+cpp/cmake-build-debug/
+cpp/cmake-build-release/
+cpp/dev/
