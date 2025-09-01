@@ -29,9 +29,8 @@ def d_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
         for m in range(k - 1 - r + 1):
             for q in range(floor(r / 2) + 1):
                 for p in range(floor(m / 2) + 1):
-                    for t in range(l - n - k + m + r - p - q, min(l - k, r - q) + 1):
-                        d = (d + sp.Rational(sp.Integer((-1) ** (2 * p + n - l - k)) * 2 ** (r - 2 * q) *
-                                             rf_half(k, r - q),
+                    for t in range(l - n - k + m + r - p - q, min(l - k, r - q, l - n - k + m + r - q) + 1):
+                        d = (d + sp.Rational(rf_half(k, r - q) * ((-1) ** (n - l - k) * 2 ** (r - 2 * q)),
                                              sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
                              * sp.binomial(r - q, t) * sp.binomial(k - 1, m + r) * sp.binomial(m + 1, 2 * p + 1)
                              * sp.binomial(sp.Rational(k, 2) + r - q + l - k - t - 1, l - k - t)
@@ -53,8 +52,7 @@ def d_phi2(n: int, k: int, l: int) -> sp.core.numbers.Rational:
             for q in range(floor(r / 2) + 1):
                 for p in range(floor(m / 2) + 1):
                     for t in range(l - n - k + m + r - p - q, min(l - k, r - q) + 1):
-                        d = (d + sp.Rational(rf_half(k, r - q)
-                                             * sp.Integer((-1) ** (2 * p + n - l - k)) * 2 ** (r - 2 * q),
+                        d = (d + sp.Rational(rf_half(k, r - q) * ((-1) ** (n - l - k) * 2 ** (r - 2 * q)),
                                              sp.factorial(q) * sp.factorial(r - 2 * q) * (m + 1 + r))
                              * sp.binomial(r - q, t)
                              * sp.binomial(k - 1, m + r)

@@ -62,7 +62,7 @@ def double_series_power_coeff(n: int, i: int) -> series.SeriesBase:
     """Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
 
     :param n: First index of resulting series coefficients.
-    :param i: Second index of resulting series coefficients.
+    :param i: The power of the double power series.
     :return: Series representing the coefficient.
     """
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
