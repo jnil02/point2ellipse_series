@@ -7,12 +7,27 @@
 #include <symengine/expression.h>
 
 #include "coefficients.hpp"
+#include "polynomials.hpp"
 #include "symbols.hpp"
 
 using SymEngine::Expression;
 using SymEngine::pow;
 using SymEngine::sin;
 using SymEngine::cos;
+
+using point_to_ellipse_series::d_phi;
+using point_to_ellipse_series::d_phi2;
+using point_to_ellipse_series::c_phi;
+using point_to_ellipse_series::d_sin;
+using point_to_ellipse_series::c_sin;
+using point_to_ellipse_series::d_cos;
+using point_to_ellipse_series::c_cos;
+using point_to_ellipse_series::d_h;
+using point_to_ellipse_series::c_h;
+
+using point_to_ellipse_series::rc_expr;
+using point_to_ellipse_series::sigma;
+using point_to_ellipse_series::tau;
 
 /** Series expansion of (phi - psi) / (sin(psi) * cos(psi)) in sin-powers.
  *
@@ -25,7 +40,7 @@ inline Expression phi_in_sin_pow(int N, int K) {
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n + 1); l <= k + n; ++l)
-				d += d_phi(n, k, l) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d += rc_expr(d_phi(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
 	return d;
 }
 
@@ -43,7 +58,7 @@ inline Expression phi_in_sin_pow2(int N, int K) {
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = k; l <= k + n; ++l)
-				d += d_phi2(n, k, l) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n + 1);
+				d += rc_expr(d_phi2(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n + 1);
 	return d;
 }
 
@@ -59,7 +74,7 @@ Expression phi_in_sin_mul(int N, int K, int L) {
 	for (int n = 1; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d += c_phi(n, k, l) * pow(e2, l) * pow(varrho, k) * sin(Expression(2 * n) * psi);
+				d += rc_expr(c_phi(n, k, l)) * pow(e2, l) * pow(varrho, k) * sin(Expression(2 * n) * psi);
 	return d;
 }
 
@@ -74,7 +89,7 @@ inline Expression sin_phi_in_sin_pow(int N, int K) {
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n); l <= n + k; ++l)
-				d += d_sin(n, k, l) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d += rc_expr(d_sin(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
 	return d;
 }
 
@@ -90,7 +105,7 @@ inline Expression sin_phi_in_cos_mul(int N, int K, int L) {
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d += c_sin(n, k, l) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
+				d += rc_expr(c_sin(n, k, l)) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
 	return d;
 }
 
@@ -105,7 +120,7 @@ inline Expression cos_phi_in_sin_pow(int N, int K) {
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n); l < n + k; ++l)
-				d += d_cos(n, k, l) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d += rc_expr(d_cos(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
 	return d;
 }
 
@@ -121,7 +136,7 @@ inline Expression cos_phi_in_cos_mul(int N, int K, int L) {
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d += c_cos(n, k, l) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
+				d += rc_expr(c_cos(n, k, l)) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
 	return d;
 }
 
@@ -168,7 +183,7 @@ inline Expression h_in_sin_pow(int N, int K) {
 	for (int n = 1; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = std::max(k + 1, n); l <= n + k; ++l)
-				d += d_h(n, k, l) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d += rc_expr(d_h(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
 	return d;
 }
 
@@ -184,6 +199,6 @@ inline Expression h_in_cos_mul(int N, int K, int L) {
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = std::max(n, k + 1); l <= L; ++l)
-				d += c_h(n, k, l) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
+				d += rc_expr(c_h(n, k, l)) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
 	return d;
 }

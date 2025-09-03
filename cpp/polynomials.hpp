@@ -11,6 +11,8 @@
 #include "cache.hpp"
 #include "util.hpp"
 
+namespace point_to_ellipse_series {
+
 using SymEngine::Expression;
 using SymEngine::integer;
 using SymEngine::binomial;
@@ -34,13 +36,13 @@ using SymEngine::factorial;
  */
 inline Expression
 sin_pow_to_cos_mul(int n, int k, int l, int n_min, int k_pp,
-				   const std::function<Expression(int, int, int)> &d_nkl) {
+				   const std::function<rc(int, int, int)> &d_nkl) {
 	assert(n >= 0 && k >= 0 && l >= 0);
 
 	Expression c_nkl(0);
 	for (int i = std::max({n, n_min, l - k - k_pp}); i <= l; ++i)
-		c_nkl = c_nkl + d_nkl(i, k, l) * rational(1, 1L << (2 * i))
-				* binomial(Integer(2 * i), (unsigned long)(i - n));
+		c_nkl = c_nkl + rc_expr(d_nkl(i, k, l)) * rational(1, 1L << (2 * i))
+						* binomial(Integer(2 * i), (unsigned long) (i - n));
 	// Common factor 2*(-1)^n / (n == 0 ? 2 : 1)
 	c_nkl = c_nkl * ((1 + !!n) * powm1(n));
 
@@ -55,10 +57,10 @@ sin_pow_to_cos_mul(int n, int k, int l, int n_min, int k_pp,
  * @param a Base name for the variables (e.g., "a" → a_1, a_2, ...).
  * @return SymEngine Expression for the partial ordinary Bell polynomial.
  */
-inline Expression partial_ordinary_bell_polynomial(int k, int i, const std::string& a) {
+inline Expression partial_ordinary_bell_polynomial(int k, int i, const std::string &a) {
 
 	// Look in cache for result.
-	static std::map<std::tuple<int,std::string>, Expression> cache;
+	static std::map<std::tuple<int, std::string>, Expression> cache;
 	auto key = std::make_tuple(cantor_pairing_two(k, i), a);
 	auto it = cache.find(key);
 	if (it != cache.end())
@@ -94,10 +96,10 @@ inline Expression partial_ordinary_bell_polynomial(int k, int i, const std::stri
  * @param a The base symbol name of the coefficients (e.g., "a" → a_0, a_1, ...).
  * @return SymEngine Expression for b_{n,i}.
  */
-inline Expression ordinary_potential_polynomial(int n, int i, const std::string& a) {
+inline Expression ordinary_potential_polynomial(int n, int i, const std::string &a) {
 
 	// Look in cache for result.
-	static std::map<std::tuple<int,std::string>, Expression> cache;
+	static std::map<std::tuple<int, std::string>, Expression> cache;
 	auto key = std::make_tuple(cantor_pairing_two(n, i), a);
 	auto it = cache.find(key);
 	if (it != cache.end())
@@ -114,8 +116,8 @@ inline Expression ordinary_potential_polynomial(int n, int i, const std::string&
 		Expression clj(integer(0));
 		for (int k = 1; k <= n; ++k)
 			clj = clj + integer(k * i - n + k)
-					* Expression(a + "_" + std::to_string(k)) *
-					ordinary_potential_polynomial(n - k, i, a);
+						* Expression(a + "_" + std::to_string(k)) *
+						ordinary_potential_polynomial(n - k, i, a);
 
 		A = clj / (integer(n) * x0);
 	}
@@ -145,3 +147,5 @@ tau(int J, const Expression &omega, const Expression &delta) {
 	}
 	return omega * d;
 }
+
+} // namespace point_to_ellipse_series

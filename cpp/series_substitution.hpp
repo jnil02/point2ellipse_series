@@ -10,6 +10,8 @@
 #include "polynomials.hpp"
 #include "symbols.hpp"
 
+namespace point_to_ellipse_series {
+
 using SymEngine::Expression;
 using SymEngine::RCP;
 using SymEngine::Basic;
@@ -20,7 +22,8 @@ using SymEngine::Mul;
 using SymEngine::Pow;
 using SymEngine::rcp_static_cast;
 
-std::vector<RCP<const Basic>> get_add_args(const RCP<const Basic> &expr) {
+inline static std::vector<RCP<const Basic>>
+get_add_args(const RCP<const Basic> &expr) {
 	if (SymEngine::is_a<Add>(*expr)) {
 		return expr->get_args();
 	} else {
@@ -28,7 +31,8 @@ std::vector<RCP<const Basic>> get_add_args(const RCP<const Basic> &expr) {
 	}
 }
 
-std::vector<RCP<const Basic>> get_mul_args(const RCP<const Basic> &expr) {
+inline static std::vector<RCP<const Basic>>
+get_mul_args(const RCP<const Basic> &expr) {
 	if (SymEngine::is_a<Mul>(*expr)) {
 		return expr->get_args();
 	} else {
@@ -36,7 +40,7 @@ std::vector<RCP<const Basic>> get_mul_args(const RCP<const Basic> &expr) {
 	}
 }
 
-std::shared_ptr<SeriesBase> poly_bell_substitution(const Expression &p) {
+static std::shared_ptr<SeriesBase> poly_bell_substitution(const Expression &p) {
 	std::shared_ptr<SeriesBase> seqTot = std::make_shared<SeriesEmpty>();
 
 	for (const auto &polyTerm: get_add_args(expand(p.get_basic()))) {
@@ -90,17 +94,16 @@ std::shared_ptr<SeriesBase> poly_bell_substitution(const Expression &p) {
 }
 
 // Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
-std::shared_ptr<SeriesBase> double_series_power_coeff(int n, int i) {
+static std::shared_ptr<SeriesBase> double_series_power_coeff(int n, int i) {
 	// Polynomial for b_{n,i} in terms of {a_0, ..., a_n}
 	Expression b_ni = ordinary_potential_polynomial(n, i, "a");
 	// Substitute Bell polynomials for coefficients
 	return poly_bell_substitution(b_ni);
 }
 
-// C++ version of a_nk_sub
-Expression a_nk_sub(const Expression &p,
-					int n_offset,
-					const std::function<Expression(int, int, int)> &d_nkl) {
+static Expression a_nk_sub(const Expression &p,
+						   int n_offset,
+						   const std::function<rc(int, int, int)> &d_nkl) {
 	Expression pTot{0};
 
 	// Loop over additive terms
@@ -144,7 +147,7 @@ Expression a_nk_sub(const Expression &p,
 						*exp).as_int();
 
 				for (int l = std::max(k, n + n_offset); l <= n + k; ++l) {
-					a_nk = a_nk + d_nkl(n, k, l) * pow(e2, l);
+					a_nk = a_nk + rc_expr(d_nkl(n, k, l)) * pow(e2, l);
 				}
 
 				pTerm = pTerm * pow(a_nk, exp_int);
@@ -161,3 +164,5 @@ Expression a_nk_sub(const Expression &p,
 
 	return pTot;
 }
+
+}  // namespace point_to_ellipse_series

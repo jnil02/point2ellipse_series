@@ -2,6 +2,10 @@
 
 #include <cstdint>
 
+#include "coefficients.hpp"
+
+namespace point_to_ellipse_series {
+
 using SymEngine::Expression;
 using SymEngine::rational;
 using SymEngine::Symbol;
@@ -12,6 +16,28 @@ using SymEngine::factorial;
 using SymEngine::Mul;
 using SymEngine::Pow;
 using SymEngine::Integer;
+
+inline static Expression rc_expr(const rc &d)
+{
+	return Expression(SymEngine::Rational::from_two_ints(d.num, d.den));
+}
+
+inline static rc expr_rc(const Expression &d)
+{
+	RCP<const Basic> b = d.get_basic();
+
+	if (is_a<SymEngine::Rational>(*b)) {
+		auto r = rcp_static_cast<const SymEngine::Rational>(b);
+		return {r->get_num()->as_int(), r->get_den()->as_int()};
+	}
+	else if (is_a<Integer>(*b)) {
+		auto i = rcp_static_cast<const Integer>(b);
+		return {i->as_int(), 1};   // implicit denominator = 1
+	}
+	else {
+		throw std::runtime_error("Expression is not a Rational or Integer");
+	}
+}
 
 /** Compute the n:th rising factorial of (k/2).
  *
@@ -112,3 +138,4 @@ coeff_of(const Expression &expr, const RCP<const Symbol> &sym, int exp) {
 	return (power == exp) ? rest : Expression(0);
 }
 
+} // namespace point_to_ellipse_series
