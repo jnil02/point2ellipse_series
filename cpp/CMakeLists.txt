@@ -19,7 +19,7 @@ target_link_libraries(main
         gmp
         )
 
- # Library.
+# Build coefficient library.
 set(PTECOEF_SOURCE
         coefficients.cpp
         series.cpp
@@ -33,6 +33,7 @@ set_target_properties(ptecoef_static PROPERTIES OUTPUT_NAME ptecoef)
 
 include(GNUInstallDirs)
 
+# Install coefficient library. (run ldconfig subsequently.)
 install(TARGETS ptecoef_shared ptecoef_static
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}  # .so
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}  # .a
