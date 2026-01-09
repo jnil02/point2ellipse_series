@@ -9,7 +9,6 @@ import sympy as sp
 # Internal includes.
 import polynomials
 import cache
-from symbols import e2
 import series
 
 
@@ -70,13 +69,43 @@ def double_series_power_coeff(n: int, i: int) -> series.SeriesBase:
     # Polynomial for the varrho^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
     return poly_bell_substitution(b_ni)
 
-def a_nk_sub(p: sp.core.Expr, n_offset: int, d_nkl: Callable[[int, int, int], sp.core.Expr]) -> sp.core.Expr:
-    """Substitute a_{n,k} for \sum_{l=\max(k,n+n_offset)}^{n+k} d_{n,k,l} e²^l in a polynomial.
+def a_nk_ser(n: int, k: int, n_offset: int, d_nkl: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol) -> sp.core.Expr:
+    """Specific finite a_{n,k} series from max(k, n+offsetI to n+k.
 
-    a_{n,k} is the arguments of the Bell polynomial.
+    :param n: n index
+    :param k: k index
+    :param n_offset: offset
+    :param d_nkl: tripple sum coefficient.
+    :param e2 series base variable.
+    :return: expression for finite series.
+    """
+    a_nk = sp.S.Zero
+    for l in range(max(k, n + n_offset), n + k + 1):
+        a_nk = a_nk + d_nkl(n, k, l) * e2 ** l
+    return a_nk
 
-    :param d_nkl: The coefficient of the substitution sum.
-    :param n_offset: Offset in n in the lower limit of the sum.
+def a_nk_C(n: int, k: int, c: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol):
+    """Specific finite a_{n,k} series from 1 to k if k>n.
+
+    :param n: n index
+    :param k: k index
+    :param c: tripple sum coefficient.
+    :param e2 series base variable.
+    :return: expression for finite series.
+    """
+    a_nk = sp.S.Zero
+    if k < n+1:
+        return a_nk
+    for l in range(1, k + 1):
+        a_nk += c(n, k, l) * e2 ** l
+    return a_nk
+
+def a_nk_sub(p: sp.core.Expr, a_nk: Callable[[int, int], sp.core.Expr]) -> sp.core.Expr:
+    """Substitute a_{n,k} with the result of the callback.
+
+    The indices n and k are carried over from the symbol names to the callback arguments.
+
+    :param a_nk: Function for retrieving the a_nk coefficient substitutions.
     :param p: The polynomial to make the substitution in.
     :return: The polynomial with the substitution.
     """
@@ -96,10 +125,8 @@ def a_nk_sub(p: sp.core.Expr, n_offset: int, d_nkl: Callable[[int, int, int], sp
                 ix = base_exp[0].name[base_exp[0].name.find('_'):]
                 n = int(ix.split('_')[1])
                 k = int(ix.split('_')[2])
-                a_nk = sp.Integer(0)
-                for l in range(max(k, n + n_offset), n + k + 1):
-                    a_nk = a_nk + d_nkl(n, k, l) * e2 ** l
-                pTerm = pTerm * a_nk ** base_exp[1]
+                # Build the a_nk sum.
+                pTerm = pTerm * a_nk(n, k) ** base_exp[1]
             else:
                 raise Exception("Unhandled factor in sympy expression:" + str(termFactor))
         pTot = pTot + pTerm

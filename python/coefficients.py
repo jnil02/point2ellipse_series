@@ -96,11 +96,86 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return h
 
 @cache.ints_cache
+def d_phi_evo_dense(n, k, l):
+    """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
+
+    Dense coefficients. All the coefficients are non-zero.
+
+    :param n: Fourier sin-multiple.
+    :param k: rho power of inner power series.
+    :param l: e² power of innermost power series.
+    :return: Coefficient as a sympy rational number.
+    """
+    c = sp.S.Zero
+    s = n % 2
+    m = n + 1 + 2 * k
+    for j in range(l + 1):
+        b = sp.S.Zero
+        ka = n // 2 - l + j
+        for i in range(0, min(j, ka) + 1):
+            b += (-1) ** i * sp.binomial(j, i) * sp.binomial(ka - i + k, ka - i)
+        sum = sp.S.Zero
+        for q in range(2 * j, s + 2 * l + 1):
+            sum += 2 ** (q - 2 * j) * sp.binomial(q - j, j) * sp.binomial(n - 1 + 2 * k - q, s + 2 * l - q)
+        c += sum * b
+    return (-1) ** (n // 2 + l + n + 1) * sp.binomial(sp.Rational(m, 2), n // 2 + k - l) / m * c
+
+@cache.ints_cache
+def c_phi_evo(n, k, l):
+    """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
+
+    Coefficients with clean sums but with half the coefficients being zero.
+
+    :param n: Fourier sin-multiple.
+    :param k: rho power of inner power series.
+    :param l: e² power of innermost power series.
+    :return: Coefficient as a sympy rational number.
+    """
+    c = sp.S.Zero
+    if (k - n - 1) % 2 != 0:
+        return c
+    if (l - k) % 2 != 0:
+        return c
+    for j in range(floor((l - 1) / 2) + 1):
+        b = sp.S.Zero
+        for i in range(0, min(j, (n + 1 - l + 2 * j) // 2) + 1):
+            ka = (n - l + 1 + 2 * j - 2 * i) // 2
+            b += ((-1) ** ka) * sp.binomial(j, i) * sp.binomial(j - i + (k - l) // 2, ka)
+        s = sp.S.Zero
+        for q in range(2 * j, l - 1 + 1):
+            s += 2 ** (q - 2 * j) * sp.binomial(k - 2 - q, l - 1 - q) * sp.binomial(q - j, j)
+        c += sp.binomial(sp.Rational(k, 2), (k - l) // 2) / k * (-1) ** (l - j) * s * b
+    return c
+
+@cache.ints_cache
+def d_phi_pow_polynomial3(n: int, l: int, i: int) -> sp.core.Expr:
+    # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
+    tmp = series_substitutions.double_series_power_coeff(n, i)[l]
+    # Polynomial for the rho^k coefficients in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
+    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_C(n, k, lambda n,l,r: c_phi_evo(n, l, r), symbols.e2))
+    return tmp
+
+
+@cache.ints_cache
+def d_phi_pow_evo(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
+    """Compute (phi-pi/2)^i sin-power series expansion coefficients within evolute.
+
+    :param n: sin-power.
+    :param k: rho power of inner power series.
+    :param l: e² power of innermost power series.
+    :param i: The power exponent.
+    :return: Coefficient as a sympy rational number.
+    """
+    tmp = d_phi_pow_polynomial3(n, k, i)
+    return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
+
+
+@cache.ints_cache
 def d_phi_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
     tmp = series_substitutions.double_series_power_coeff(n, i)[k]
     # Polynomial for the varrho^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
-    tmp = series_substitutions.a_nk_sub(tmp, 1, d_phi)
+    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_ser(n, k, 1, d_phi, symbols.e2))
     return tmp
 
 @cache.ints_cache
@@ -121,7 +196,7 @@ def d_sin_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
     tmp = series_substitutions.double_series_power_coeff(n, i)[k]
     # Polynomial for the delta^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
-    tmp = series_substitutions.a_nk_sub(tmp, 0, d_sin)
+    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_ser(n, k,0, d_sin, symbols.e2))
     return tmp
 
 @cache.ints_cache
