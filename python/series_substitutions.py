@@ -85,7 +85,7 @@ def a_nk_ser(n: int, k: int, n_offset: int, d_nkl: Callable[[int, int, int], sp.
     return a_nk
 
 def a_nk_C(n: int, k: int, c: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol):
-    """Specific finite a_{n,k} series from 1 to k if k>n.
+    """Specific finite a_{n,k} series from 1 to k if k>=n+1.
 
     :param n: n index
     :param k: k index
