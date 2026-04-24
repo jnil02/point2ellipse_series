@@ -10,6 +10,9 @@
 #include "coefficients.hpp"
 
 using point_to_ellipse_series::d_phi;
+using point_to_ellipse_series::d_cos;
+using point_to_ellipse_series::d_sin;
+using point_to_ellipse_series::d_h;
 using point_to_ellipse_series::d_phi_evo;
 using point_to_ellipse_series::rc;
 
@@ -77,9 +80,41 @@ TEST_CASE("d_phi matches Python reference", "[coefficients]") {
 }
 
 TEST_CASE("d_phi returns zero for invalid indices", "[coefficients]") {
-	CHECK(d_phi(0, 0, 1).num == 0);  // k > 0 invalid.
+	CHECK(d_phi(0, 0, 1).num == 0);  // k = 0 invalid.
 	CHECK(d_phi(2, 1, 4).num == 0);  // l > n+k invalid.
 	CHECK(d_phi(3, 2, 1).num == 0);  // l < max(n+1,k) invalid.
+}
+
+TEST_CASE("d_cos matches Python reference", "[coefficients]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_cos.csv";
+	check_against_csv(csv_path, d_cos);
+}
+
+TEST_CASE("d_cos returns zero for invalid indices", "[coefficients]") {
+	CHECK(d_cos(0, 0, 1).num == 0);  // k = 0 invalid.
+	CHECK(d_cos(2, 1, 3).num == 0);  // l > n+k-1 invalid.
+	CHECK(d_cos(2, 2, 1).num == 0);  // l < max(n,k) invalid.
+}
+
+TEST_CASE("d_sin matches Python reference", "[coefficients]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_sin.csv";
+	check_against_csv(csv_path, d_sin);
+}
+
+TEST_CASE("d_sin returns zero for invalid indices", "[coefficients]") {
+	CHECK(d_sin(0, 0, 1).num == 0);  // k = 0 invalid.
+	CHECK(d_sin(2, 1, 4).num == 0);  // l > n+k invalid.
+	CHECK(d_sin(2, 2, 1).num == 0);  // l < max(n,k) invalid.
+}
+
+TEST_CASE("d_h matches Python reference", "[coefficients]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_h.csv";
+	check_against_csv(csv_path, d_h);
+}
+
+TEST_CASE("d_h returns zero for invalid indices", "[coefficients]") {
+	CHECK(d_h(2, 1, 4).num == 0);  // l > n+k invalid.
+	CHECK(d_h(2, 2, 2).num == 0);  // l < max(n,k+1) invalid.
 }
 
 TEST_CASE("d_phi_evo matches Python reference", "[coefficients][evo]") {
