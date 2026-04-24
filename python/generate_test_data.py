@@ -9,9 +9,6 @@ import csv
 
 from coefficients import d_phi, d_phi_evo
 
-# Allow running from repo root or from python/.
-sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-
 # Generate all indices up to and including this value.
 MAX_INDEX = 5
 

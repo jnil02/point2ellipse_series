@@ -76,7 +76,7 @@ TEST_CASE("d_phi matches Python reference", "[coefficients]") {
 	check_against_csv(csv_path, d_phi);
 }
 
-TEST_CASE("d_phi returns zero for invalid indices", "[coefficients][evo]") {
+TEST_CASE("d_phi returns zero for invalid indices", "[coefficients]") {
 	CHECK(d_phi(0, 0, 1).num == 0);  // k > 0 invalid.
 	CHECK(d_phi(2, 1, 4).num == 0);  // l > n+k invalid.
 	CHECK(d_phi(3, 2, 1).num == 0);  // l < max(n+1,k) invalid.
