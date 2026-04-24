@@ -174,7 +174,7 @@ def d_phi_pow_evo(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
 
 @cache.ints_cache
-def d_sin_phi_evo(n, k, l):
+def d_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     if (n-k) % 2 != 0 or (n-l) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -184,7 +184,7 @@ def d_sin_phi_evo(n, k, l):
     return d
 
 @cache.ints_cache
-def d_cos_phi_evo(n, k, l):
+def d_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     if (n+1-k) % 2 != 0 or (l-k) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -195,7 +195,7 @@ def d_cos_phi_evo(n, k, l):
 
 
 @cache.ints_cache
-def d_sin_phi_inv_evo(n,k,l):
+def d_sin_phi_inv_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     if (n-k) % 2 != 0 or (n-l) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -358,14 +358,14 @@ def c_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return polynomials.sin_pow_to_cos_mul(n, k, l, 1, 0, d_h)
 
 @cache.ints_cache
-def R(n,k,l,i):
+def R(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     s = sp.S.Zero
     for j in range(ceil((n + 2 * i - k) / 2.), n // 2 + 1):
         s += (-1) ** (j) * sp.binomial(i, j) * d_phi_pow_evo(n - 2 * j, k, l, 2 * i)
     return s
 
 @cache.ints_cache
-def d_Na_evo2(n, k, l, b_a):
+def d_Na_evo2(n: int, k: int, l: int, b_a) -> sp.core.Expr:
     d = sp.S.Zero
     for i in range(l // 2 + 1):
         for t in range(i+1):
@@ -373,7 +373,7 @@ def d_Na_evo2(n, k, l, b_a):
     return d
 
 @cache.ints_cache
-def B_p(n, k, p):
+def B_p(n: int, k: int, p: int) -> sp.core.Rational:
     if (n-k) % 2 != 0 or (n-p-1) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -385,7 +385,7 @@ def B_p(n, k, p):
     return d
 
 @cache.ints_cache
-def cp_evo_nkl(n, k, l):
+def cp_evo_nkl(n: int, k: int, l: int) -> sp.core.Rational:
     if (n-k) % 2 != 0 or (n-l-1) % 2 != 0:
         return sp.S.Zero
     if l <= 1:
@@ -394,10 +394,12 @@ def cp_evo_nkl(n, k, l):
         return d_sin_phi_inv_evo(n-1,k-1,l) - d_sin_phi_inv_evo(n-1,k-1,l-2)
     if k <= l:
         return -d_sin_phi_inv_evo(n-1,k-1,l-2)
+    # This should never happen.
+    return sp.S.Zero
 
 
 @cache.ints_cache
-def ch_evo(n, k, l):
+def ch_evo(n: int, k: int, l: int) -> sp.core.Rational:
     """Series coefficients for h/a in sin powers for small rho.
 
     Sparse coefficients with every other coefficient being zero.
@@ -416,7 +418,7 @@ def ch_evo(n, k, l):
     return cp_evo_nkl(n, k, l) - B_p(n, k, l)
 
 @cache.ints_cache
-def dh_evo(n, k, l):
+def dh_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     """Series coefficients for h/a in sin powers for small rho.
 
     :param n: sin power index.
@@ -428,7 +430,7 @@ def dh_evo(n, k, l):
     return ch_evo(n, 2 * k + n, 2 * l + 1 - sn)
 
 @cache.ints_cache
-def a_mr(m,r):
+def a_mr(m: int, r: int) -> sp.core.numbers.Rational:
     if r > m:
         raise Exception("r>m")
     if m == 0 and r==0:
@@ -444,14 +446,14 @@ def a_mr(m,r):
     return sp.Rational(2*(-1) ** m, sp.factorial(2*m)) * a
 
 @cache.ints_cache
-def C_mt(m,t):
+def C_mt(m: int, t: int) -> sp.core.numbers.Rational:
     C = sp.S.Zero
     for r in range(t,m+1):
         C += a_mr(m, r) * B_rt(r, t)
     return C
 
 @cache.ints_cache
-def B_rt(r,t):
+def B_rt(r: int, t: int) -> sp.core.numbers.Rational:
     B = sp.S.Zero
     for k in range(t,r+1):
         B += stirling(r,k,kind=2)*rf(sp.Rational(1,2),k) * (-1) ** (k-t) * sp.binomial(k,t)
