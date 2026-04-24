@@ -1,14 +1,13 @@
 """Generate test data for C++ consistency checks.
 
-Outputs test_data/d_phi_evo.csv with columns: n,k,l,num,den
-Only valid indices (l <= n//2 + k) are included.
+Outputs CSV files to test_data/ with columns: n,k,l,num,den
 """
 
 import os
 import sys
 import csv
 
-from coefficients import d_phi_evo
+from coefficients import d_phi, d_phi_evo
 
 # Allow running from repo root or from python/.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
@@ -17,24 +16,47 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 MAX_INDEX = 5
 
 # Where to place the test data.
-OUTPUT_PATH = os.path.join(os.path.dirname(__file__), '..', 'test_data', 'd_phi_evo.csv')
+TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'test_data')
 
-def main():
-    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
 
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(MAX_INDEX + 1):
-            for l in range(n // 2 + k + 1):  # Only valid indices.
-                c = d_phi_evo(n, k, l)  # c is a sympy Rational or Integer.
-                rows.append((n, k, l, c.p, c.q)) # Indices, numerator and denominator.
-
-    with open(OUTPUT_PATH, 'w', newline='') as f:
+def write_csv(filename, rows):
+    """Write rows to a CSV file in TEST_DATA_DIR."""
+    os.makedirs(TEST_DATA_DIR, exist_ok=True)
+    path = os.path.join(TEST_DATA_DIR, filename)
+    with open(path, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['n', 'k', 'l', 'num', 'den'])
         writer.writerows(rows)
+    print(f"Written {len(rows)} rows to {path}")
 
-    print(f"Written {len(rows)} rows to {OUTPUT_PATH}")
+
+def generate_d_phi():
+    """Generate test data for d_phi.
+
+    Valid indices: k >= 1 and max(n+1, k) <= l <= n+k.
+    """
+    rows = []
+    for n in range(MAX_INDEX + 1):
+        for k in range(1, MAX_INDEX + 1):
+            for l in range(max(n + 1, k), n + k + 1):
+                c = d_phi(n, k, l)
+                rows.append((n, k, l, c.p, c.q))
+    write_csv('d_phi.csv', rows)
+
+
+def generate_d_phi_evo():
+    """Generate test data for d_phi_evo.
+
+    Valid indices: l <= n//2 + k.
+    """
+    rows = []
+    for n in range(MAX_INDEX + 1):
+        for k in range(MAX_INDEX + 1):
+            for l in range(n // 2 + k + 1):
+                c = d_phi_evo(n, k, l)
+                rows.append((n, k, l, c.p, c.q))
+    write_csv('d_phi_evo.csv', rows)
 
 if __name__ == '__main__':
-    main()
+    generate_d_phi()
+    generate_d_phi_evo()

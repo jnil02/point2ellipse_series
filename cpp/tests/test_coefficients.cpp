@@ -9,6 +9,7 @@
 
 #include "coefficients.hpp"
 
+using point_to_ellipse_series::d_phi;
 using point_to_ellipse_series::d_phi_evo;
 using point_to_ellipse_series::rc;
 
@@ -47,15 +48,8 @@ static std::vector<TestRow> load_csv(const std::string &path) {
 	return rows;
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
-TEST_CASE("d_phi_evo matches Python reference", "[coefficients][evo]") {
-
-	// Path is set by CMake via a compile definition TEST_DATA_DIR.
-	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_phi_evo.csv";
-
+static void check_against_csv(const std::string &csv_path,
+							  const std::function<rc(int, int, int)> &fn) {
 	std::vector<TestRow> rows;
 	REQUIRE_NOTHROW(rows = load_csv(csv_path));
 	REQUIRE(!rows.empty());
@@ -63,9 +57,9 @@ TEST_CASE("d_phi_evo matches Python reference", "[coefficients][evo]") {
 	for (const auto &row : rows) {
 		INFO("indices: n=" << row.n << " k=" << row.k << " l=" << row.l);
 
-		rc result = d_phi_evo(row.n, row.k, row.l);
-		INFO("c++:    " << row.num << " / " << row.den);
-		INFO("python: " << result.num << " / " << result.den);
+		rc result = fn(row.n, row.k, row.l);
+		INFO("python: " << row.num << " / " << row.den);
+		INFO("c++:    " << result.num << " / " << result.den);
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
@@ -73,9 +67,28 @@ TEST_CASE("d_phi_evo matches Python reference", "[coefficients][evo]") {
 	}
 }
 
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+TEST_CASE("d_phi matches Python reference", "[coefficients]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_phi.csv";
+	check_against_csv(csv_path, d_phi);
+}
+
+TEST_CASE("d_phi returns zero for invalid indices", "[coefficients][evo]") {
+	CHECK(d_phi(0, 0, 1).num == 0);  // k > 0 invalid.
+	CHECK(d_phi(2, 1, 4).num == 0);  // l > n+k invalid.
+	CHECK(d_phi(3, 2, 1).num == 0);  // l < max(n+1,k) invalid.
+}
+
+TEST_CASE("d_phi_evo matches Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_phi_evo.csv";
+	check_against_csv(csv_path, d_phi_evo);
+}
+
 TEST_CASE("d_phi_evo returns zero for invalid indices", "[coefficients][evo]") {
-	// l > n/2 + k should always give zero.
-	CHECK(d_phi_evo(0, 0, 1).num == 0);
-	CHECK(d_phi_evo(2, 1, 3).num == 0);  // n/2+k = 1+1 = 2, l=3 invalid.
-	CHECK(d_phi_evo(3, 2, 5).num == 0);  // n/2+k = 1+2 = 3, l=5 invalid.
+	CHECK(d_phi_evo(0, 0, 1).num == 0);  // l > n/2 + k is invalid.
+	CHECK(d_phi_evo(2, 1, 3).num == 0);  // l > n/2 + k is invalid.
+	CHECK(d_phi_evo(3, 2, 5).num == 0);  // l > n/2 + k is invalid.
 }

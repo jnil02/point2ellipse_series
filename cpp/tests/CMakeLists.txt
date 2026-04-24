@@ -1,6 +1,8 @@
 add_executable(test_coefficients
         test_coefficients.cpp
+        ../coefficients.cpp
         ../coefficients_evo.cpp
+        ../series.cpp
         )
 
 target_include_directories(test_coefficients
