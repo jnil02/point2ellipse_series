@@ -22,6 +22,7 @@ target_link_libraries(main
 # Build coefficient library.
 set(PTECOEF_SOURCE
         coefficients.cpp
+        coefficients_evo.cpp
         series.cpp
         )
 
@@ -42,3 +43,6 @@ install(TARGETS ptecoef_shared ptecoef_static
 install(FILES
         coefficients.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+# Unit tests.
+add_subdirectory(tests)

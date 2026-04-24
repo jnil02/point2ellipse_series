@@ -7,7 +7,7 @@ import math
 import sympy as sp
 
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
-from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo_dense, \
+from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
     c_phi_evo, d_phi_pow_evo, d_sin_phi_evo, d_cos_phi_evo, d_sin_phi_inv_evo, d_Na_evo2, B_p, cp_evo_nkl, \
     ch_evo, dh_evo
 
@@ -233,7 +233,7 @@ def phi_evo_sin_pow_dense(N, K):
     for n in range(0, N+1):
         for k in range(0, K+1):
             for l in range(0, n//2+k+1):
-                d += sin_psi ** n * rho_ae2 ** (n + 1 + 2*k) * b_a ** ((n % 2) + 1 + 2*l) * d_phi_evo_dense(n, k, l)
+                d += sin_psi ** n * rho_ae2 ** (n + 1 + 2*k) * b_a ** ((n % 2) + 1 + 2*l) * d_phi_evo(n, k, l)
     return d
 
 

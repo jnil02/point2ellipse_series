@@ -22,4 +22,6 @@ rc d_cos(int n, int k, int l);
 rc c_h(int n, int k, int l);
 rc d_h(int n, int k, int l);
 
+rc d_phi_evo(int n, int k, int l);
+
 }  // namespace point_to_ellipse_series

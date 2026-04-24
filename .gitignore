@@ -4,3 +4,4 @@ cpp/.idea/
 cpp/cmake-build-debug/
 cpp/cmake-build-release/
 cpp/dev/
+test_data/

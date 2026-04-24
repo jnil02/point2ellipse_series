@@ -98,7 +98,7 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return h
 
 @cache.ints_cache
-def d_phi_evo_dense(n, k, l):
+def d_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
 
     Dense coefficients. All the coefficients are non-zero.
