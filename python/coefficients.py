@@ -150,11 +150,11 @@ def c_phi_evo(n, k, l):
     return c
 
 @cache.ints_cache
-def d_phi_pow_polynomial3(n: int, l: int, i: int) -> sp.core.Expr:
+def d_phi_pow_evo_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for A_{n,i} in terms of {a_0,...,a_n}.
-    tmp = series_substitutions.double_series_power_coeff(n, i)[l]
+    tmp = series_substitutions.double_series_power_coeff(n, i)[k]
     # Polynomial for the rho^k coefficients in A_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
-    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_C(n, k, lambda n,l,r: c_phi_evo(n, l, r), symbols.e2))
+    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_C(n, k, lambda n,k,l: c_phi_evo(n, k, l), symbols.e2))
     return tmp
 
 
@@ -170,7 +170,7 @@ def d_phi_pow_evo(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     """
     if (i+n-k) % 2 != 0 or (l-k) % 2 != 0:  # Parity constraint from the underlying coefficients.
         return sp.S.Zero
-    tmp = d_phi_pow_polynomial3(n, k, i)
+    tmp = d_phi_pow_evo_polynomial(n, k, i)
     return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
 
 @cache.ints_cache
