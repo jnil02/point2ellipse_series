@@ -66,9 +66,9 @@ static std::shared_ptr<SeriesBase> poly_bell_substitution(const Expression &p) {
 
 				auto sym = rcp_static_cast<const Symbol>(base);
 				std::string name = sym->get_name();
-				std::string ix = name.substr(name.find('_')); // "_0", "_1",
+				std::string ix = name.substr(name.find('_')); // "_0", "_1", ...
 
-				// Build Bell polynomial generator
+				// Build Bell polynomial generator.
 				int j = SymEngine::down_cast<const SymEngine::Integer &>(
 						*exp).as_int();
 
@@ -93,7 +93,8 @@ static std::shared_ptr<SeriesBase> poly_bell_substitution(const Expression &p) {
 	return seqTot;
 }
 
-// Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
+// Coefficient of the power of a double power series where the first series
+// starts from 0 and the second starts from 1.
 static std::shared_ptr<SeriesBase> double_series_power_coeff(int n, int i) {
 	// Polynomial for b_{n,i} in terms of {a_0, ..., a_n}
 	Expression b_ni = ordinary_potential_polynomial(n, i, "a");
@@ -101,9 +102,54 @@ static std::shared_ptr<SeriesBase> double_series_power_coeff(int n, int i) {
 	return poly_bell_substitution(b_ni);
 }
 
+/** Mirrors Python a_nk_ser.
+ *
+ * finite series sum from max(k, n+n_offset) to n+k.
+ *
+ * @param n n index.
+ * @param k k index.
+ * @param n_offset Offset for the lower bound.
+ * @param d_nkl Triple-index coefficient function.
+ * @return Expression for the finite series in e2.
+ */
+static Expression a_nk_ser(int n, int k, int n_offset,
+                            const std::function<rc(int, int, int)> &d_nkl) {
+	Expression a_nk(0);
+	for (int l = std::max(k, n + n_offset); l <= n + k; ++l)
+		a_nk = a_nk + rc_expr(d_nkl(n, k, l)) * pow(e2, l);
+	return a_nk;
+}
+
+/** Mirrors Python a_nk_C.
+ *
+ * finite series sum from 1 to k, only if k >= n+1.
+ *
+ * @param n n index.
+ * @param k k index.
+ * @param c_nkl Triple-index coefficient function.
+ * @return Expression for the finite series in e2.
+ */
+static Expression a_nk_C(int n, int k,
+                          const std::function<rc(int, int, int)> &c_nkl) {
+	Expression a_nk(0);
+	if (k < n + 1)
+		return a_nk;
+	for (int l = 1; l <= k; ++l)
+		a_nk = a_nk + rc_expr(c_nkl(n, k, l)) * pow(e2, l);
+	return a_nk;
+}
+
+/** Substitute a_{n,k} symbols in polynomial p with the result of a_nk callback.
+ *
+ * Mirrors Python a_nk_sub. The callback takes (n, k) and returns an Expression
+ * for the substitution.
+ *
+ * @param p Polynomial to substitute into.
+ * @param a_nk Callback returning the substitution expression for given (n, k).
+ * @return Polynomial with substitutions applied.
+ */
 static Expression a_nk_sub(const Expression &p,
-						   int n_offset,
-						   const std::function<rc(int, int, int)> &d_nkl) {
+                            const std::function<Expression(int, int)> &a_nk) {
 	Expression pTot{0};
 
 	// Loop over additive terms
@@ -141,16 +187,10 @@ static Expression a_nk_sub(const Expression &p,
 						name.substr(first_us + 1, second_us - first_us - 1));
 				int k = std::stoi(name.substr(second_us + 1));
 
-				// Construct substitution sum
-				Expression a_nk = 0;
 				int exp_int = SymEngine::down_cast<const SymEngine::Integer &>(
 						*exp).as_int();
 
-				for (int l = std::max(k, n + n_offset); l <= n + k; ++l) {
-					a_nk = a_nk + rc_expr(d_nkl(n, k, l)) * pow(e2, l);
-				}
-
-				pTerm = pTerm * pow(a_nk, exp_int);
+				pTerm = pTerm * pow(a_nk(n, k), exp_int);
 			} else {
 				std::cout << p << std::endl;
 				std::cout << Expression(termFactor) << std::endl;

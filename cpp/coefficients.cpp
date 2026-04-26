@@ -153,14 +153,13 @@ Expression d_phi_pow_polynomial(int n, int k, int i) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
 		return *ret;
 
-	// Series for b_{n,i}.
-	std::shared_ptr<SeriesBase> series = double_series_power_coeff(n, i);
+	// Series for b_{n,i}, take the k-th coefficient.
+	Expression b_ni_k = double_series_power_coeff(n, i)->getItem(k);
 
-	// Take the k-th coefficient.
-	Expression b_ni_k = series->getItem(k);
-
-	// Substitute a_{n,k} with its inner series using d_phi and n_offset = 1.
-	auto d = a_nk_sub(b_ni_k, 1, d_phi);
+	// Substitute a_{n,k} using a_nk_ser with d_phi and n_offset=1.
+	auto d = a_nk_sub(b_ni_k, [](int n, int k) {
+		return a_nk_ser(n, k, 1, d_phi);
+	});
 
 	cache.insert(d, (uint) n, (uint) k, (uint) i);
 	return d;
@@ -211,12 +210,13 @@ Expression d_sin_pow_polynomial(int n, int k, int i) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
 		return *ret;
 
-	// Series for b_{n,i} in terms of {a_0,...,a_n}, then take the k-th coefficient.
-	std::shared_ptr<SeriesBase> series = double_series_power_coeff(n, i);
-	Expression b_ni_k = series->getItem(k);
+	// Series for b_{n,i}, take the k-th coefficient.
+	Expression b_ni_k = double_series_power_coeff(n, i)->getItem(k);
 
-	// Substitute a_{n,k} with \sum_{l=max(k,n+0)}^{n+k} d_sin(n,k,l) * e2^l  (offset = 0).
-	Expression d(a_nk_sub(b_ni_k, 0, d_sin));
+	// Substitute a_{n,k} using a_nk_ser with d_sin and n_offset=0.
+	Expression d(a_nk_sub(b_ni_k, [](int n, int k) {
+		return a_nk_ser(n, k, 0, d_sin);
+	}));
 
 	cache.insert(d, (uint) n, (uint) k, (uint) i);
 	return d;
