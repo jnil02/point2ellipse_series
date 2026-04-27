@@ -11,7 +11,7 @@ both the non-zero coefficients and the zeros.
 import os
 import csv
 
-from coefficients import d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo
+from coefficients import d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo, d_phi_pow_evo
 
 # Generate all indices up to and including this value.
 MAX_INDEX = 5
@@ -20,13 +20,13 @@ MAX_INDEX = 5
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'test_data')
 
 
-def write_csv(filename, rows):
+def write_csv(filename, rows, header):
     """Write rows to a CSV file in TEST_DATA_DIR."""
     os.makedirs(TEST_DATA_DIR, exist_ok=True)
     path = os.path.join(TEST_DATA_DIR, filename)
     with open(path, 'w', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow(['n', 'k', 'l', 'num', 'den'])
+        writer.writerow(header)
         writer.writerows(rows)
     print(f"Written {len(rows)} rows to {path}")
 
@@ -43,7 +43,7 @@ def generate_d_phi():
             for l in range(MAX_INDEX + 1):
                 c = d_phi(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
-    write_csv('d_phi.csv', rows)
+    write_csv('d_phi.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_d_sin():
@@ -58,7 +58,7 @@ def generate_d_sin():
             for l in range(MAX_INDEX + 1):
                 c = d_sin(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
-    write_csv('d_sin.csv', rows)
+    write_csv('d_sin.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_d_cos():
@@ -73,7 +73,7 @@ def generate_d_cos():
             for l in range(MAX_INDEX + 1):
                 c = d_cos(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
-    write_csv('d_cos.csv', rows)
+    write_csv('d_cos.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_d_h():
@@ -88,7 +88,7 @@ def generate_d_h():
             for l in range(MAX_INDEX + 1):
                 c = d_h(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
-    write_csv('d_h.csv', rows)
+    write_csv('d_h.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_d_phi_evo():
@@ -103,7 +103,7 @@ def generate_d_phi_evo():
             for l in range(MAX_INDEX + 1):
                 c = d_phi_evo(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
-    write_csv('d_phi_evo.csv', rows)
+    write_csv('d_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_c_phi_evo():
@@ -118,7 +118,24 @@ def generate_c_phi_evo():
             for l in range(MAX_INDEX + 1):
                 c = c_phi_evo(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
-    write_csv('c_phi_evo.csv', rows)
+    write_csv('c_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+
+
+def generate_d_phi_pow_evo():
+    """Generate test data for d_phi_pow_evo.
+
+    Non-zero for (i+n-k)%2==0 and (l-k)%2==0.
+    Uses a smaller MAX_INDEX due to computational cost.
+    """
+    max_idx = 3  # Keep small — this is expensive to compute.
+    rows = []
+    for n in range(max_idx + 1):
+        for k in range(max_idx + 1):
+            for l in range(max_idx + 1):
+                for i in range(max_idx + 1):
+                    c = d_phi_pow_evo(n, k, l, i)
+                    rows.append((n, k, l, i, c.p, c.q))
+    write_csv('d_phi_pow_evo.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
 
 
 if __name__ == '__main__':
@@ -128,3 +145,4 @@ if __name__ == '__main__':
     generate_d_h()
     generate_d_phi_evo()
     generate_c_phi_evo()
+    generate_d_phi_pow_evo()

@@ -6,6 +6,7 @@
 
 #include "cache.hpp"
 #include "util.hpp"
+#include "series_substitution.hpp"
 
 #include "coefficients.hpp"
 
@@ -120,6 +121,43 @@ rc c_phi_evo(int n, int k, int l) {
 
 	rc ret = expr_rc(c);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return ret;
+}
+
+Expression d_phi_pow_evo_polynomial(int n, int k, int i) {
+	assert(n >= 0 && k >= 0 && i >= 0);
+	static auto cache = UintsCache<Expression>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
+		return *ret;
+
+	// Series for b_{n,i}, take the k-th coefficient.
+	Expression b_ni_k = double_series_power_coeff(n, i)->getItem(k);
+
+	// Substitute a_{n,k} using a_nk_C with c_phi_evo.
+	Expression d = a_nk_sub(b_ni_k, [](int n, int k) {
+		return a_nk_C(n, k, c_phi_evo);
+	});
+
+	cache.insert(d, (uint) n, (uint) k, (uint) i);
+	return d;
+}
+
+rc d_phi_pow_evo(int n, int k, int l, int i) {
+	assert(n >= 0 && k >= 0 && l >= 0 && i >= 0);
+
+	// Parity constraints from underlying c_phi_evo coefficients.
+	if ((i + n - k) % 2 != 0 || (l - k) % 2 != 0)
+		return {0, 1};
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
+		return *ret;
+
+	Expression poly = d_phi_pow_evo_polynomial(n, k, i);
+	auto d = coeff_of(expand(poly).get_basic(), e2sym, l);
+
+	rc ret = expr_rc(d);
+	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;
 }
 
