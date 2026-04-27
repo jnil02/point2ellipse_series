@@ -134,6 +134,8 @@ def c_phi_evo(n, k, l):
     :return: Coefficient as a sympy rational number.
     """
     c = sp.S.Zero
+    if k < 1:
+        return c
     if (k - n - 1) % 2 != 0:
         return c
     if (l - k) % 2 != 0:
@@ -145,6 +147,7 @@ def c_phi_evo(n, k, l):
             b += ((-1) ** ka) * sp.binomial(j, i) * sp.binomial(j - i + (k - l) // 2, ka)
         s = sp.S.Zero
         for q in range(2 * j, l - 1 + 1):
+            # Note, the first binomial can become (-1,0) which should be 1.
             s += 2 ** (q - 2 * j) * sp.binomial(k - 2 - q, l - 1 - q) * sp.binomial(q - j, j)
         c += sp.binomial(sp.Rational(k, 2), (k - l) // 2) / k * (-1) ** (l - j) * s * b
     return c
