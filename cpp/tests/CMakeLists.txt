@@ -1,5 +1,6 @@
 add_executable(test_coefficients
         test_coefficients.cpp
+        test_stirling.cpp
         ../coefficients.cpp
         ../coefficients_evo.cpp
         ../series.cpp

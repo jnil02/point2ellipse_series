@@ -18,7 +18,6 @@ using SymEngine::Rational;
 using SymEngine::rational;
 using SymEngine::binomial;
 using SymEngine::rcp_static_cast;
-using SymEngine::RCP;
 using SymEngine::Basic;
 using SymEngine::Integer;
 using SymEngine::integer;

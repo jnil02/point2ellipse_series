@@ -44,5 +44,5 @@ public:
 	}
 
 private:
-	std::unordered_map<int, R> cache;
+	std::unordered_map<long, R> cache;
 };
