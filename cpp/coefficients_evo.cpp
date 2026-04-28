@@ -142,7 +142,7 @@ Expression d_phi_pow_evo_polynomial(int n, int k, int i) {
 	return d;
 }
 
-rc d_phi_pow_evo(int n, int k, int l, int i) {
+rc c_phi_pow_evo(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= 0 && l >= 0 && i >= 0);
 
 	// Parity constraints from underlying c_phi_evo coefficients.
@@ -161,7 +161,7 @@ rc d_phi_pow_evo(int n, int k, int l, int i) {
 	return ret;
 }
 
-rc d_sin_phi_evo(int n, int k, int l) {
+rc c_sin_phi_evo(int n, int k, int l) {
 	assert(n >= 0 && k >= 0 && l >= 0);
 
 	// Parity constraints.
@@ -180,7 +180,7 @@ rc d_sin_phi_evo(int n, int k, int l) {
 		for (int j = j_min; j <= j_max; ++j) {
 			d += Expression(powm1(i + j))
 				 * binomial(Integer(i), (unsigned long) j)
-				 * rc_expr(d_phi_pow_evo(n - 2 * j, k, l, 2 * i))
+				 * rc_expr(c_phi_pow_evo(n - 2 * j, k, l, 2 * i))
 				 / Expression(factorial(2 * i));
 		}
 	}
@@ -190,7 +190,7 @@ rc d_sin_phi_evo(int n, int k, int l) {
 	return ret;
 }
 
-rc d_cos_phi_evo(int n, int k, int l) {
+rc c_cos_phi_evo(int n, int k, int l) {
 	assert(n >= 0 && k >= 0 && l >= 0);
 
 	// Parity constraints.
@@ -209,7 +209,7 @@ rc d_cos_phi_evo(int n, int k, int l) {
 		for (int j = j_min; j <= j_max; ++j) {
 			d += Expression(powm1(i + 1 + j))
 				 * binomial(Integer(i), (unsigned long) j)
-				 * rc_expr(d_phi_pow_evo(n - 2 * j, k, l, 2 * i + 1))
+				 * rc_expr(c_phi_pow_evo(n - 2 * j, k, l, 2 * i + 1))
 				 / Expression(factorial(2 * i + 1));
 		}
 	}
@@ -219,7 +219,7 @@ rc d_cos_phi_evo(int n, int k, int l) {
 	return ret;
 }
 
-rc d_sin_phi_inv_evo(int n, int k, int l) {
+rc c_sin_phi_inv_evo(int n, int k, int l) {
 	assert(n >= 0 && k >= 0 && l >= 0);
 
 	// Parity constraints — same as d_sin_phi_evo.
@@ -238,7 +238,7 @@ rc d_sin_phi_inv_evo(int n, int k, int l) {
 		for (int j = j_min; j <= j_max; ++j) {
 			d += Expression(E2(i) * powm1(j))
 				 * binomial(Integer(i), (unsigned long) j)
-				 * rc_expr(d_phi_pow_evo(n - 2 * j, k, l, 2 * i))
+				 * rc_expr(c_phi_pow_evo(n - 2 * j, k, l, 2 * i))
 				 / Expression(factorial(2 * i));
 		}
 	}

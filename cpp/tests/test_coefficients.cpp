@@ -18,9 +18,9 @@ using point_to_ellipse_series::d_sin;
 using point_to_ellipse_series::d_h;
 using point_to_ellipse_series::d_phi_evo;
 using point_to_ellipse_series::c_phi_evo;
-using point_to_ellipse_series::d_sin_phi_evo;
-using point_to_ellipse_series::d_cos_phi_evo;
-using point_to_ellipse_series::d_sin_phi_inv_evo;
+using point_to_ellipse_series::c_sin_phi_evo;
+using point_to_ellipse_series::c_cos_phi_evo;
+using point_to_ellipse_series::c_sin_phi_inv_evo;
 
 // ---------------------------------------------------------------------------
 // CSV helpers
@@ -119,17 +119,17 @@ TEST_CASE("c_phi_evo matches Python reference", "[coefficients][evo]") {
 	check_against_csv(csv_path, c_phi_evo);
 }
 
-TEST_CASE("d_sin_phi_evo matches Python reference", "[coefficients][evo]") {
-	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_sin_phi_evo.csv";
-	check_against_csv(csv_path, d_sin_phi_evo);
+TEST_CASE("c_sin_phi_evo matches Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/c_sin_phi_evo.csv";
+	check_against_csv(csv_path, c_sin_phi_evo);
 }
 
-TEST_CASE("d_cos_phi_evo matches Python reference", "[coefficients][evo]") {
-	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_cos_phi_evo.csv";
-	check_against_csv(csv_path, d_cos_phi_evo);
+TEST_CASE("c_cos_phi_evo matches Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/c_cos_phi_evo.csv";
+	check_against_csv(csv_path, c_cos_phi_evo);
 }
 
-TEST_CASE("d_sin_phi_inv_evo matches Python reference", "[coefficients][evo]") {
-	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_sin_phi_inv_evo.csv";
-	check_against_csv(csv_path, d_sin_phi_inv_evo);
+TEST_CASE("c_sin_phi_inv_evo matches Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/c_sin_phi_inv_evo.csv";
+	check_against_csv(csv_path, c_sin_phi_inv_evo);
 }

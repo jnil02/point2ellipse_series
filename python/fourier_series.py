@@ -8,7 +8,7 @@ import sympy as sp
 
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
-    c_phi_evo, d_phi_pow_evo, d_sin_phi_evo, d_cos_phi_evo, d_sin_phi_inv_evo, d_Na_evo2, B_p, cp_evo_nkl, \
+    c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, c_cos_phi_evo, c_sin_phi_inv_evo, d_Na_evo2, B_p, cp_evo_nkl, \
     ch_evo, dh_evo
 
 
@@ -267,7 +267,7 @@ def phi_pow_evo(i, N, K):
     for n in range(0, N+1):
         for k in range(n+i, K+1):
             for l in range(i,k+1):
-                d += sin_psi ** n * rho_ae2 ** k * b_a ** l * d_phi_pow_evo(n, k, l, i)
+                d += sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_pow_evo(n, k, l, i)
     return cos_psi ** i * d
 
 def sin_phi_evo_sin_pow(N,K):
@@ -281,7 +281,7 @@ def sin_phi_evo_sin_pow(N,K):
     for n in range(N+1):
         for k in range(n, K+1):
             for l in range(k+1):
-                s += d_sin_phi_evo(n,k,l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
+                s += c_sin_phi_evo(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
 def sin_phi_evo_dense(N, K):
@@ -297,7 +297,7 @@ def sin_phi_evo_dense(N, K):
     for n in range(N+1):
         for k in range(0, (K-n) // 2+1):  # Limit fix to get the same result as for the non-dense.
             for l in range(1, n // 2 + k+1):
-                s += d_sin_phi_evo(n,n + 2 * k,2*l + (n%2)) * b_a ** (2*l + (n%2)) * rho_ae2 ** (n + 2 * k) * sin_psi ** n
+                s += c_sin_phi_evo(n, n + 2 * k, 2 * l + (n % 2)) * b_a ** (2 * l + (n % 2)) * rho_ae2 ** (n + 2 * k) * sin_psi ** n
     return s
 
 def cos_phi_evo(N, K):
@@ -311,7 +311,7 @@ def cos_phi_evo(N, K):
     for n in range(N+1):
         for k in range(n, K+1):
             for l in range(k+1):
-                s += d_cos_phi_evo(n,k,l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
+                s += c_cos_phi_evo(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
 def cos_phi_evo_dense(N, K):
@@ -327,7 +327,7 @@ def cos_phi_evo_dense(N, K):
     for n in range(N+1):
         for k in range(0, (K-n-1)//2+1):  # Limit fix to get the same result as for the non-dense.
             for l in range(math.ceil(n/2.)+k + 1):
-                s += d_cos_phi_evo(n,n+1+2*k,2*l+1-(n%2)) * b_a ** (2*l+1-(n%2)) * rho_ae2 ** (n+1+2*k) * sin_psi ** n
+                s += c_cos_phi_evo(n, n + 1 + 2 * k, 2 * l + 1 - (n % 2)) * b_a ** (2 * l + 1 - (n % 2)) * rho_ae2 ** (n + 1 + 2 * k) * sin_psi ** n
     return s
 
 def sin_phi_inv_evo(N, K):
@@ -341,7 +341,7 @@ def sin_phi_inv_evo(N, K):
     for n in range(N+1):
         for k in range(n, K+1):
             for l in range(k+1):
-                s += d_sin_phi_inv_evo(n,k,l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
+                s += c_sin_phi_inv_evo(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
 def sin_psi_sin_phi_inv_evo(N, K):
