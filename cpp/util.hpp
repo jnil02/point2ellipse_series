@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <unordered_map>
 
 #include "coefficients.hpp"
 
@@ -70,7 +71,7 @@ inline long powm1(long n) {
 /** Compute the binomial coefficient for (n,k) where n is a rational number.
  *
  * @param n Rational number.
- * @param k Integer. k != 1 and n != k  FIXME(JO) Check what this means.
+ * @param k Integer.
  * @return
  */
 inline Expression binomial_rational(RCP<const Basic> n, unsigned long k) {
@@ -81,6 +82,37 @@ inline Expression binomial_rational(RCP<const Basic> n, unsigned long k) {
 		result *= d;
 	}
 	return result / factorial(k);
+}
+
+/** Euler secant number E_{2n}.
+ *
+ * Mirrors Python E2(n). Uses a static cache for efficiency.
+ * Defined by: E2(0)=1, E2(n) = sum_{j=0}^{n-1} (-1)^(n-j+1) * C(2n,2j) * E2(j)
+ *
+ * @param n Non-negative integer.
+ * @return E_{2n} as a long.
+ */
+inline long E2(int n) {
+	static std::unordered_map<int, long> cache;
+	auto it = cache.find(n);
+	if (it != cache.end())
+		return it->second;
+
+	if (n == 0)
+		return 1;
+
+	// Compute binomial coefficients C(2n, 2j) for j=0..n-1.
+	long result = 0;
+	for (int j = 0; j < n; ++j) {
+		// C(2n, 2j) computed via SymEngine to avoid overflow for large n.
+		long binom = SymEngine::binomial(
+				*SymEngine::integer(2 * n),
+				(unsigned long)(2 * j))->as_int();
+		result += powm1(n - j + 1) * binom * E2(j);
+	}
+
+	cache[n] = result;
+	return result;
 }
 
 // Extract the coefficient of `sym^exp` from an expanded expression.
