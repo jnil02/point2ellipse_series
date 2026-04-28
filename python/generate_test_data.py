@@ -11,7 +11,9 @@ both the non-zero coefficients and the zeros.
 import os
 import csv
 
-from coefficients import d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo, d_phi_pow_evo
+from coefficients import (d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo,
+                          d_phi_pow_evo, d_sin_phi_evo, d_cos_phi_evo,
+                          d_sin_phi_inv_evo)
 
 # Generate all indices up to and including this value.
 MAX_INDEX = 5
@@ -138,6 +140,51 @@ def generate_d_phi_pow_evo():
     write_csv('d_phi_pow_evo.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
 
 
+def generate_d_sin_phi_evo():
+    """Generate test data for d_sin_phi_evo.
+
+    Non-zero for (n-k)%2==0 and (n-l)%2==0.
+    Full range tested to verify zeros outside valid indices.
+    """
+    rows = []
+    for n in range(MAX_INDEX + 1):
+        for k in range(MAX_INDEX + 1):
+            for l in range(MAX_INDEX + 1):
+                c = d_sin_phi_evo(n, k, l)
+                rows.append((n, k, l, c.p, c.q))
+    write_csv('d_sin_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+
+
+def generate_d_cos_phi_evo():
+    """Generate test data for d_cos_phi_evo.
+
+    Non-zero for (n+1-k)%2==0 and (l-k)%2==0.
+    Full range tested to verify zeros outside valid indices.
+    """
+    rows = []
+    for n in range(MAX_INDEX + 1):
+        for k in range(MAX_INDEX + 1):
+            for l in range(MAX_INDEX + 1):
+                c = d_cos_phi_evo(n, k, l)
+                rows.append((n, k, l, c.p, c.q))
+    write_csv('d_cos_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+
+
+def generate_d_sin_phi_inv_evo():
+    """Generate test data for d_sin_phi_inv_evo.
+
+    Non-zero for (n-k)%2==0 and (n-l)%2==0.
+    Full range tested to verify zeros outside valid indices.
+    """
+    rows = []
+    for n in range(MAX_INDEX + 1):
+        for k in range(MAX_INDEX + 1):
+            for l in range(MAX_INDEX + 1):
+                c = d_sin_phi_inv_evo(n, k, l)
+                rows.append((n, k, l, c.p, c.q))
+    write_csv('d_sin_phi_inv_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+
+
 if __name__ == '__main__':
     generate_d_phi()
     generate_d_cos()
@@ -146,3 +193,6 @@ if __name__ == '__main__':
     generate_d_phi_evo()
     generate_c_phi_evo()
     generate_d_phi_pow_evo()
+    generate_d_sin_phi_evo()
+    generate_d_cos_phi_evo()
+    generate_d_sin_phi_inv_evo()

@@ -161,4 +161,91 @@ rc d_phi_pow_evo(int n, int k, int l, int i) {
 	return ret;
 }
 
+rc d_sin_phi_evo(int n, int k, int l) {
+	assert(n >= 0 && k >= 0 && l >= 0);
+
+	// Parity constraints.
+	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
+		return {0, 1};
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+		return *ret;
+
+	Expression d(0);
+	for (int i = 0; i <= l / 2; ++i) {
+		// j lower bound: ceil((n + 2*i - k) / 2) = (n + 2*i - k + 1) / 2
+		const int j_min = (n + 2 * i - k + 1) / 2;
+		const int j_max = n / 2;
+		for (int j = j_min; j <= j_max; ++j) {
+			d += Expression(powm1(i + j))
+				 * binomial(Integer(i), (unsigned long) j)
+				 * rc_expr(d_phi_pow_evo(n - 2 * j, k, l, 2 * i))
+				 / Expression(factorial(2 * i));
+		}
+	}
+
+	rc ret = expr_rc(d);
+	cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return ret;
+}
+
+rc d_cos_phi_evo(int n, int k, int l) {
+	assert(n >= 0 && k >= 0 && l >= 0);
+
+	// Parity constraints.
+	if ((n + 1 - k) % 2 != 0 || (l - k) % 2 != 0)
+		return {0, 1};
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+		return *ret;
+
+	Expression d(0);
+	for (int i = 0; i <= (l - 1) / 2; ++i) {
+		// j lower bound: ceil((n + 2*i + 1 - k) / 2) = (n + 2*i + 1 - k + 1) / 2
+		const int j_min = (n + 2 * i + 2 - k) / 2;
+		const int j_max = std::min(i, n / 2);
+		for (int j = j_min; j <= j_max; ++j) {
+			d += Expression(powm1(i + 1 + j))
+				 * binomial(Integer(i), (unsigned long) j)
+				 * rc_expr(d_phi_pow_evo(n - 2 * j, k, l, 2 * i + 1))
+				 / Expression(factorial(2 * i + 1));
+		}
+	}
+
+	rc ret = expr_rc(d);
+	cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return ret;
+}
+
+rc d_sin_phi_inv_evo(int n, int k, int l) {
+	assert(n >= 0 && k >= 0 && l >= 0);
+
+	// Parity constraints — same as d_sin_phi_evo.
+	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
+		return {0, 1};
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+		return *ret;
+
+	Expression d(0);
+	for (int i = 0; i <= l / 2; ++i) {
+		// j lower bound: ceil((n + 2*i - k) / 2) = (n + 2*i - k + 1) / 2
+		const int j_min = (n + 2 * i - k + 1) / 2;
+		const int j_max = n / 2;
+		for (int j = j_min; j <= j_max; ++j) {
+			d += Expression(E2(i) * powm1(j))
+				 * binomial(Integer(i), (unsigned long) j)
+				 * rc_expr(d_phi_pow_evo(n - 2 * j, k, l, 2 * i))
+				 / Expression(factorial(2 * i));
+		}
+	}
+
+	rc ret = expr_rc(d);
+	cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return ret;
+}
+
 }  // namespace point_to_ellipse_series
