@@ -287,4 +287,28 @@ rc a_mr(int m, int r) {
 	return ret;
 }
 
+rc B_rt(int r, int t) {
+	assert(r >= 0 && t >= 0);
+
+	if (t > r)
+		throw std::runtime_error("t > r");
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) r, (uint) t))
+		return *ret;
+
+	Expression B(0);
+
+	for (int k = t; k <= r; ++k) {
+		B += Expression(stirling2((uint) r, (uint) k))
+			 * rf_half(1, k)
+			 * Expression(powm1(k - t))
+			 * binomial(Integer(k), (unsigned long) t);
+	}
+
+	rc ret = expr_rc(B);
+	cache.insert(ret, (uint) r, (uint) t);
+	return ret;
+}
+
 }  // namespace point_to_ellipse_series

@@ -22,6 +22,7 @@ using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
 using point_to_ellipse_series::c_sin_phi_inv_evo;
 using point_to_ellipse_series::a_mr;
+using point_to_ellipse_series::B_rt;
 
 // ---------------------------------------------------------------------------
 // CSV helpers
@@ -189,3 +190,7 @@ TEST_CASE("a_mr matches Python reference", "[coefficients][evo]") {
 	check_against_csv_2(csv_path, a_mr);
 }
 
+TEST_CASE("B_rt matches Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/B_rt.csv";
+	check_against_csv_2(csv_path, B_rt);
+}
