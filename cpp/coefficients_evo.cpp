@@ -9,6 +9,7 @@
 #include "series_substitution.hpp"
 
 #include "coefficients.hpp"
+#include "stirling.hpp"
 
 namespace point_to_ellipse_series {
 
@@ -244,6 +245,45 @@ rc c_sin_phi_inv_evo(int n, int k, int l) {
 
 	rc ret = expr_rc(d);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return ret;
+}
+
+rc a_mr(int m, int r) {
+	assert(m >= 0 && r >= 0);
+
+	if (r > m)
+		throw std::runtime_error("r > m");
+
+	if (m == 0 && r == 0)
+		return {1, 1};
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) m, (uint) r))
+		return *ret;
+
+	Expression a(0);
+
+	for (int k = r; k <= m; ++k) {
+		Expression b(0);
+
+		for (int t = 1; t <= k; ++t) {
+			b += Expression(powm1(k - t))
+				 * binomial(Integer(2 * k), (unsigned long) (k - t))
+				 * pow(Expression(integer(t)), 2 * m);
+		}
+
+		a += b
+			 * Expression(stirling1_signed((uint) k, (uint) r))
+			 / (Expression(factorial(k)) * Expression(integer(1L << (k - r))));
+	}
+
+	Expression result =
+			Expression(integer(2 * powm1(m)))
+			* a
+			/ Expression(factorial(2 * m));
+
+	rc ret = expr_rc(result);
+	cache.insert(ret, (uint) m, (uint) r);
 	return ret;
 }
 

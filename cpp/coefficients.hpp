@@ -29,4 +29,8 @@ rc c_sin_phi_evo(int n, int k, int l);
 rc c_cos_phi_evo(int n, int k, int l);
 rc c_sin_phi_inv_evo(int n, int k, int l);
 
+// TODO(JO) Temporary. These are intermediate coefficients and should be
+//  removed once the final coefficients are in place.
+rc a_mr(int m, int r);
+
 }  // namespace point_to_ellipse_series

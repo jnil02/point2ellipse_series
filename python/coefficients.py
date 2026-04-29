@@ -437,9 +437,7 @@ def a_mr(m: int, r: int) -> sp.core.numbers.Rational:
     if r > m:
         raise Exception("r>m")
     if m == 0 and r==0:
-        return 1
-    if m < 1:
-        raise Exception("m<1")
+        return sp.S.One
     a = sp.S.Zero
     for k in range(r, m+1):
         b = sp.S.Zero

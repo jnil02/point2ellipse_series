@@ -13,7 +13,7 @@ import csv
 
 from coefficients import (d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo,
                           c_phi_pow_evo, c_sin_phi_evo, c_cos_phi_evo,
-                          c_sin_phi_inv_evo)
+                          c_sin_phi_inv_evo, a_mr)
 
 # Generate all indices up to and including this value.
 MAX_INDEX = 5
@@ -184,6 +184,15 @@ def generate_d_sin_phi_inv_evo():
                 rows.append((n, k, l, c.p, c.q))
     write_csv('c_sin_phi_inv_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
+def generate_a_mr():
+    rows = []
+    for n in range(MAX_INDEX + 1):
+        for k in range(n + 1):
+            c = a_mr(n,k)
+            rows.append((n, k, c.p, c.q))
+    write_csv('a_mr.csv', rows, ['n', 'k'])
+
+
 
 if __name__ == '__main__':
     generate_d_phi()
@@ -196,3 +205,4 @@ if __name__ == '__main__':
     generate_d_sin_phi_evo()
     generate_d_cos_phi_evo()
     generate_d_sin_phi_inv_evo()
+    generate_a_mr()
