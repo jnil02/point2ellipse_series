@@ -311,4 +311,24 @@ rc B_rt(int r, int t) {
 	return ret;
 }
 
+rc C_mt(int m, int t) {
+	assert(m >= 0 && t >= 0);
+
+	if (t > m)
+		throw std::runtime_error("t > m");
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) m, (uint) t))
+		return *ret;
+
+	Expression C(0);
+
+	for (int r = t; r <= m; ++r)
+		C += rc_expr(a_mr(m, r)) * rc_expr(B_rt(r, t));
+
+	rc ret = expr_rc(C);
+	cache.insert(ret, (uint) m, (uint) t);
+	return ret;
+}
+
 }  // namespace point_to_ellipse_series

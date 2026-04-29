@@ -33,5 +33,6 @@ rc c_sin_phi_inv_evo(int n, int k, int l);
 //  removed once the final coefficients are in place.
 rc a_mr(int m, int r);
 rc B_rt(int r, int t);
+rc C_mt(int m, int t);
 
 }  // namespace point_to_ellipse_series
