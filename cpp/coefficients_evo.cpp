@@ -354,4 +354,30 @@ rc R(int n, int k, int l, int i) {
 	return ret;
 }
 
+rc B_p(int n, int k, int p) {
+	assert(n >= 0 && k >= 0 && p >= 0);
+
+	if ((n - k) % 2 != 0 || (n - p - 1) % 2 != 0)
+		return {0, 1};
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) p))
+		return *ret;
+
+	Expression d(0);
+
+	for (int l = 0; l <= k; ++l) {
+		for (int i = 0; i <= l / 2; ++i) {
+			const int t = l + 1 - p;
+
+			if (t % 2 == 0 && t >= 0 && t <= 2 * i)
+				d += rc_expr(C_mt(i, t / 2)) * rc_expr(R(n, k, l, i));
+		}
+	}
+
+	rc ret = expr_rc(d);
+	cache.insert(ret, (uint) n, (uint) k, (uint) p);
+	return ret;
+}
+
 }  // namespace point_to_ellipse_series

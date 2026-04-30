@@ -25,6 +25,7 @@ using point_to_ellipse_series::a_mr;
 using point_to_ellipse_series::B_rt;
 using point_to_ellipse_series::C_mt;
 using point_to_ellipse_series::R;
+using point_to_ellipse_series::B_p;
 
 // ---------------------------------------------------------------------------
 // CSV helpers
@@ -256,4 +257,9 @@ TEST_CASE("C_mt matches Python reference", "[coefficients][evo]") {
 TEST_CASE("R matches Python reference", "[coefficients][evo]") {
 	const std::string csv_path = std::string(TEST_DATA_DIR) + "/R.csv";
 	check_against_csv_4(csv_path, R);
+}
+
+TEST_CASE("B_p Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/B_p.csv";
+	check_against_csv_3(csv_path, B_p);
 }

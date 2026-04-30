@@ -35,5 +35,6 @@ rc a_mr(int m, int r);
 rc B_rt(int r, int t);
 rc C_mt(int m, int t);
 rc R(int n, int k, int l, int i);
+rc B_p(int n, int k, int p);
 
 }  // namespace point_to_ellipse_series
