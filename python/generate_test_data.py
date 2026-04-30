@@ -13,7 +13,7 @@ import csv
 
 from coefficients import (d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo,
                           c_phi_pow_evo, c_sin_phi_evo, c_cos_phi_evo,
-                          c_sin_phi_inv_evo, a_mr, B_rt, C_mt, R, B_p)
+                          c_sin_phi_inv_evo, a_mr, B_rt, C_mt, R, B_p, cp_evo_nkl)
 
 # Generate all indices up to and including this value.
 MAX_INDEX = 5
@@ -233,6 +233,16 @@ def generate_B_p():
     write_csv('B_p.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
+def generate_cp_evo_nkl():
+    rows = []
+    for n in range(1, MAX_INDEX + 1):
+        for k in range(n, MAX_INDEX + 1):
+            for l in range(k + 2):
+                c = cp_evo_nkl(n, k, l)
+                rows.append((n, k, l, c.p, c.q))
+    write_csv('cp_evo_nkl.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+
+
 if __name__ == '__main__':
     generate_d_phi()
     generate_d_cos()
@@ -249,3 +259,4 @@ if __name__ == '__main__':
     generate_C_mt()
     generate_R()
     generate_B_p()
+    generate_cp_evo_nkl()

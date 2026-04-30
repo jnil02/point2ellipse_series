@@ -380,4 +380,33 @@ rc B_p(int n, int k, int p) {
 	return ret;
 }
 
+rc cp_evo_nkl(int n, int k, int l) {
+	assert(n >= 1 && k >= n && l >= 0 && l <= k+1);
+
+	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
+		return {0, 1};
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+		return *ret;
+
+	rc ret{0, 1};
+
+	if (l <= 1) {
+		ret = c_sin_phi_inv_evo(n - 1, k - 1, l);
+	} else if (2 <= l && l <= k - 1) {
+		Expression d =
+				rc_expr(c_sin_phi_inv_evo(n - 1, k - 1, l))
+				- rc_expr(c_sin_phi_inv_evo(n - 1, k - 1, l - 2));
+		ret = expr_rc(d);
+	} else if (k <= l) {
+		Expression d =
+				-rc_expr(c_sin_phi_inv_evo(n - 1, k - 1, l - 2));
+		ret = expr_rc(d);
+	}
+
+	cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return ret;
+}
+
 }  // namespace point_to_ellipse_series
