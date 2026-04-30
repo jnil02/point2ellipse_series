@@ -175,7 +175,7 @@ rc c_sin_phi_evo(int n, int k, int l) {
 	Expression d(0);
 	for (int i = 0; i <= l / 2; ++i) {
 		// j lower bound: ceil((n + 2*i - k) / 2) = (n + 2*i - k + 1) / 2
-		const int j_min = (n + 2 * i - k + 1) / 2;
+		const int j_min = std::max(0, (n + 2 * i - k + 1) / 2);
 		const int j_max = n / 2;
 		for (int j = j_min; j <= j_max; ++j) {
 			d += Expression(powm1(i + j))
@@ -204,7 +204,7 @@ rc c_cos_phi_evo(int n, int k, int l) {
 	Expression d(0);
 	for (int i = 0; i <= (l - 1) / 2; ++i) {
 		// j lower bound: ceil((n + 2*i + 1 - k) / 2) = (n + 2*i + 1 - k + 1) / 2
-		const int j_min = (n + 2 * i + 2 - k) / 2;
+		const int j_min = std::max(0, (n + 2 * i + 2 - k) / 2);
 		const int j_max = std::min(i, n / 2);
 		for (int j = j_min; j <= j_max; ++j) {
 			d += Expression(powm1(i + 1 + j))
@@ -233,7 +233,7 @@ rc c_sin_phi_inv_evo(int n, int k, int l) {
 	Expression d(0);
 	for (int i = 0; i <= l / 2; ++i) {
 		// j lower bound: ceil((n + 2*i - k) / 2) = (n + 2*i - k + 1) / 2
-		const int j_min = (n + 2 * i - k + 1) / 2;
+		const int j_min = std::max(0,(n + 2 * i - k + 1) / 2);
 		const int j_max = n / 2;
 		for (int j = j_min; j <= j_max; ++j) {
 			d += Expression(E2(i) * powm1(j))
