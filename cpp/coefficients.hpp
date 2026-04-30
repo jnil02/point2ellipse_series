@@ -34,5 +34,6 @@ rc c_sin_phi_inv_evo(int n, int k, int l);
 rc a_mr(int m, int r);
 rc B_rt(int r, int t);
 rc C_mt(int m, int t);
+rc R(int n, int k, int l, int i);
 
 }  // namespace point_to_ellipse_series

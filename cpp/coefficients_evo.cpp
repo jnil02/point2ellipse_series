@@ -331,4 +331,27 @@ rc C_mt(int m, int t) {
 	return ret;
 }
 
+rc R(int n, int k, int l, int i) {
+	assert(n >= 0 && k >= 0 && l >= 0 && i >= 0);
+
+	static auto cache = UintsCache<rc>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
+		return *ret;
+
+	Expression s(0);
+
+	const int j_min = std::max(0, (n + 2 * i - k + 1) / 2);
+	const int j_max = n / 2;
+
+	for (int j = j_min; j <= j_max; ++j) {
+		s += Expression(powm1(j))
+			 * binomial(Integer(i), (unsigned long) j)
+			 * rc_expr(c_phi_pow_evo(n - 2 * j, k, l, 2 * i));
+	}
+
+	rc ret = expr_rc(s);
+	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
+	return ret;
+}
+
 }  // namespace point_to_ellipse_series

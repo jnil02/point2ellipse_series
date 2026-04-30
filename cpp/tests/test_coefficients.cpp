@@ -24,6 +24,7 @@ using point_to_ellipse_series::c_sin_phi_inv_evo;
 using point_to_ellipse_series::a_mr;
 using point_to_ellipse_series::B_rt;
 using point_to_ellipse_series::C_mt;
+using point_to_ellipse_series::R;
 
 // ---------------------------------------------------------------------------
 // CSV helpers
@@ -31,6 +32,11 @@ using point_to_ellipse_series::C_mt;
 
 struct TestRow3 {
 	int n, k, l;
+	long num, den;
+};
+
+struct TestRow4 {
+	int n, k, l, i;
 	long num, den;
 };
 
@@ -58,6 +64,33 @@ static std::vector<TestRow3> load_csv_3(const std::string &path) {
 		std::getline(ss, tok, ','); row.n   = std::stoi(tok);
 		std::getline(ss, tok, ','); row.k   = std::stoi(tok);
 		std::getline(ss, tok, ','); row.l   = std::stoi(tok);
+		std::getline(ss, tok, ','); row.num = std::stol(tok);
+		std::getline(ss, tok, ','); row.den = std::stol(tok);
+		rows.push_back(row);
+	}
+	return rows;
+}
+
+static std::vector<TestRow4> load_csv_4(const std::string &path) {
+	std::ifstream f(path);
+	if (!f.is_open())
+		throw std::runtime_error("Could not open test data file: " + path);
+
+	std::vector<TestRow4> rows;
+	std::string line;
+
+	// Skip header.
+	std::getline(f, line);
+
+	while (std::getline(f, line)) {
+		if (line.empty()) continue;
+		std::istringstream ss(line);
+		std::string tok;
+		TestRow4 row{};
+		std::getline(ss, tok, ','); row.n   = std::stoi(tok);
+		std::getline(ss, tok, ','); row.k   = std::stoi(tok);
+		std::getline(ss, tok, ','); row.l   = std::stoi(tok);
+		std::getline(ss, tok, ','); row.i   = std::stoi(tok);
 		std::getline(ss, tok, ','); row.num = std::stol(tok);
 		std::getline(ss, tok, ','); row.den = std::stol(tok);
 		rows.push_back(row);
@@ -100,6 +133,25 @@ static void check_against_csv_3(const std::string &csv_path,
 		INFO("indices: n=" << row.n << " k=" << row.k << " l=" << row.l);
 
 		rc result = fn(row.n, row.k, row.l);
+		INFO("python: " << row.num << " / " << row.den);
+		INFO("c++:    " << result.num << " / " << result.den);
+
+		// Normalise both fractions before comparing:
+		// a/b == c/d  iff  a*d == b*c
+		CHECK(result.num * row.den == row.num * result.den);
+	}
+}
+
+static void check_against_csv_4(const std::string &csv_path,
+								const std::function<rc(int, int, int, int)> &fn) {
+	std::vector<TestRow4> rows;
+	REQUIRE_NOTHROW(rows = load_csv_4(csv_path));
+	REQUIRE(!rows.empty());
+
+	for (const auto &row : rows) {
+		INFO("indices: n=" << row.n << " k=" << row.k << " l=" << row.l << " i=" << row.i);
+
+		rc result = fn(row.n, row.k, row.l, row.i);
 		INFO("python: " << row.num << " / " << row.den);
 		INFO("c++:    " << result.num << " / " << result.den);
 
@@ -199,4 +251,9 @@ TEST_CASE("B_rt matches Python reference", "[coefficients][evo]") {
 TEST_CASE("C_mt matches Python reference", "[coefficients][evo]") {
 	const std::string csv_path = std::string(TEST_DATA_DIR) + "/C_mt.csv";
 	check_against_csv_2(csv_path, C_mt);
+}
+
+TEST_CASE("R matches Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/R.csv";
+	check_against_csv_4(csv_path, R);
 }
