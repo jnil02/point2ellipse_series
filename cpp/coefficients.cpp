@@ -28,7 +28,7 @@ using SymEngine::rational;
 using uint = unsigned int;
 
 rc d_phi(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= 1 && l >= std::max(n+1,k) && l <= n+k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -60,7 +60,7 @@ rc d_phi(int n, int k, int l) {
 }
 
 rc d_phi2(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= 1 && l >= k && l <= n+k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -93,7 +93,7 @@ rc d_phi2(int n, int k, int l) {
 }
 
 rc c_phi(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 1 && k >= 1 && l >= std::max(n, k));
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -165,7 +165,7 @@ Expression d_phi_pow_polynomial(int n, int k, int i) {
 }
 
 rc d_phi_pow(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= 0 && l >= 0 && i >= 0);
+	assert(n >= 0 && k >= i && l >= std::max(n+i,k) && l<=n+k && i >= 1);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
@@ -179,7 +179,7 @@ rc d_phi_pow(int n, int k, int l, int i) {
 }
 
 rc d_sin(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= 1 && l >= std::max(n,k) && l <= n+k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -190,7 +190,7 @@ rc d_sin(int n, int k, int l) {
 		const int floor_i_2 = i / 2;
 		const int ceil_i_2 = (i + 1) / 2;
 		for (int j = std::max(0, ceil_i_2 - l + n);
-			 j <= std::min(ceil_i_2, n - floor_i_2); ++j)
+			 j <= std::min(ceil_i_2, std::min(n - floor_i_2, n+k-l-floor_i_2)); ++j)
 			d += Expression(powm1(floor_i_2 + j))
 				 * binomial(Integer(ceil_i_2), j)
 				 * rc_expr(d_phi_pow(n - floor_i_2 - j, k, l, i))
@@ -222,7 +222,7 @@ Expression d_sin_pow_polynomial(int n, int k, int i) {
 }
 
 rc d_sin_pow(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= 0 && l >= 0 && i >= 0);
+	assert(n >= 0 && k >= 0 && l >= 0 && l <= n+k && i >= 0);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
@@ -236,7 +236,7 @@ rc d_sin_pow(int n, int k, int l, int i) {
 }
 
 rc c_sin(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 1 && k >= 1 && l >= std::max(n, k));
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -249,7 +249,7 @@ rc c_sin(int n, int k, int l) {
 }
 
 rc d_cos(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= 1 && l >= std::max(n,k) && l <= n+k-1);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -260,7 +260,7 @@ rc d_cos(int n, int k, int l) {
 		const int floor_i_2 = i / 2;
 		const int ceil_i_2 = (i + 1) / 2;
 		for (int j = std::max(0, floor_i_2 - l + n);
-			 j <= std::min(floor_i_2, n - ceil_i_2); ++j)
+			 j <= std::min(floor_i_2, std::min(n - ceil_i_2, n+k-l-ceil_i_2)); ++j)
 			d += Expression(powm1(ceil_i_2 + j))
 				 * binomial(Integer(floor_i_2), j)
 				 * rc_expr(d_phi_pow(n - ceil_i_2 - j, k, l, i))
@@ -273,7 +273,7 @@ rc d_cos(int n, int k, int l) {
 }
 
 rc c_cos(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= 1 && l >= std::max(n,k));
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -286,13 +286,13 @@ rc c_cos(int n, int k, int l) {
 }
 
 rc d_N_nkl(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 1 && k >= 0 && l >= std::max(n,k+1) && l <= n+k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
 	Expression d(0);
-	for (int i = 1; i <= std::min(n, l); ++i)
+	for (int i = 1; i <= n; ++i)
 		for (int j = 0; j <= std::min(2 * i, k); ++j)
 			d += binomial_rational(rational(1, 2), i)
 				 * binomial(Integer(2 * i), j)
@@ -305,14 +305,14 @@ rc d_N_nkl(int n, int k, int l) {
 }
 
 rc bp_nkl(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 1 && k >= 1 && l >= std::max(n,k) && l <= n+k-1);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
 	Expression d(0);
 	for (int i = 1; i <= std::min(n, k / 2); ++i)
-		for (int j = 0; j <= std::min(i, n - i); ++j)
+		for (int j = std::max(0, n-l+i); j <= std::min(i, std::min(n - i, n+k-l-i)); ++j)
 			d += Expression(powm1(i + j))
 				 * binomial(Integer(i), j)
 				 / factorial(2 * i)
@@ -324,7 +324,7 @@ rc bp_nkl(int n, int k, int l) {
 }
 
 rc d_h(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 1 && k >= 0 && l >= std::max(n,k+1) && l <= n+k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -341,7 +341,7 @@ rc d_h(int n, int k, int l) {
 }
 
 rc c_h(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= 0 && l >= std::max(n,k+1));
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;

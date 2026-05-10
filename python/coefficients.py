@@ -26,6 +26,7 @@ def d_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 1 and l >= max(n+1, k) and l <= n+k, f"d_phi indices out of range. n: {n} k: {k} l: {l}"
     d = sp.Integer(0)
     for r in range(k - 1 + 1):
         for m in range(k - 1 - r + 1):
@@ -48,6 +49,7 @@ def d_phi2(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 1 and l >= k and l <= n+k, f"d_phi2 indices out of range. n: {n} k: {k} l: {l}"
     d = sp.Integer(0)
     for r in range(k - 1 + 1):
         for m in range(k - 1 - r + 1):
@@ -72,6 +74,7 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 1 and k >= 1 and l >= max(n, k), f"c_phi indices out of range. n: {n} k: {k} l: {l}"
     h = sp.Integer(0)
     for r in range(k - 1 + 1):
         for m in range(k - 1 - r + 1):
@@ -108,6 +111,7 @@ def d_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 0 and l >= 0 and l <= n//2+k, f"d_phi_evo indices out of range. n: {n} k: {k} l: {l}"
     c = sp.S.Zero
     s = n % 2
     m = n + 1 + 2 * k
@@ -133,6 +137,7 @@ def c_phi_evo(n, k, l):
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= n+1 and l >= 1 and l <= k, f"c_phi_evo indices out of range. n: {n} k: {k} l: {l}"
     c = sp.S.Zero
     if k < 1:
         return c
@@ -171,6 +176,7 @@ def c_phi_pow_evo(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     :param i: The power exponent.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= n+i and l >= i and l <= k, f"c_phi_pow_evo indices out of range. n: {n} k: {k} l: {l} i: {i}"
     if (i+n-k) % 2 != 0 or (l-k) % 2 != 0:  # Parity constraint from the underlying coefficients.
         return sp.S.Zero
     tmp = d_phi_pow_evo_polynomial(n, k, i)
@@ -178,6 +184,7 @@ def c_phi_pow_evo(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+    assert n >= 0 and k >= n and l >= 0 and l <= k, f"c_sin_phi_evo indices out of range. n: {n} k: {k} l: {l}"
     if (n-k) % 2 != 0 or (n-l) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -188,6 +195,7 @@ def c_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+    assert n >= 0 and k >= n and l >= 0 and l <= k, f"c_cos_phi_evo indices out of range. n: {n} k: {k} l: {l}"
     if (n+1-k) % 2 != 0 or (l-k) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -199,6 +207,7 @@ def c_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_sin_phi_inv_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+    assert n >= 0 and k >= n and l >= 0 and l <= k, f"c_sin_phi_inv_evo indices out of range. n: {n} k: {k} l: {l}"
     if (n-k) % 2 != 0 or (n-l) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -226,6 +235,7 @@ def d_phi_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     :param i: The power exponent.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= i and l >= max(n+i,k) and l<=n+k and i >= 1, f"d_phi_pow indices out of range. n: {n} k: {k} l: {l} i: {i}"
     tmp = d_phi_pow_polynomial(n, k, i)
     return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
 
@@ -247,6 +257,7 @@ def d_sin_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     :param i: The power exponent.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 0 and l >= 0 and l <= n+k and i > 0, f"d_sin_pow indices out of range. n: {n} k: {k} l: {l} i: {i}"
     tmp = d_sin_pow_polynomial(n, k, i)
     return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
 
@@ -259,8 +270,9 @@ def d_N_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 1 and k >= 0 and l >= max(n,k+1) and l <= n+k, f"d_N_nkl indices out of range. n: {n} k: {k} l: {l}"
     d = sp.Integer(0)
-    for i in range(1,min(n,l)+1):
+    for i in range(1,n+1):
         for j in range(min(2*i,k)+1):
             d = (d + sp.binomial(sp.Rational(1,2), i)
                  * sp.binomial(2*i,j) * (-1) ** i * d_sin_pow(n - i, k, l - i, j))
@@ -275,9 +287,10 @@ def bp_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 1 and k >= 1 and l >= max(n,k) and l <= n+k-1, f"bp_nkl indices out of range. n: {n} k: {k} l: {l}"
     c = sp.Integer(0)
     for i in range(1, min(n,floor(k/2))+1):
-        for j in range(min(i,n-i)+1):
+        for j in range(max(0, n-l+i), min(i,n-i, n+k-l-i)+1):
             c = c + (-1) ** (i+j) * sp.binomial(i,j) / sp.factorial(2*i) * d_phi_pow(n - i - j, k, l, 2 * i)
     return c
 
@@ -290,9 +303,10 @@ def d_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 1 and l >= max(n,k) and l <= n+k, f"d_sin indices out of range. n: {n} k: {k} l: {l}"
     d = sp.Integer(0)
     for i in range(1,min(k,2*n+1)+1):
-        for j in range(max(0,ceil(i/2)-l+n), min(ceil(i/2),n-floor(i/2))+1):
+        for j in range(max(0,ceil(i/2)-l+n), min(ceil(i/2),n-floor(i/2), n+k-l-floor(i/2))+1):
             d = d + sp.Rational(sp.binomial(ceil(i/2), j) * (-1) ** (floor(i/2)+j)
                                 * d_phi_pow(n - floor(i / 2) - j, k, l, i), sp.factorial(i))
     return d
@@ -306,6 +320,7 @@ def c_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 1 and l >= max(n,k), f"c_sin indices out of range. n: {n} k: {k} l: {l}"
     return polynomials.sin_pow_to_cos_mul(n, k, l, 0, 0, d_sin)
 
 @cache.ints_cache
@@ -317,9 +332,10 @@ def d_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 1 and l >= max(n,k) and l <= n+k-1, f"d_cos indices out of range. n: {n} k: {k} l: {l}"
     d = sp.Integer(0)
     for i in range(1,min(k,2*n+1)+1):
-        for j in range(max(0,floor(i/2)-l+n), min(floor(i/2),n-ceil(i/2))+1):
+        for j in range(max(0,floor(i/2)-l+n), min(floor(i/2),n-ceil(i/2), n+k-l-ceil(i/2))+1):
             d = d + sp.Rational(sp.binomial(floor(i/2), j) * (-1) ** (ceil(i/2)+j)
                                 * d_phi_pow(n - ceil(i / 2) - j, k, l, i), sp.factorial(i))
     return d
@@ -333,6 +349,7 @@ def c_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 1 and l >= max(n,k), f"c_cos indices out of range. n: {n} k: {k} l: {l}"
     return polynomials.sin_pow_to_cos_mul(n, k, l, 0, -1, d_cos)
 
 @cache.ints_cache
@@ -344,6 +361,7 @@ def d_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 1 and k >= 0 and l >= max(n,k+1) and l <= n+k, f"d_h indices out of range. n: {n} k: {k} l: {l}"
     if k==0:
         return -d_N_nkl(n,k,l)
     else:
@@ -358,10 +376,12 @@ def c_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
+    assert n >= 0 and k >= 0 and l >= max(n,k+1), f"c_h indices out of range. n: {n} k: {k} l: {l}"
     return polynomials.sin_pow_to_cos_mul(n, k, l, 1, 0, d_h)
 
 @cache.ints_cache
 def R(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
+    assert n >= 0 and k >= n and l >= 0 and l <= k and i>=0 and i <= l//2, f"R indices out of range. n: {n} k: {k} l: {l} i: {i}"
     s = sp.S.Zero
     for j in range(max(0,ceil((n + 2 * i - k) / 2.)), n // 2 + 1):
         s += (-1) ** (j) * sp.binomial(i, j) * c_phi_pow_evo(n - 2 * j, k, l, 2 * i)
@@ -369,6 +389,7 @@ def R(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def d_Na_evo2(n: int, k: int, l: int, b_a) -> sp.core.Expr:
+    assert n >= 0 and k >= n and l >= 0 and l <= k, f"d_Na_evo2 indices out of range. n: {n} k: {k} l: {l}"
     d = sp.S.Zero
     for i in range(l // 2 + 1):
         for t in range(i+1):
@@ -377,6 +398,7 @@ def d_Na_evo2(n: int, k: int, l: int, b_a) -> sp.core.Expr:
 
 @cache.ints_cache
 def B_p(n: int, k: int, p: int) -> sp.core.Rational:
+    assert n >= 0 and k >= n and p >= 0 and p <= k+1, f"B_p indices out of range. n: {n} k: {k} l: {p}"
     if (n-k) % 2 != 0 or (n-p-1) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -389,6 +411,7 @@ def B_p(n: int, k: int, p: int) -> sp.core.Rational:
 
 @cache.ints_cache
 def cp_evo_nkl(n: int, k: int, l: int) -> sp.core.Rational:
+    assert n >= 1 and k >= n and l >= 0 and l <= k+1, f"cp_evo_nkl indices out of range. n: {n} k: {k} l: {l}"
     if (n-k) % 2 != 0 or (n-l-1) % 2 != 0:
         return sp.S.Zero
     if l <= 1:
@@ -412,6 +435,7 @@ def ch_evo(n: int, k: int, l: int) -> sp.core.Rational:
     :param l: epsilon power index.
     :return: Rational coefficient.
     """
+    assert n >= 0 and k >= n and l >= 0 and l <= k+1, f"ch_evo indices out of range. n: {n} k: {k} l: {l}"
     if (n-k) % 2 != 0 or (n-l-1) % 2 != 0:
         return sp.S.Zero
     if n==0:
@@ -429,13 +453,13 @@ def dh_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     :param l: epsilon power index.
     :return: Rational coefficient.
     """
+    assert n >= 0 and k >= 0 and l >= 0 and l <= k+ceil(n/2.), f"dh_evo indices out of range. n: {n} k: {k} l: {l}"
     sn = n % 2
     return ch_evo(n, 2 * k + n, 2 * l + 1 - sn)
 
 @cache.ints_cache
 def a_mr(m: int, r: int) -> sp.core.numbers.Rational:
-    if r > m:
-        raise Exception("r>m")
+    assert r <= m, f"a_mr index out of range. r: {r} m: {m}"
     if m == 0 and r==0:
         return sp.S.One
     a = sp.S.Zero
@@ -448,6 +472,7 @@ def a_mr(m: int, r: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def C_mt(m: int, t: int) -> sp.core.numbers.Rational:
+    assert m >= 0 and t >= 0 and t <= m, f"C_mt indices out of range. m: {m} t: {t}"
     C = sp.S.Zero
     for r in range(t,m+1):
         C += a_mr(m, r) * B_rt(r, t)
@@ -455,6 +480,7 @@ def C_mt(m: int, t: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def B_rt(r: int, t: int) -> sp.core.numbers.Rational:
+    assert r >= t and t >= 0, f"B_rt indices out of range. r: {r} t: {t}"
     B = sp.S.Zero
     for k in range(t,r+1):
         B += stirling(r,k,kind=2)*rf(sp.Rational(1,2),k) * (-1) ** (k-t) * sp.binomial(k,t)

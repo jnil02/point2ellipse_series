@@ -39,7 +39,7 @@ def phi_in_sin_pow2(N: int, K: int) -> sp.core.Expr:
     d = sp.Integer(0)
     for n in range(0, N+1):
         for k in range(1, K+1):
-            for l in range(k, k+n + 1):
+            for l in range(k, n+k+1):
                 d = d + d_phi2(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n + 1)
     return d
 
@@ -125,9 +125,9 @@ def sin_phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
     :return: Symbolic representation of the series.
     """
     d = sp.Integer(0)
-    for n in range(0, N+1):
+    for n in range(N+1):
         for k in range(1, K+1):
-            for l in range(max(k,n), n+k+1):
+            for l in range(max(n,k), n+k+1):
                 d = d + d_sin(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d
 
@@ -140,7 +140,7 @@ def cos_phi_in_cos_mul(N: int, K: int, L: int) -> sp.core.Expr:
     :return: Symbolic representation of the series.
     """
     d = sp.Integer(0)
-    for n in range(0, N+1):
+    for n in range(N+1):
         for k in range(1, K+1):
             for l in range(max(n,k), L+1):
                 d = d + c_cos(n,k,l) * e2 ** l * varrho ** k * sp.cos(2 * n * psi)
@@ -399,7 +399,7 @@ def h_a_evo(N, K):
     s = sp.S.Zero
     for n in range(N+1):
         for k in range(n, K+1):
-            for l in range(0, k+2):
+            for l in range(k+2):
                 s += ch_evo(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
