@@ -26,7 +26,7 @@ using SymEngine::factorial;
 using uint = unsigned int;
 
 rc d_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= 0 && l >= 0 && l <= n / 2 + k);
 
 	// Only valid (potentially non-zero) for l <= n/2 + k.
 	if (l > n / 2 + k)
@@ -75,7 +75,7 @@ rc d_phi_evo(int n, int k, int l) {
 }
 
 rc c_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= n+1 && l >= 1 && l <= k);
 
 	// Parity constraints — coefficient is zero unless both hold.
 	if ((k - n - 1) % 2 != 0 || (l - k) % 2 != 0)
@@ -143,7 +143,7 @@ Expression d_phi_pow_evo_polynomial(int n, int k, int i) {
 }
 
 rc c_phi_pow_evo(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= 0 && l >= 0 && i >= 0);
+	assert(n >= 0 && k >= n+i && l >= i && l <= k && i >= 0);
 
 	// Parity constraints from underlying c_phi_evo coefficients.
 	if ((i + n - k) % 2 != 0 || (l - k) % 2 != 0)
@@ -162,7 +162,7 @@ rc c_phi_pow_evo(int n, int k, int l, int i) {
 }
 
 rc c_sin_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= n && l >= 0 && l <= k);
 
 	// Parity constraints.
 	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
@@ -191,7 +191,7 @@ rc c_sin_phi_evo(int n, int k, int l) {
 }
 
 rc c_cos_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= n && l >= 1 && l <= k);
 
 	// Parity constraints.
 	if ((n + 1 - k) % 2 != 0 || (l - k) % 2 != 0)
@@ -220,7 +220,7 @@ rc c_cos_phi_evo(int n, int k, int l) {
 }
 
 rc c_sin_phi_inv_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= n && l >= 0 && l <= k);
 
 	// Parity constraints — same as d_sin_phi_evo.
 	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
@@ -249,10 +249,7 @@ rc c_sin_phi_inv_evo(int n, int k, int l) {
 }
 
 rc a_mr(int m, int r) {
-	assert(m >= 0 && r >= 0);
-
-	if (r > m)
-		throw std::runtime_error("r > m");
+	assert(r <= m && r >= 0);
 
 	if (m == 0 && r == 0)
 		return {1, 1};
@@ -288,10 +285,7 @@ rc a_mr(int m, int r) {
 }
 
 rc B_rt(int r, int t) {
-	assert(r >= 0 && t >= 0);
-
-	if (t > r)
-		throw std::runtime_error("t > r");
+	assert(r >= t && t >= 0);
 
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) r, (uint) t))
@@ -312,10 +306,7 @@ rc B_rt(int r, int t) {
 }
 
 rc C_mt(int m, int t) {
-	assert(m >= 0 && t >= 0);
-
-	if (t > m)
-		throw std::runtime_error("t > m");
+	assert(t <= m && t >= 0);
 
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) m, (uint) t))
@@ -332,7 +323,7 @@ rc C_mt(int m, int t) {
 }
 
 rc R(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= 0 && l >= 0 && i >= 0);
+	assert(n >= 0 && k >= n && l >= 0 && l <= k && i >= 0 && i <= l / 2);
 
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
@@ -355,7 +346,7 @@ rc R(int n, int k, int l, int i) {
 }
 
 rc B_p(int n, int k, int p) {
-	assert(n >= 0 && k >= 0 && p >= 0);
+	assert(n >= 0 && k >= n && p >= 0 && p <= k+1);
 
 	if ((n - k) % 2 != 0 || (n - p - 1) % 2 != 0)
 		return {0, 1};
@@ -410,7 +401,7 @@ rc cp_evo_nkl(int n, int k, int l) {
 }
 
 rc ch_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0);
+	assert(n >= 0 && k >= n && l >= 0 && l <= k+1);
 
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
 		return {0, 1};

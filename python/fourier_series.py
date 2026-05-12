@@ -310,7 +310,7 @@ def cos_phi_evo(N, K):
     s = sp.S.Zero
     for n in range(N+1):
         for k in range(n, K+1):
-            for l in range(k+1):
+            for l in range(1, k+1):
                 s += c_cos_phi_evo(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
@@ -326,7 +326,7 @@ def cos_phi_evo_dense(N, K):
     s = sp.S.Zero
     for n in range(N+1):
         for k in range(0, (K-n-1)//2+1):  # Limit fix to get the same result as for the non-dense.
-            for l in range(math.ceil(n/2.)+k + 1):
+            for l in range(n % 2, math.ceil(n/2.)+k + 1):
                 s += c_cos_phi_evo(n, n + 1 + 2 * k, 2 * l + 1 - (n % 2)) * b_a ** (2 * l + 1 - (n % 2)) * rho_ae2 ** (n + 1 + 2 * k) * sin_psi ** n
     return s
 

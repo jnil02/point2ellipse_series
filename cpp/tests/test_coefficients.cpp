@@ -134,6 +134,7 @@ static void check_against_csv_3(const std::string &csv_path,
 
 	for (const auto &row : rows) {
 		INFO("indices: n=" << row.n << " k=" << row.k << " l=" << row.l);
+		INFO(csv_path);
 
 		rc result = fn(row.n, row.k, row.l);
 		INFO("python: " << row.num << " / " << row.den);
@@ -153,6 +154,7 @@ static void check_against_csv_4(const std::string &csv_path,
 
 	for (const auto &row : rows) {
 		INFO("indices: n=" << row.n << " k=" << row.k << " l=" << row.l << " i=" << row.i);
+		INFO(csv_path);
 
 		rc result = fn(row.n, row.k, row.l, row.i);
 		INFO("python: " << row.num << " / " << row.den);
@@ -172,6 +174,7 @@ static void check_against_csv_2(const std::string &csv_path,
 
 	for (const auto &row : rows) {
 		INFO("indices: n=" << row.n << " k=" << row.k);
+		INFO(csv_path);
 
 		rc result = fn(row.n, row.k);
 		INFO("python: " << row.num << " / " << row.den);

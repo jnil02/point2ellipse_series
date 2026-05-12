@@ -165,7 +165,7 @@ def generate_d_cos_phi_evo():
     rows = []
     for n in range(MAX_INDEX + 1):
         for k in range(n, MAX_INDEX + 1):
-            for l in range(k + 1):
+            for l in range(1, k + 1):
                 c = c_cos_phi_evo(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('c_cos_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])

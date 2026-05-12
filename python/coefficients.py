@@ -195,7 +195,7 @@ def c_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    assert n >= 0 and k >= n and l >= 0 and l <= k, f"c_cos_phi_evo indices out of range. n: {n} k: {k} l: {l}"
+    assert n >= 0 and k >= n and l >= 1 and l <= k, f"c_cos_phi_evo indices out of range. n: {n} k: {k} l: {l}"
     if (n+1-k) % 2 != 0 or (l-k) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -257,7 +257,7 @@ def d_sin_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     :param i: The power exponent.
     :return: Coefficient as a sympy rational number.
     """
-    assert n >= 0 and k >= 0 and l >= 0 and l <= n+k and i > 0, f"d_sin_pow indices out of range. n: {n} k: {k} l: {l} i: {i}"
+    assert n >= 0 and k >= 0 and l >= 0 and l <= n+k and i >= 0, f"d_sin_pow indices out of range. n: {n} k: {k} l: {l} i: {i}"
     tmp = d_sin_pow_polynomial(n, k, i)
     return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
 
@@ -459,7 +459,7 @@ def dh_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def a_mr(m: int, r: int) -> sp.core.numbers.Rational:
-    assert r <= m, f"a_mr index out of range. r: {r} m: {m}"
+    assert r <= m and r >= 0, f"a_mr index out of range. r: {r} m: {m}"
     if m == 0 and r==0:
         return sp.S.One
     a = sp.S.Zero
