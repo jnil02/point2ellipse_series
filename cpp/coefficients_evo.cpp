@@ -28,10 +28,6 @@ using uint = unsigned int;
 rc d_phi_evo(int n, int k, int l) {
 	assert(n >= 0 && k >= 0 && l >= 0 && l <= n / 2 + k);
 
-	// Only valid (potentially non-zero) for l <= n/2 + k.
-	if (l > n / 2 + k)
-		return {0, 1};
-
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -75,14 +71,10 @@ rc d_phi_evo(int n, int k, int l) {
 }
 
 rc c_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= n+1 && l >= 1 && l <= k);
+	assert(n >= 0 && k >= n + 1 && l >= 1 && l <= k);
 
 	// Parity constraints — coefficient is zero unless both hold.
 	if ((k - n - 1) % 2 != 0 || (l - k) % 2 != 0)
-		return {0, 1};
-
-	// Valid range: k >= n+1, 1 <= l <= k, correct parity.
-	if (k < n + 1 || l < 1 || l > k)
 		return {0, 1};
 
 	static auto cache = UintsCache<rc>();
@@ -143,7 +135,7 @@ Expression d_phi_pow_evo_polynomial(int n, int k, int i) {
 }
 
 rc c_phi_pow_evo(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= n+i && l >= i && l <= k && i >= 0);
+	assert(n >= 0 && k >= n + i && l >= i && l <= k && i >= 0);
 
 	// Parity constraints from underlying c_phi_evo coefficients.
 	if ((i + n - k) % 2 != 0 || (l - k) % 2 != 0)
@@ -233,7 +225,7 @@ rc c_sin_phi_inv_evo(int n, int k, int l) {
 	Expression d(0);
 	for (int i = 0; i <= l / 2; ++i) {
 		// j lower bound: ceil((n + 2*i - k) / 2) = (n + 2*i - k + 1) / 2
-		const int j_min = std::max(0,(n + 2 * i - k + 1) / 2);
+		const int j_min = std::max(0, (n + 2 * i - k + 1) / 2);
 		const int j_max = n / 2;
 		for (int j = j_min; j <= j_max; ++j) {
 			d += Expression(E2(i) * powm1(j))
@@ -249,7 +241,7 @@ rc c_sin_phi_inv_evo(int n, int k, int l) {
 }
 
 rc a_mr(int m, int r) {
-	assert(r <= m && r >= 0);
+	assert(m >= 0 && r >= 0 && r <= m);
 
 	if (m == 0 && r == 0)
 		return {1, 1};
@@ -285,7 +277,7 @@ rc a_mr(int m, int r) {
 }
 
 rc B_rt(int r, int t) {
-	assert(r >= t && t >= 0);
+	assert(r >= 0 && t >= 0 && r >= t);
 
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) r, (uint) t))
@@ -306,7 +298,7 @@ rc B_rt(int r, int t) {
 }
 
 rc C_mt(int m, int t) {
-	assert(t <= m && t >= 0);
+	assert(m >= 0 && t >= 0 && t <= m);
 
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) m, (uint) t))
@@ -346,7 +338,7 @@ rc R(int n, int k, int l, int i) {
 }
 
 rc B_p(int n, int k, int p) {
-	assert(n >= 0 && k >= n && p >= 0 && p <= k+1);
+	assert(n >= 0 && k >= n && p >= 0 && p <= k + 1);
 
 	if ((n - k) % 2 != 0 || (n - p - 1) % 2 != 0)
 		return {0, 1};
@@ -372,7 +364,7 @@ rc B_p(int n, int k, int p) {
 }
 
 rc cp_evo_nkl(int n, int k, int l) {
-	assert(n >= 1 && k >= n && l >= 0 && l <= k+1);
+	assert(n >= 1 && k >= n && l >= 0 && l <= k + 1);
 
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
 		return {0, 1};
@@ -401,7 +393,7 @@ rc cp_evo_nkl(int n, int k, int l) {
 }
 
 rc ch_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= n && l >= 0 && l <= k+1);
+	assert(n >= 0 && k >= n && l >= 0 && l <= k + 1);
 
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
 		return {0, 1};
