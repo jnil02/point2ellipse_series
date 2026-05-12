@@ -28,7 +28,7 @@ using SymEngine::rational;
 using uint = unsigned int;
 
 rc d_phi(int n, int k, int l) {
-	assert(n >= 0 && k >= 1 && l >= std::max(n+1,k) && l <= n+k);
+	assert(n >= 0 && k >= 1 && l >= std::max(n + 1, k) && l <= n + k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -60,7 +60,7 @@ rc d_phi(int n, int k, int l) {
 }
 
 rc d_phi2(int n, int k, int l) {
-	assert(n >= 0 && k >= 1 && l >= k && l <= n+k);
+	assert(n >= 0 && k >= 1 && l >= k && l <= n + k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -165,7 +165,7 @@ Expression d_phi_pow_polynomial(int n, int k, int i) {
 }
 
 rc d_phi_pow(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= i && l >= std::max(n+i,k) && l<=n+k && i >= 1);
+	assert(n >= 0 && k >= i && l >= std::max(n + i, k) && l <= n + k && i >= 1);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
@@ -179,7 +179,7 @@ rc d_phi_pow(int n, int k, int l, int i) {
 }
 
 rc d_sin(int n, int k, int l) {
-	assert(n >= 0 && k >= 1 && l >= std::max(n,k) && l <= n+k);
+	assert(n >= 0 && k >= 1 && l >= std::max(n,k) && l <= n + k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -222,7 +222,7 @@ Expression d_sin_pow_polynomial(int n, int k, int i) {
 }
 
 rc d_sin_pow(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= 0 && l >= 0 && l <= n+k && i >= 0);
+	assert(n >= 0 && k >= 0 && l >= 0 && l <= n + k && i >= 0);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
@@ -249,7 +249,7 @@ rc c_sin(int n, int k, int l) {
 }
 
 rc d_cos(int n, int k, int l) {
-	assert(n >= 0 && k >= 1 && l >= std::max(n,k) && l <= n+k-1);
+	assert(n >= 0 && k >= 1 && l >= std::max(n, k) && l <= n + k - 1);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -273,7 +273,7 @@ rc d_cos(int n, int k, int l) {
 }
 
 rc c_cos(int n, int k, int l) {
-	assert(n >= 0 && k >= 1 && l >= std::max(n,k));
+	assert(n >= 0 && k >= 1 && l >= std::max(n, k));
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -286,7 +286,7 @@ rc c_cos(int n, int k, int l) {
 }
 
 rc d_N_nkl(int n, int k, int l) {
-	assert(n >= 1 && k >= 0 && l >= std::max(n,k+1) && l <= n+k);
+	assert(n >= 1 && k >= 0 && l >= std::max(n, k + 1) && l <= n + k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -305,7 +305,7 @@ rc d_N_nkl(int n, int k, int l) {
 }
 
 rc bp_nkl(int n, int k, int l) {
-	assert(n >= 1 && k >= 1 && l >= std::max(n,k) && l <= n+k-1);
+	assert(n >= 1 && k >= 1 && l >= std::max(n, k) && l <= n + k - 1);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -324,7 +324,7 @@ rc bp_nkl(int n, int k, int l) {
 }
 
 rc d_h(int n, int k, int l) {
-	assert(n >= 1 && k >= 0 && l >= std::max(n,k+1) && l <= n+k);
+	assert(n >= 1 && k >= 0 && l >= std::max(n, k + 1) && l <= n+k);
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
@@ -341,7 +341,7 @@ rc d_h(int n, int k, int l) {
 }
 
 rc c_h(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= std::max(n,k+1));
+	assert(n >= 0 && k >= 0 && l >= std::max(n, k + 1));
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
