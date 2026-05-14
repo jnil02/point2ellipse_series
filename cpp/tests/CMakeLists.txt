@@ -27,3 +27,24 @@ target_compile_definitions(test_coefficients
 
 include(CTest)
 add_test(NAME test_coefficients COMMAND test_coefficients)
+
+add_executable(test_series
+        test_series.cpp
+        ../coefficients.cpp
+        ../coefficients_evo.cpp
+        ../series.cpp
+        )
+
+target_include_directories(test_series
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        )
+
+target_link_libraries(test_series
+        PRIVATE
+        symengine
+        mpfr
+        gmp
+        )
+
+add_test(NAME test_series COMMAND test_series)

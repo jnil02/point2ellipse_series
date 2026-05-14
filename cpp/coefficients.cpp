@@ -236,7 +236,7 @@ rc d_sin_pow(int n, int k, int l, int i) {
 }
 
 rc c_sin(int n, int k, int l) {
-	assert(n >= 1 && k >= 1 && l >= std::max(n, k));
+	assert(n >= 0 && k >= 1 && l >= std::max(n, k));
 	static auto cache = UintsCache<rc>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
