@@ -48,3 +48,24 @@ target_link_libraries(test_series
         )
 
 add_test(NAME test_series COMMAND test_series)
+
+add_executable(test_series_evo
+        test_series_evo.cpp
+        ../coefficients.cpp
+        ../coefficients_evo.cpp
+        ../series.cpp
+        )
+
+target_include_directories(test_series_evo
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        )
+
+target_link_libraries(test_series_evo
+        PRIVATE
+        symengine
+        mpfr
+        gmp
+        )
+
+add_test(NAME test_series_evo COMMAND test_series_evo)

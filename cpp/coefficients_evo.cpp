@@ -420,4 +420,9 @@ rc ch_evo(int n, int k, int l) {
 	return ret;
 }
 
+rc dh_evo(int n, int k, int l) {
+	int sn = n % 2;
+	return ch_evo(n, 2 * k + n, 2 * l + 1 - sn);
+}
+
 }  // namespace point_to_ellipse_series
