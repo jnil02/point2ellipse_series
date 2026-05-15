@@ -10,6 +10,7 @@
 #include <symengine/expression.h>
 
 #include "coefficients.hpp"
+#include "coefficients_evo.hpp"
 
 using point_to_ellipse_series::rc;
 using point_to_ellipse_series::d_phi;

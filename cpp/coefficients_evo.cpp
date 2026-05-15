@@ -8,7 +8,7 @@
 #include "util.hpp"
 #include "series_substitution.hpp"
 
-#include "coefficients.hpp"
+#include "coefficients_evo.hpp"
 #include "stirling.hpp"
 
 namespace point_to_ellipse_series {
