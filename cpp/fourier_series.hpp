@@ -29,22 +29,38 @@ using point_to_ellipse_series::c_h;
 using point_to_ellipse_series::rc_expr;
 using point_to_ellipse_series::series_coeff;
 using point_to_ellipse_series::series_pow;
+using point_to_ellipse_series::series_sin_mul;
+using point_to_ellipse_series::series_cos_mul;
 using point_to_ellipse_series::sigma;
 using point_to_ellipse_series::tau;
 
 /** Series expansion of (phi - psi) / (sin(psi) * cos(psi)) in sin-powers.
  *
- * @param N sin power series truncation order.
- * @param K rho power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin power series truncation order.
+ * @param K     rho power series truncation order.
+ * @param sin_psi_v   Value/expression for sin(psi).
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression phi_in_sin_pow(int N, int K) {
-	Expression d(0);
+template<typename T>
+inline T phi_in_sin_pow(int N, int K,
+						const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n + 1); l <= k + n; ++l)
-				d += rc_expr(d_phi(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d = d + series_coeff<T>(d_phi(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_pow(sin_psi_v, 2 * n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression phi_in_sin_pow(int N, int K) {
+	return phi_in_sin_pow<Expression>(N, K, sin_psi, varrho, e2);
 }
 
 /** Series expansion of (phi - psi) in sin-powers.
@@ -52,95 +68,179 @@ inline Expression phi_in_sin_pow(int N, int K) {
  * Note, this series has poor convergence and is only implemented to demonstrate
  * this. It should not be used in practice.
  *
- * @param N sin power series truncation order.
- * @param K rho power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin power series truncation order.
+ * @param K     rho power series truncation order.
+ * @param sin_psi_v   Value/expression for sin(psi).
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression phi_in_sin_pow2(int N, int K) {
-	Expression d(0);
+template<typename T>
+inline T phi_in_sin_pow2(int N, int K,
+						 const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = k; l <= k + n; ++l)
-				d += rc_expr(d_phi2(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n + 1);
+				d = d + series_coeff<T>(d_phi2(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_pow(sin_psi_v, 2 * n + 1);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression phi_in_sin_pow2(int N, int K) {
+	return phi_in_sin_pow2<Expression>(N, K, sin_psi, varrho, e2);
 }
 
 /** Series expansion of (phi - psi) in sin multiples.
  *
- * @param N sin multiple series truncation order.
- * @param K rho power series truncation order.
- * @param L e2 power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin multiple series truncation order.
+ * @param K     rho power series truncation order.
+ * @param L     e2 power series truncation order.
+ * @param psi_v       Value/expression for psi.
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-Expression phi_in_sin_mul(int N, int K, int L) {
-	Expression d(0);
+template<typename T>
+inline T phi_in_sin_mul(int N, int K, int L,
+						const T& psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 1; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d += rc_expr(c_phi(n, k, l)) * pow(e2, l) * pow(varrho, k) * sin(Expression(2 * n) * psi);
+				d = d + series_coeff<T>(c_phi(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_sin_mul(psi_v, n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression phi_in_sin_mul(int N, int K, int L) {
+	return phi_in_sin_mul<Expression>(N, K, L, psi, varrho, e2);
 }
 
 /** Series expansion of sin(phi) / sin(psi) - 1 in sin-powers.
  *
- * @param N sin power series truncation order.
- * @param K rho power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin power series truncation order.
+ * @param K     rho power series truncation order.
+ * @param sin_psi_v   Value/expression for sin(psi).
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression sin_phi_in_sin_pow(int N, int K) {
-	Expression d(0);
+template<typename T>
+inline T sin_phi_in_sin_pow(int N, int K,
+							const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n); l <= n + k; ++l)
-				d += rc_expr(d_sin(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d = d + series_coeff<T>(d_sin(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_pow(sin_psi_v, 2 * n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression sin_phi_in_sin_pow(int N, int K) {
+	return sin_phi_in_sin_pow<Expression>(N, K, sin_psi, varrho, e2);
 }
 
 /** Series expansion of sin(phi) / sin(psi) - 1 in cos multiples.
  *
- * @param N sin multiple series truncation order.
- * @param K rho power series truncation order.
- * @param L e2 power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin multiple series truncation order.
+ * @param K     rho power series truncation order.
+ * @param L     e2 power series truncation order.
+ * @param psi_v       Value/expression for psi.
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression sin_phi_in_cos_mul(int N, int K, int L) {
-	Expression d(0);
+template<typename T>
+inline T sin_phi_in_cos_mul(int N, int K, int L,
+							const T& psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d += rc_expr(c_sin(n, k, l)) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
+				d = d + series_coeff<T>(c_sin(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_cos_mul(psi_v, n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression sin_phi_in_cos_mul(int N, int K, int L) {
+	return sin_phi_in_cos_mul<Expression>(N, K, L, psi, varrho, e2);
 }
 
 /** Series expansion of cos(phi) / cos(psi) - 1 in sin-powers.
  *
- * @param N sin power series truncation order.
- * @param K rho power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin power series truncation order.
+ * @param K     rho power series truncation order.
+ * @param sin_psi_v   Value/expression for sin(psi).
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression cos_phi_in_sin_pow(int N, int K) {
-	Expression d(0);
+template<typename T>
+inline T cos_phi_in_sin_pow(int N, int K,
+							const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n); l < n + k; ++l)
-				d += rc_expr(d_cos(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d = d + series_coeff<T>(d_cos(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_pow(sin_psi_v, 2 * n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression cos_phi_in_sin_pow(int N, int K) {
+	return cos_phi_in_sin_pow<Expression>(N, K, sin_psi, varrho, e2);
 }
 
 /** Series expansion of cos(phi) / cos(psi) - 1 in cos multiples.
  *
- * @param N sin multiple series truncation order.
- * @param K rho power series truncation order.
- * @param L e2 power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin multiple series truncation order.
+ * @param K     rho power series truncation order.
+ * @param L     e2 power series truncation order.
+ * @param psi_v       Value/expression for psi.
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression cos_phi_in_cos_mul(int N, int K, int L) {
-	Expression d(0);
+template<typename T>
+inline T cos_phi_in_cos_mul(int N, int K, int L,
+							const T& psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d += rc_expr(c_cos(n, k, l)) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
+				d = d + series_coeff<T>(c_cos(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_cos_mul(psi_v, n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression cos_phi_in_cos_mul(int N, int K, int L) {
+	return cos_phi_in_cos_mul<Expression>(N, K, L, psi, varrho, e2);
 }
 
 /** Series expansion of sin(phi) / sin(psi) - 1 in sin-powers but with common sigma/tau components.
@@ -177,31 +277,59 @@ inline Expression cos_phi_in_sin_pow2(int N, int K, int J) {
 
 /** Series expansion of (h + a + rho) / a in sin-powers.
  *
- * @param N sin power series truncation order.
- * @param K rho power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin power series truncation order.
+ * @param K     rho power series truncation order.
+ * @param sin_psi_v   Value/expression for sin(psi).
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression h_in_sin_pow(int N, int K) {
-	Expression d(0);
+template<typename T>
+inline T h_in_sin_pow(int N, int K,
+					  const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 1; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = std::max(k + 1, n); l <= n + k; ++l)
-				d += rc_expr(d_h(n, k, l)) * pow(e2, l) * pow(varrho, k) * pow(sin_psi, 2 * n);
+				d = d + series_coeff<T>(d_h(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_pow(sin_psi_v, 2 * n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression h_in_sin_pow(int N, int K) {
+	return h_in_sin_pow<Expression>(N, K, sin_psi, varrho, e2);
 }
 
 /** Series expansion of (h + a + rho) / a in cos multiples.
  *
- * @param N sin multiples series truncation order.
- * @param K rho power series truncation order.
- * @param L e2 power series truncation order.
- * @return Symbolic expression for the truncated series.
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin multiples series truncation order.
+ * @param K     rho power series truncation order.
+ * @param L     e2 power series truncation order.
+ * @param psi_v       Value/expression for psi.
+ * @param varrho_v    Value/expression for rho/a.
+ * @param e2_v        Value/expression for e².
+ * @return Series result as type T.
  */
-inline Expression h_in_cos_mul(int N, int K, int L) {
-	Expression d(0);
+template<typename T>
+inline T h_in_cos_mul(int N, int K, int L,
+					  const T& psi_v, const T& varrho_v, const T& e2_v) {
+	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = std::max(n, k + 1); l <= L; ++l)
-				d += rc_expr(c_h(n, k, l)) * pow(e2, l) * pow(varrho, k) * cos(Expression(2 * n) * psi);
+				d = d + series_coeff<T>(c_h(n, k, l))
+						* series_pow(e2_v, l)
+						* series_pow(varrho_v, k)
+						* series_cos_mul(psi_v, n);
 	return d;
+}
+
+/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
+inline Expression h_in_cos_mul(int N, int K, int L) {
+	return h_in_cos_mul<Expression>(N, K, L, psi, varrho, e2);
 }
