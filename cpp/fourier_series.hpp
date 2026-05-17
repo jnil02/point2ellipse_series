@@ -8,6 +8,7 @@
 
 #include "coefficients.hpp"
 #include "polynomials.hpp"
+#include "series_traits.hpp"
 #include "symbols.hpp"
 
 using SymEngine::Expression;
@@ -26,6 +27,8 @@ using point_to_ellipse_series::d_h;
 using point_to_ellipse_series::c_h;
 
 using point_to_ellipse_series::rc_expr;
+using point_to_ellipse_series::series_coeff;
+using point_to_ellipse_series::series_pow;
 using point_to_ellipse_series::sigma;
 using point_to_ellipse_series::tau;
 
