@@ -47,6 +47,12 @@ target_link_libraries(test_series
         gmp
         )
 
+target_compile_definitions(test_series
+        PRIVATE
+        ELLIPSE_A="6378137.0"
+        ELLIPSE_INV_F="298.257223563"
+        )
+
 add_test(NAME test_series COMMAND test_series)
 
 add_executable(test_series_evo
@@ -66,6 +72,12 @@ target_link_libraries(test_series_evo
         symengine
         mpfr
         gmp
+        )
+
+target_compile_definitions(test_series_evo
+        PRIVATE
+        ELLIPSE_A="6378137.0"
+        ELLIPSE_INV_F="298.257223563"
         )
 
 add_test(NAME test_series_evo COMMAND test_series_evo)

@@ -19,6 +19,12 @@ target_link_libraries(main
         gmp
         )
 
+target_compile_definitions(main
+        PRIVATE
+        ELLIPSE_A="6378137.0"
+        ELLIPSE_INV_F="298.257223563"
+        )
+
 # Build coefficient library.
 set(PTECOEF_SOURCE
         coefficients.cpp
