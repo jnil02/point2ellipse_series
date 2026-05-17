@@ -3,6 +3,8 @@
 #include <utility>  // std::pair
 #include <mpreal.h>
 
+#include "ellipse_params.hpp"
+
 using mpfr::mpreal;
 using mpfr::abs;
 using mpfr::sin;
@@ -17,12 +19,18 @@ inline void set_precision_bits(mpfr_prec_t bits) {
 	mpreal::set_default_prec(bits);
 }
 
-// WGS84 constants. Lazy evaluation such that set precision is respected.
-// The literal values are defined by the standard.
-inline const mpreal& mp_a()  { static const mpreal v = mpreal("6378137.0");                               return v; } // Semi-major axis.
-inline const mpreal& mp_f()  { static const mpreal v = mpreal(1) / mpreal("298.257223563");               return v; } // Flattening.
-inline const mpreal& mp_b()  { static const mpreal v = mp_a() - mp_f() * mp_a();                          return v; } // Semi-minor axis.
-inline const mpreal& mp_e2() { static const mpreal v = mpreal(1) - (mp_b() * mp_b()) / (mp_a() * mp_a()); return v; } // Eccentricity squared.
+// Ellipse constants derived from ELLIPSE_A and ELLIPSE_B/ELLIPSE_F (see ellipse_params.hpp).
+// Lazy evaluation such that set precision is respected.
+inline const mpreal& mp_a()  { static const mpreal v = mpreal(ELLIPSE_A);                                   return v; }
+#ifdef ELLIPSE_B
+inline const mpreal& mp_b()  { static const mpreal v = mpreal(ELLIPSE_B);                                   return v; }
+inline const mpreal& mp_f()  { static const mpreal v = (mp_a() - mp_b()) / mp_a();                          return v; }
+#else
+inline const mpreal& mp_f()  { static const mpreal v = mpreal(1) / mpreal(ELLIPSE_INV_F);                   return v; }
+inline const mpreal& mp_b()  { static const mpreal v = mp_a() * (mpreal(1) - mp_f());                       return v; }
+#endif
+
+inline const mpreal& mp_e2() { static const mpreal v = mpreal(1) - (mp_b() * mp_b()) / (mp_a() * mp_a()); return v; }
 
 // Geodetic (lat,alt) to 2D Cartesian (x,y).
 inline std::pair<mpreal, mpreal>
