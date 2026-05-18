@@ -19,9 +19,9 @@ import matplotlib.pyplot as plt
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo.csv")
 OUT_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo.png")
 
-PSI_PLOT = 45       # which psi angle (degrees) to inspect
-N_LINES  = [1, 3, 5, 7, 10, 12, 14, 16, 18, 20]    # orders shown in the left plot
-RHO_INDICES = [2, 7, 12, 17, 22]  # indices into the rho grid for the right plot
+PSI_PLOT  = 45  # which psi angle (degrees) to inspect
+N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)
+RHO_COUNT = 5   # how many rho curves in the right plot (evenly spaced from data)
 
 # ---------------------------------------------------------------------------
 # Load CSV into a nested dict: data[psi_deg][N] = list of (rho, rho_evo, phi_err, h_err)
@@ -60,9 +60,16 @@ rho_evo = psi_data[1][0][1]
 # Unique rho values (from any N).
 rhos_all = [t[0] for t in psi_data[1]]
 
-# Pick representative rho values by index.
-rho_indices_clamped = [min(i, len(rhos_all) - 1) for i in RHO_INDICES]
-rho_pick = [rhos_all[i] for i in rho_indices_clamped]
+# Pick N_COUNT evenly spaced N values from whatever the data contains.
+Ns_all = sorted(psi_data.keys())
+def _pick(lst, count):
+    n = len(lst)
+    if n <= count:
+        return lst[:]
+    return [lst[round(i * (n - 1) / (count - 1))] for i in range(count)]
+
+N_LINES  = _pick(Ns_all, N_COUNT)
+rho_pick = _pick(rhos_all, RHO_COUNT)
 
 # ---------------------------------------------------------------------------
 # Plot.
@@ -88,17 +95,14 @@ ax1.set_title("Error vs ρ")
 ax1.legend()
 ax1.grid(True, which="both", alpha=0.3)
 
-# --- Right: phi_err vs N for selected rho values ---
-Ns = sorted(psi_data.keys())
-
 for rho_val in rho_pick:
     phi_errs = []
-    for N in Ns:
+    for N in Ns_all:
         # Find the row closest to rho_val.
         row = min(psi_data[N], key=lambda t: abs(t[0] - rho_val))
         phi_errs.append(max(row[2], 1e-50))
     inside = "in" if rho_val < rho_evo else "out"
-    ax2.semilogy(Ns, phi_errs, marker="o", label=f"ρ={rho_val:.3f} ({inside})")
+    ax2.semilogy(Ns_all, phi_errs, marker="o", label=f"ρ={rho_val:.3f} ({inside})")
 
 ax2.set_xlabel("N  (= K)")
 ax2.set_ylabel("|φ error| [rad]")
