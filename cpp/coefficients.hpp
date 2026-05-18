@@ -7,9 +7,12 @@
 namespace point_to_ellipse_series {
 
 // Rational coefficient.
+// __int128 is used instead of long to avoid overflow at higher truncation
+// orders. long, with its 9 decimal digits, overflows around order 13 while
+// __int128 extends the range to ~39 decimal digits.
 struct rc {
-	long num;
-	long den;
+	__int128 num;
+	__int128 den;
 };
 
 rc c_phi(int n, int k, int l);

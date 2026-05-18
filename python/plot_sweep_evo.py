@@ -20,7 +20,7 @@ CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo
 OUT_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo.png")
 
 PSI_PLOT = 45       # which psi angle (degrees) to inspect
-N_LINES  = [1, 3, 5, 7, 10, 12]    # orders shown in the left plot
+N_LINES  = [1, 3, 5, 7, 10, 12, 14, 16, 18, 20]    # orders shown in the left plot
 RHO_INDICES = [2, 7, 12, 17, 22]  # indices into the rho grid for the right plot
 
 # ---------------------------------------------------------------------------

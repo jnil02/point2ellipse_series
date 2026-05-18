@@ -1,18 +1,18 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
-#include <fstream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <stdexcept>
 
 #include <symengine/expression.h>
 
+#include "util.hpp"
 #include "coefficients.hpp"
 #include "coefficients_evo.hpp"
 
 using point_to_ellipse_series::rc;
+using point_to_ellipse_series::i128_to_str;
 using point_to_ellipse_series::d_phi;
 using point_to_ellipse_series::d_cos;
 using point_to_ellipse_series::d_sin;
@@ -139,7 +139,7 @@ static void check_against_csv_3(const std::string &csv_path,
 
 		rc result = fn(row.n, row.k, row.l);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << result.num << " / " << result.den);
+		INFO("c++:    " << i128_to_str(result.num) << " / " << i128_to_str(result.den));
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
@@ -159,7 +159,7 @@ static void check_against_csv_4(const std::string &csv_path,
 
 		rc result = fn(row.n, row.k, row.l, row.i);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << result.num << " / " << result.den);
+		INFO("c++:    " << i128_to_str(result.num) << " / " << i128_to_str(result.den));
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
@@ -179,7 +179,7 @@ static void check_against_csv_2(const std::string &csv_path,
 
 		rc result = fn(row.n, row.k);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << result.num << " / " << result.den);
+		INFO("c++:    " << i128_to_str(result.num) << " / " << i128_to_str(result.den));
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c

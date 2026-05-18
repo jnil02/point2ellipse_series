@@ -1,7 +1,16 @@
 #pragma once
 
+#include <cassert>
 #include <cstdint>
+#include <string>
+#include <algorithm>
 #include <unordered_map>
+#include <gmpxx.h>
+
+#include <symengine/expression.h>
+#include <symengine/functions.h>
+#include <symengine/pow.h>
+#include <symengine/mp_class.h>
 
 #include "coefficients.hpp"
 
@@ -18,9 +27,44 @@ using SymEngine::Mul;
 using SymEngine::Pow;
 using SymEngine::Integer;
 
+// Convert __int128 to a decimal string (for passing to SymEngine / mpreal).
+inline std::string i128_to_str(__int128 x) {
+	if (x == 0) return "0";
+	bool neg = x < 0;
+	unsigned __int128 ux = neg ? -(unsigned __int128)x : (unsigned __int128)x;
+	std::string s;
+	do { s += ('0' + (int)(ux % 10)); ux /= 10; } while (ux > 0);
+	if (neg) s += '-';
+	std::reverse(s.begin(), s.end());
+	return s;
+}
+
+// Convert a SymEngine Integer to __int128 via its decimal string representation.
+// as_int() is limited to long range.
+inline __int128 se_integer_to_i128(const Integer& i) {
+	std::string s = i.__str__();
+	bool neg = !s.empty() && s[0] == '-';
+	size_t start  = neg ? 1 : 0;
+	size_t digits = s.size() - start;
+
+	// __int128 holds up to 39 decimal digits; at exactly 39, compare against the bound.
+	static constexpr const char* i128_max     = "170141183460469231731687303715884105727";
+	static constexpr const char* i128_min_abs = "170141183460469231731687303715884105728";
+	assert((digits < 39 || (digits == 39 && s.compare(start, 39, neg ? i128_min_abs : i128_max) <= 0))
+		   && "se_integer_to_i128: value exceeds __int128 range — truncation order too high");
+
+	__int128 result = 0;
+	for (size_t k = start; k < s.size(); ++k)
+		result = result * 10 + (s[k] - '0');
+	return neg ? -result : result;
+}
+
 inline static Expression rc_expr(const rc &d)
 {
-	return Expression(SymEngine::Rational::from_two_ints(d.num, d.den));
+	mpz_class num(i128_to_str(d.num));
+	mpz_class den(i128_to_str(d.den));
+	SymEngine::rational_class q(num.get_mpz_t(), den.get_mpz_t());
+	return Expression(SymEngine::Rational::from_mpq(std::move(q)));
 }
 
 inline static rc expr_rc(const Expression &d)
@@ -29,11 +73,11 @@ inline static rc expr_rc(const Expression &d)
 
 	if (is_a<SymEngine::Rational>(*b)) {
 		auto r = rcp_static_cast<const SymEngine::Rational>(b);
-		return {r->get_num()->as_int(), r->get_den()->as_int()};
+		return {se_integer_to_i128(*r->get_num()), se_integer_to_i128(*r->get_den())};
 	}
 	else if (is_a<Integer>(*b)) {
 		auto i = rcp_static_cast<const Integer>(b);
-		return {i->as_int(), 1};   // implicit denominator = 1
+		return {se_integer_to_i128(*i), 1};   // implicit denominator = 1
 	}
 	else {
 		throw std::runtime_error("Expression is not a Rational or Integer");
@@ -90,24 +134,24 @@ inline Expression binomial_rational(RCP<const Basic> n, unsigned long k) {
  * Defined by: E2(0)=1, E2(n) = sum_{j=0}^{n-1} (-1)^(n-j+1) * C(2n,2j) * E2(j)
  *
  * @param n Non-negative integer.
- * @return E_{2n} as a long.
+ * @return E_{2n} as a __int128.
  */
-inline long E2(int n) {
-	static std::unordered_map<int, long> cache;
+inline __int128 E2(int n) {
+	static std::unordered_map<int, __int128> cache;
 	auto it = cache.find(n);
 	if (it != cache.end())
 		return it->second;
 
 	if (n == 0)
-		return 1;
+		return __int128(1);
 
 	// Compute binomial coefficients C(2n, 2j) for j=0..n-1.
-	long result = 0;
+	__int128 result(0);
 	for (int j = 0; j < n; ++j) {
 		// C(2n, 2j) computed via SymEngine to avoid overflow for large n.
-		long binom = SymEngine::binomial(
+		__int128 binom = se_integer_to_i128(*SymEngine::binomial(
 				*SymEngine::integer(2 * n),
-				(unsigned long)(2 * j))->as_int();
+				(unsigned long)(2 * j)));
 		result += powm1(n - j + 1) * binom * E2(j);
 	}
 

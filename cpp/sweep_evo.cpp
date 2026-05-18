@@ -61,7 +61,7 @@ int main() {
 
 	const int PSI_STEPS = 17;   // psi = 5°, 10°, ..., 85°
 	const int RHO_STEPS = 25;   // rho = 1/25 * rho_max, ..., rho_max
-	const int MAX_ORDER = 12;   // N = K = 1 .. MAX_ORDER
+	const int MAX_ORDER = 20;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;
