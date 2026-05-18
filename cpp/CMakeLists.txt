@@ -52,3 +52,32 @@ install(FILES
 
 # Unit tests.
 add_subdirectory(tests)
+
+# Convergence sweep binary for the inside-evolute series.
+# Default ellipse: unit ellipse a=1, b=0.5 (large evolute, good for convergence studies).
+# Override by redefining ELLIPSE_A + ELLIPSE_B (or ELLIPSE_INV_F) below.
+add_executable(sweep_evo
+        sweep_evo.cpp
+        coefficients.cpp
+        coefficients_evo.cpp
+        series.cpp
+        )
+
+target_include_directories(sweep_evo
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
+target_link_libraries(sweep_evo
+        PRIVATE
+        symengine
+        mpfr
+        gmp
+        )
+
+target_compile_definitions(sweep_evo
+        PRIVATE
+        ELLIPSE_A="1.0"
+        ELLIPSE_B="0.5"
+        TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
+        )

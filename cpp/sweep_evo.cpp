@@ -1,0 +1,128 @@
+/*
+ * Convergence sweep for the inside-evolute series.
+ *
+ * For each point (psi, rho) on a polar grid the series phi_evo_sin_pow_dense
+ * and h_a_evo_dense are evaluated at increasing truncation orders N=K=1..MAX_ORDER
+ * using mpreal arithmetic.  The absolute error against the closed-form Vermeille
+ * reference is written to a CSV file.  rho intentionally extends beyond the evolute
+ * (rho_evo) so that divergence is visible.
+ *
+ * Ellipse parameters are set via CMake target_compile_definitions
+ * (ELLIPSE_A + ELLIPSE_B or ELLIPSE_INV_F).  The default in CMakeLists.txt
+ * is the unit ellipse a=1, b=0.5 (b/a=0.5), which has a large evolute convenient
+ * for convergence studies.
+ *
+ * Output columns:
+ *   psi_deg   – polar angle in degrees
+ *   rho       – radial distance (same units as a)
+ *   rho_evo   – evolute radius at this psi (series valid for rho < rho_evo)
+ *   N         – truncation order (N = K)
+ *   phi_err   – |phi_approx - phi_true|  [radians]
+ *   h_err     – |h_approx   - h_true|   [same units as a]
+ */
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <mpreal.h>
+
+#include "ellipse.hpp"
+#include "fourier_series_evo.hpp"
+
+using mpfr::mpreal;
+using mpfr::const_pi;
+
+static constexpr mpfr_prec_t BITS = 167;  // ~50 decimal digits
+
+/** Evolute radius at polar angle psi.
+ *
+ * The evolute of x²/a² + y²/b² = 1 satisfies (aX)^(2/3) + (bY)^(2/3) = (a²-b²)^(2/3).
+ * For a ray at angle psi, X = rho*|cos(psi)|, Y = rho*|sin(psi)|, so:
+ *
+ *   rho_evo(psi) = (a²-b²) / [(a|cos(psi)|)^(2/3) + (b|sin(psi)|)^(2/3)]^(3/2)
+ *
+ * @param psi  Polar angle in radians (0, pi/2).
+ * @return     Evolute radius at psi (same units as a).
+ */
+static mpreal evolute_rho(const mpreal& psi) {
+	const mpreal a  = mp_a();
+	const mpreal b  = mp_b();
+	const mpreal ac = mpfr::abs(a * mpfr::cos(psi));
+	const mpreal bs = mpfr::abs(b * mpfr::sin(psi));
+	const mpreal sum = mpfr::cbrt(ac * ac) + mpfr::cbrt(bs * bs);
+	return (a * a - b * b) / (sum * mpfr::sqrt(sum));
+}
+
+// ---------------------------------------------------------------------------
+// main
+// ---------------------------------------------------------------------------
+int main() {
+	set_precision_bits(BITS);
+
+	const int PSI_STEPS = 17;   // psi = 5°, 10°, ..., 85°
+	const int RHO_STEPS = 25;   // rho = 1/25 * rho_max, ..., rho_max
+	const int MAX_ORDER = 12;   // N = K = 1 .. MAX_ORDER
+
+	const mpreal a     = mp_a();
+	const mpreal b_a_v = mp_b() / a;
+	const mpreal ae2   = a * mp_e2();
+	const mpreal pi    = const_pi();
+
+	const mpreal rho_max = mpreal("1.2") * a;  // extends beyond the evolute to show divergence
+
+	const std::string fname = std::string(TEST_DATA_DIR) + "/sweep_evo.csv";
+	std::ofstream out(fname);
+	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
+
+	for (int i = 1; i <= PSI_STEPS; ++i) {
+		const int    psi_deg_int = 5 * i;
+		const mpreal psi_deg     = mpreal(psi_deg_int);
+		const mpreal psi         = psi_deg / mpreal(180) * pi;
+		const mpreal abs_sin_psi = mpfr::abs(mpfr::sin(psi));
+		const mpreal abs_cos_psi = mpfr::abs(mpfr::cos(psi));
+		const mpreal sgn         = mpreal(1);  // psi in (0°, 90°) so sin(psi) > 0
+
+		const mpreal rho_evo = evolute_rho(psi);
+
+		std::cerr << "psi = " << psi_deg_int << "°  rho_evo = " << rho_evo << "\n";
+
+		for (int j = 1; j <= RHO_STEPS; ++j) {
+			const mpreal rho = rho_max * mpreal(j) / mpreal(RHO_STEPS);
+
+			// True solution via Vermeille closed form.
+			const mpreal x = rho * mpfr::cos(psi);
+			const mpreal y = rho * mpfr::sin(psi);
+			auto [true_phi, true_h] = mp_cartesian_to_ellipse(x, y);
+
+			// Shared series inputs.
+			const mpreal rho_ae2_v = rho / ae2;
+
+			for (int N = 1; N <= MAX_ORDER; ++N) {
+				// phi via phi_evo_sin_pow_dense:
+				//   series = (phi - sgn*pi/2) / (sgn*|cos(psi)|)
+				//   phi    = sgn*pi/2 + sgn*|cos(psi)| * series
+				const mpreal phi_series = phi_evo_sin_pow_dense<mpreal>(
+						N, N, abs_sin_psi, rho_ae2_v, b_a_v);
+				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_series;
+				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
+
+				// h via h_a_evo_dense:
+				//   series = h/a  →  h = series * a
+				const mpreal h_series = h_a_evo_dense<mpreal>(
+						N, N, abs_sin_psi, rho_ae2_v, b_a_v);
+				const mpreal h_approx = h_series * a;
+				const mpreal h_err    = mpfr::abs(h_approx - true_h);
+
+				out << psi_deg_int           << ","
+					<< rho.toString(10)      << ","
+					<< rho_evo.toString(10)  << ","
+					<< N                     << ","
+					<< phi_err.toString(10)  << ","
+					<< h_err.toString(10)    << "\n";
+			}
+		}
+	}
+
+	std::cout << "Written " << fname << "\n";
+	return 0;
+}
