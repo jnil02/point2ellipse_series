@@ -5,6 +5,9 @@ Two subplots for a chosen psi angle:
   Left:  |phi error| vs rho  for several truncation orders N
   Right: |phi error| vs N    for several rho values (inside and outside evolute)
 
+A separate polar heat map shows the decay rate (slope of log10|phi_err| vs N)
+across the full (psi, rho) grid, with the evolute boundary overlaid.
+
 The evolute boundary rho_evo is marked on both plots.
 
 Usage:
@@ -14,6 +17,7 @@ Usage:
 import csv
 import math
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo.csv")
@@ -113,4 +117,58 @@ ax2.grid(True, which="both", alpha=0.3)
 plt.tight_layout()
 plt.savefig(OUT_PATH, dpi=150)
 print(f"Saved {OUT_PATH}")
+
+# ---------------------------------------------------------------------------
+# Polar heat map: decay rate across the full (psi, rho) grid.
+# For each cell, fit log10(phi_err) vs N; the slope is the decay rate.
+# Negative slope = converging, positive = diverging.
+# ---------------------------------------------------------------------------
+psi_degs_all = sorted(data.keys())
+Ns_heat      = sorted(data[psi_degs_all[0]].keys())
+rhos_heat    = [t[0] for t in data[psi_degs_all[0]][Ns_heat[0]]]
+
+rate = np.full((len(psi_degs_all), len(rhos_heat)), np.nan)
+
+for i, psi in enumerate(psi_degs_all):
+    Ns_psi = sorted(data[psi].keys())
+    for j, rho_val in enumerate(rhos_heat):
+        log_errs, ns_used = [], []
+        for N in Ns_psi:
+            row = min(data[psi][N], key=lambda t: abs(t[0] - rho_val))
+            e = row[2]
+            if e > 1e-50:
+                log_errs.append(math.log10(e))
+                ns_used.append(float(N))
+        if len(log_errs) >= 2:
+            rate[i, j] = np.polyfit(ns_used, log_errs, 1)[0]
+
+# Polar grid edges for pcolormesh (one longer than data in each dimension).
+def _edges(a):
+    d = np.diff(a)
+    return np.r_[a[0] - d[0] / 2, a[:-1] + d / 2, a[-1] + d[-1] / 2]
+
+thetas   = np.radians(psi_degs_all)
+rhos_arr = np.array(rhos_heat)
+# meshgrid(thetas, rhos): theta varies along rows (axis 0), rho along columns (axis 1)
+T, R     = np.meshgrid(_edges(thetas), _edges(rhos_arr), indexing='ij')  # (n_psi+1, n_rho+1)
+
+fig_polar, ax_polar = plt.subplots(subplot_kw={"projection": "polar"}, figsize=(7, 6))
+fig_polar.suptitle("Phi-error decay rate  (d log₁₀|err| / dN)\n"
+                   "blue = fast convergence,  red = divergence")
+
+vmax = np.nanmax(np.abs(rate))
+mesh = ax_polar.pcolormesh(T, R, rate, cmap="RdBu_r", vmin=-vmax, vmax=vmax,
+                           shading="flat")
+fig_polar.colorbar(mesh, ax=ax_polar, pad=0.1, label="d log₁₀|φ err| / dN")
+
+# Evolute boundary.
+evo_rhos = [data[psi][Ns_heat[0]][0][1] for psi in psi_degs_all]
+ax_polar.plot(thetas, evo_rhos, "k--", linewidth=1.5, label="evolute")
+ax_polar.legend(loc="upper left", bbox_to_anchor=(1.15, 1.05))
+
+OUT_PATH_POLAR = os.path.join(os.path.dirname(__file__), "..", "test_data",
+                               "sweep_evo_polar.png")
+fig_polar.savefig(OUT_PATH_POLAR, dpi=150, bbox_inches="tight")
+print(f"Saved {OUT_PATH_POLAR}")
+
 plt.show()
