@@ -23,9 +23,11 @@ import matplotlib.pyplot as plt
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo_m.csv")
 OUT_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo_m.png")
 
-PSI_PLOT  = 45  # which psi angle (degrees) to inspect
-N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)
-RHO_COUNT = 5   # how many rho curves in the right plot (evenly spaced from data)
+PSI_PLOT  = 45   # which psi angle (degrees) to inspect
+N_COUNT   = 6    # how many N curves in the left plot  (evenly spaced from data)
+RHO_COUNT = 5    # how many rho curves in the right plot (evenly spaced from data)
+ELLIPSE_A = 1.0  # semi-major axis — must match the CSV
+ELLIPSE_B = 0.5  # semi-minor axis — must match the CSV
 
 # ---------------------------------------------------------------------------
 # Load CSV into a nested dict: data[psi_deg][N] = list of (rho, rho_evo, phi_err, h_err)
@@ -128,6 +130,7 @@ psi_degs_all = sorted(data.keys())
 Ns_heat      = sorted(data[psi_degs_all[0]].keys())
 rhos_heat    = [t[0] for t in data[psi_degs_all[0]][Ns_heat[0]]]
 
+TAIL = 5   # number of high-N points used for slope estimate; tail better captures asymptotic rate
 rate = np.full((len(psi_degs_all), len(rhos_heat)), np.nan)
 
 for i, psi in enumerate(psi_degs_all):
@@ -141,30 +144,45 @@ for i, psi in enumerate(psi_degs_all):
                 log_errs.append(math.log10(e))
                 ns_used.append(float(N))
         if len(log_errs) >= 2:
-            rate[i, j] = np.polyfit(ns_used, log_errs, 1)[0]
+            rate[i, j] = np.polyfit(ns_used[-TAIL:], log_errs[-TAIL:], 1)[0]
 
-# Polar grid edges for pcolormesh (one longer than data in each dimension).
 def _edges(a):
+    """Cell edges: first clamped to a[0] (no negative wrap), last extended by half step (full-width final cell)."""
     d = np.diff(a)
-    return np.r_[a[0] - d[0] / 2, a[:-1] + d / 2, a[-1] + d[-1] / 2]
+    mid = (a[:-1] + a[1:]) / 2
+    return np.r_[a[0], mid, a[-1] + d[-1] / 2]
 
-thetas   = np.radians(psi_degs_all)
+thetas   = np.radians(np.array(psi_degs_all))
 rhos_arr = np.array(rhos_heat)
-# meshgrid(thetas, rhos): theta varies along rows (axis 0), rho along columns (axis 1)
-T, R     = np.meshgrid(_edges(thetas), _edges(rhos_arr), indexing='ij')  # (n_psi+1, n_rho+1)
 
 fig_polar, ax_polar = plt.subplots(subplot_kw={"projection": "polar"}, figsize=(7, 6))
 fig_polar.suptitle("Phi-error decay rate  (d log₁₀|err| / dN)\n"
                    "blue = fast convergence,  red = divergence")
 
 vmax = np.nanmax(np.abs(rate))
-mesh = ax_polar.pcolormesh(T, R, rate, cmap="RdBu_r", vmin=-vmax, vmax=vmax,
-                           shading="flat")
+# shading='flat' with clamped edges: cells span exactly [0°, 90°] with no overshoot.
+mesh = ax_polar.pcolormesh(
+    _edges(thetas), _edges(rhos_arr), rate.T,
+    cmap="RdBu_r", vmin=-vmax, vmax=vmax, shading="flat"
+)
 fig_polar.colorbar(mesh, ax=ax_polar, pad=0.1, label="d log₁₀|φ err| / dN")
+
+T, R = np.meshgrid(thetas, rhos_arr)
+ax_polar.contour(T, R, rate.T, levels=15, colors="k", linewidths=0.4, alpha=0.5)
+# Add labeling for zero-contour.
+cs0 = ax_polar.contour(T, R, rate.T, levels=[0], colors="k", linewidths=0.4)
+ax_polar.clabel(cs0, fmt="0", fontsize=8)
+
 
 # Evolute boundary.
 evo_rhos = [data[psi][Ns_heat[0]][0][1] for psi in psi_degs_all]
 ax_polar.plot(thetas, evo_rhos, "k--", linewidth=1.5, label="evolute")
+
+# ae circle: second ROC bound, binding for psi where rho_evo > ae.
+psi_all_rad = np.linspace(0, np.pi / 2, 200)
+ae_val      = ELLIPSE_A * math.sqrt(1 - (ELLIPSE_B / ELLIPSE_A) ** 2)
+ax_polar.plot(psi_all_rad, np.full_like(psi_all_rad, ae_val),
+              "b--", linewidth=1.5, label=f"ae = {ae_val:.3f}")
 ax_polar.legend(loc="upper left", bbox_to_anchor=(1.15, 1.05))
 
 OUT_PATH_POLAR = os.path.join(os.path.dirname(__file__), "..", "test_data",

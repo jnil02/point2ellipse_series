@@ -21,6 +21,7 @@
  *   h_err     – |h_approx   - h_true|   [same units as a]
  */
 
+#include <ctime>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -59,9 +60,12 @@ static mpreal evolute_rho(const mpreal& psi) {
 int main() {
 	set_precision_bits(BITS);
 
-	const int PSI_STEPS = 18;   // PSI_STEPS evenly spaced psi from 0 to 90.
-	const int RHO_STEPS = 25;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
-	const int MAX_ORDER = 20;   // N = K = 1 .. MAX_ORDER
+	time_t tstart, tend;
+	tstart = time(nullptr);
+
+	const int PSI_STEPS = 100;   // PSI_STEPS evenly spaced psi from 0 to 90.
+	const int RHO_STEPS = 100;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
+	const int MAX_ORDER = 22;   // N = K = 1 .. MAX_ORDER  20 tog 75s, 21 tog 271s, 22 tog 395s
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;
@@ -126,5 +130,8 @@ int main() {
 	}
 
 	std::cout << "Written " << fname << "\n";
+
+	tend = time(nullptr);
+	std::cout << "Sweep took "<< difftime(tend, tstart) <<" second(s)."<< std::endl;
 	return 0;
 }
