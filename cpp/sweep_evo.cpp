@@ -59,8 +59,8 @@ static mpreal evolute_rho(const mpreal& psi) {
 int main() {
 	set_precision_bits(BITS);
 
-	const int PSI_STEPS = 17;   // psi = 5°, 10°, ..., 85°
-	const int RHO_STEPS = 25;   // rho = 1/25 * rho_max, ..., rho_max
+	const int PSI_STEPS = 18;   // PSI_STEPS evenly spaced psi from 0 to 90.
+	const int RHO_STEPS = 25;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
 	const int MAX_ORDER = 20;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
@@ -69,28 +69,25 @@ int main() {
 	const mpreal pi    = const_pi();
 
 	const mpreal rho_max = mpreal("1.2") * a;  // extends beyond the evolute to show divergence
+	const mpreal rho_min = mpreal("0.01") * a;
 
 	const std::string fname = std::string(TEST_DATA_DIR) + "/sweep_evo_m.csv";
 	std::ofstream out(fname);
 	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
 
-	for (int i = 1; i <= PSI_STEPS; ++i) {
-		const int    psi_deg_int = 5 * i;
-		const mpreal psi_deg     = mpreal(psi_deg_int);
-//	for (int i = 0; i <= PSI_STEPS; ++i) {
-//		const mpreal psi_deg     = pi * mpreal(i) / (mpreal(PSI_STEPS) * 2);
-		const mpreal psi         = psi_deg / mpreal(180) * pi;
+	for (int i = 0; i < PSI_STEPS; ++i) {
+		const mpreal psi_deg = mpreal(90) * mpreal(i) / mpreal(PSI_STEPS-1);
+		const mpreal psi     = psi_deg / mpreal(180) * pi;
 		const mpreal abs_sin_psi = mpfr::abs(mpfr::sin(psi));
 		const mpreal abs_cos_psi = mpfr::abs(mpfr::cos(psi));
 		const mpreal sgn         = mpreal(1);  // psi in (0°, 90°) so sin(psi) > 0
 
 		const mpreal rho_evo = evolute_rho(psi);
 
-		std::cerr << "psi = " << psi_deg_int << "°  rho_evo = " << rho_evo << "\n";
-//		std::cerr << "psi = " << psi_deg.toString(3) << "°  rho_evo = " << rho_evo << "\n";
+		std::cerr << "psi = " << psi_deg.toString(4) << "°  rho_evo = " << rho_evo << "\n";
 
-		for (int j = 1; j <= RHO_STEPS; ++j) {
-			const mpreal rho = rho_max * mpreal(j) / mpreal(RHO_STEPS);
+		for (int j = 0; j < RHO_STEPS; ++j) {
+			const mpreal rho = rho_min + (rho_max - rho_min) * mpreal(j) / mpreal(RHO_STEPS-1);
 
 			// True solution via Vermeille closed form.
 			const mpreal x = rho * mpfr::cos(psi);
@@ -118,8 +115,7 @@ int main() {
 				const mpreal h_approx = h_series * a;
 				const mpreal h_err    = mpfr::abs(h_approx - true_h);
 
-				out << psi_deg_int  << ","
-//				out << psi_deg.toString(10)  << ","
+				out << psi_deg.toString(10)  << ","
 					<< rho.toString(10)      << ","
 					<< rho_evo.toString(10)  << ","
 					<< N                     << ","

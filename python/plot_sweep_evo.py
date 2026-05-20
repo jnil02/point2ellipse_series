@@ -35,7 +35,7 @@ data = {}   # data[psi_deg][N] -> list of (rho, rho_evo, phi_err, h_err)
 with open(CSV_PATH, newline="") as f:
     reader = csv.DictReader(f)
     for row in reader:
-        psi  = int(row["psi_deg"])
+        psi  = float(row["psi_deg"])
         N    = int(row["N"])
         rho      = float(row["rho"])
         rho_evo  = float(row["rho_evo"])
@@ -51,11 +51,12 @@ for psi in data:
 # ---------------------------------------------------------------------------
 # Extract data for the chosen psi.
 # ---------------------------------------------------------------------------
-if PSI_PLOT not in data:
-    raise ValueError(f"psi={PSI_PLOT}° not found in {CSV_PATH}. "
+psi_plot_actual = min(data.keys(), key=lambda p: abs(p - PSI_PLOT))
+if abs(psi_plot_actual - PSI_PLOT) > 5:
+    raise ValueError(f"No psi near {PSI_PLOT}° in {CSV_PATH}. "
                      f"Available: {sorted(data.keys())}")
 
-psi_data = data[PSI_PLOT]
+psi_data = data[psi_plot_actual]
 N_max    = max(psi_data.keys())
 
 # rho_evo is the same for all N at a given psi — take it from N=1.
@@ -81,7 +82,7 @@ rho_pick = _pick(rhos_all, RHO_COUNT)
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 fig.suptitle(
     f"Inside-evolute series convergence  "
-    f"(a=1, b/a=0.5,  ψ={PSI_PLOT}°,  ρ_evo={rho_evo:.4f})"
+    f"(a=1, b/a=0.5,  ψ={psi_plot_actual:.4g}°,  ρ_evo={rho_evo:.4f})"
 )
 
 # --- Left: phi_err vs rho for selected N ---
