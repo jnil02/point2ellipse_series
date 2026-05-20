@@ -65,18 +65,19 @@ int main() {
 
 	const int PSI_STEPS = 100;   // PSI_STEPS evenly spaced psi from 0 to 90.
 	const int RHO_STEPS = 100;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
-	const int MAX_ORDER = 22;   // N = K = 1 .. MAX_ORDER  20 tog 75s, 21 tog 271s, 22 tog 395s
+	const int MAX_ORDER = 21;   // N = K = 1 .. MAX_ORDER  20 tog 75s, 21 tog 271s, 22 tog 395s
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;
 	const mpreal ae2   = a * mp_e2();
 	const mpreal pi    = const_pi();
 
-	const mpreal rho_max = mpreal("1.2") * a;  // extends beyond the evolute to show divergence
+	const mpreal rho_max = mpreal("1.5") * a;  // extends beyond the evolute to show divergence
 	const mpreal rho_min = mpreal("0.01") * a;
 
 	const std::string fname = std::string(TEST_DATA_DIR) + "/sweep_evo_m.csv";
 	std::ofstream out(fname);
+	out << "# a=" << a.toString(15) << " b=" << mp_b().toString(15) << "\n";
 	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
 
 	for (int i = 0; i < PSI_STEPS; ++i) {

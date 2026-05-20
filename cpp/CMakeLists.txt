@@ -54,7 +54,7 @@ install(FILES
 add_subdirectory(tests)
 
 # Convergence sweep binary for the inside-evolute series.
-# Default ellipse: unit ellipse a=1, b=0.5 (large evolute, good for convergence studies).
+# Default ellipse: unit ellipse a=1, b=0.25 (ae bound becomes binding at ~62°, good for ROC studies).
 # Override by redefining ELLIPSE_A + ELLIPSE_B (or ELLIPSE_INV_F) below.
 add_executable(sweep_evo
         sweep_evo.cpp
@@ -78,6 +78,6 @@ target_link_libraries(sweep_evo
 target_compile_definitions(sweep_evo
         PRIVATE
         ELLIPSE_A="1.0"
-        ELLIPSE_B="0.5"
+        ELLIPSE_B="0.25"
         TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
         )

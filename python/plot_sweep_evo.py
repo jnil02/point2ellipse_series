@@ -15,35 +15,44 @@ Usage:
 """
 
 import csv
+import io
 import math
 import os
+import re
 import numpy as np
 import matplotlib.pyplot as plt
 
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo_m.csv")
 OUT_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo_m.png")
 
-PSI_PLOT  = 45   # which psi angle (degrees) to inspect
-N_COUNT   = 6    # how many N curves in the left plot  (evenly spaced from data)
-RHO_COUNT = 5    # how many rho curves in the right plot (evenly spaced from data)
-ELLIPSE_A = 1.0  # semi-major axis — must match the CSV
-ELLIPSE_B = 0.5  # semi-minor axis — must match the CSV
+PSI_PLOT  = 45  # which psi angle (degrees) to inspect
+N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)
+RHO_COUNT = 5   # how many rho curves in the right plot (evenly spaced from data)
 
 # ---------------------------------------------------------------------------
-# Load CSV into a nested dict: data[psi_deg][N] = list of (rho, rho_evo, phi_err, h_err)
+# Load CSV — first line is "# a=... b=..." metadata written by sweep_evo.cpp
 # ---------------------------------------------------------------------------
+with open(CSV_PATH, newline="") as f:
+    raw = f.read()
+
+meta_match = re.search(r"#\s*a=([\d.eE+\-]+)\s+b=([\d.eE+\-]+)", raw)
+if not meta_match:
+    raise ValueError(f"No '# a=... b=...' metadata line found in {CSV_PATH}")
+ELLIPSE_A = float(meta_match.group(1))
+ELLIPSE_B = float(meta_match.group(2))
+
 data = {}   # data[psi_deg][N] -> list of (rho, rho_evo, phi_err, h_err)
 
-with open(CSV_PATH, newline="") as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        psi  = float(row["psi_deg"])
-        N    = int(row["N"])
-        rho      = float(row["rho"])
-        rho_evo  = float(row["rho_evo"])
-        phi_err  = float(row["phi_err"])
-        h_err    = float(row["h_err"])
-        data.setdefault(psi, {}).setdefault(N, []).append((rho, rho_evo, phi_err, h_err))
+csv_lines = (l for l in raw.splitlines(keepends=True) if not l.startswith("#"))
+reader = csv.DictReader(io.StringIO("".join(csv_lines)))
+for row in reader:
+    psi  = float(row["psi_deg"])
+    N    = int(row["N"])
+    rho      = float(row["rho"])
+    rho_evo  = float(row["rho_evo"])
+    phi_err  = float(row["phi_err"])
+    h_err    = float(row["h_err"])
+    data.setdefault(psi, {}).setdefault(N, []).append((rho, rho_evo, phi_err, h_err))
 
 # Sort each list by rho.
 for psi in data:
@@ -84,7 +93,7 @@ rho_pick = _pick(rhos_all, RHO_COUNT)
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
 fig.suptitle(
     f"Inside-evolute series convergence  "
-    f"(a=1, b/a=0.5,  ψ={psi_plot_actual:.4g}°,  ρ_evo={rho_evo:.4f})"
+    f"(a={ELLIPSE_A}, b/a={ELLIPSE_B/ELLIPSE_A:.4g},  ψ={psi_plot_actual:.4g}°,  ρ_evo={rho_evo:.4f})"
 )
 
 # --- Left: phi_err vs rho for selected N ---
@@ -173,14 +182,13 @@ ax_polar.contour(T, R, rate.T, levels=15, colors="k", linewidths=0.4, alpha=0.5)
 cs0 = ax_polar.contour(T, R, rate.T, levels=[0], colors="k", linewidths=0.4)
 ax_polar.clabel(cs0, fmt="0", fontsize=8)
 
-
 # Evolute boundary.
 evo_rhos = [data[psi][Ns_heat[0]][0][1] for psi in psi_degs_all]
 ax_polar.plot(thetas, evo_rhos, "k--", linewidth=1.5, label="evolute")
 
-# ae circle: second ROC bound, binding for psi where rho_evo > ae.
-psi_all_rad = np.linspace(0, np.pi / 2, 200)
+# ae circle: second ROC bound for phi, binding where rho_evo > ae.
 ae_val      = ELLIPSE_A * math.sqrt(1 - (ELLIPSE_B / ELLIPSE_A) ** 2)
+psi_all_rad = np.linspace(0, np.pi / 2, 200)
 ax_polar.plot(psi_all_rad, np.full_like(psi_all_rad, ae_val),
               "b--", linewidth=1.5, label=f"ae = {ae_val:.3f}")
 ax_polar.legend(loc="upper left", bbox_to_anchor=(1.15, 1.05))
