@@ -102,6 +102,12 @@ TEST_CASE_METHOD(RefEvo, "(phi-sgn*pi/2)/(sgn*|cos(psi)|) evo_dense", "[series_e
 	assert_close("(phi-sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense", expected, result, TOL);
 }
 
+TEST_CASE_METHOD(RefEvo, "(phi-sgn*pi/2)/(sgn*|cos(psi)|) evo_dense_m", "[series_evo]") {
+	const mpreal expected = (phi - sgn * mpfr::const_pi() / 2) / (sgn * abs_cos_psi);
+	const mpreal result   = ev(phi_evo_sin_pow_dense_m(MAX_ORD), subs);
+	assert_close("(phi-sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense_m", expected, result, TOL);
+}
+
 // ---------------------------------------------------------------------------
 // (sin(phi) - sgn) / sgn
 // ---------------------------------------------------------------------------

@@ -237,6 +237,29 @@ def phi_evo_sin_pow_dense(N, K):
     return d
 
 
+def phi_evo_sin_pow_dense_m(M):
+    """Series for (phi - pi/2) / cos(psi), organised by total rho_ae2 power m.
+
+    All terms with rho_ae2^m for m = 1 … M are included exactly.
+    For each m, both k and l run from 0 to floor((m-1)/2) — the same
+    finite upper bound — and n = m-1-2k is derived, not a free index.
+
+    :param M: maximum rho_ae2 power (the single truncation parameter).
+    :return: symbolic series.
+    """
+    d = sp.S.Zero
+    for m in range(1, M + 1):
+        K = (m - 1) // 2
+        for k in range(0, K + 1):
+            n = m - 1 - 2 * k
+            for l in range(0, K + 1):
+                d += (sin_psi ** n
+                      * rho_ae2 ** m
+                      * b_a ** (n % 2 + 1 + 2 * l)
+                      * d_phi_evo(n, k, l))
+    return d
+
+
 def phi_evo_sin_pow(N, K):
     """Series for phi - pi/2 in sin-powers for small rho with simple sums
 

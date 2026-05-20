@@ -70,13 +70,15 @@ int main() {
 
 	const mpreal rho_max = mpreal("1.2") * a;  // extends beyond the evolute to show divergence
 
-	const std::string fname = std::string(TEST_DATA_DIR) + "/sweep_evo.csv";
+	const std::string fname = std::string(TEST_DATA_DIR) + "/sweep_evo_m.csv";
 	std::ofstream out(fname);
 	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
 
 	for (int i = 1; i <= PSI_STEPS; ++i) {
 		const int    psi_deg_int = 5 * i;
 		const mpreal psi_deg     = mpreal(psi_deg_int);
+//	for (int i = 0; i <= PSI_STEPS; ++i) {
+//		const mpreal psi_deg     = pi * mpreal(i) / (mpreal(PSI_STEPS) * 2);
 		const mpreal psi         = psi_deg / mpreal(180) * pi;
 		const mpreal abs_sin_psi = mpfr::abs(mpfr::sin(psi));
 		const mpreal abs_cos_psi = mpfr::abs(mpfr::cos(psi));
@@ -85,6 +87,7 @@ int main() {
 		const mpreal rho_evo = evolute_rho(psi);
 
 		std::cerr << "psi = " << psi_deg_int << "°  rho_evo = " << rho_evo << "\n";
+//		std::cerr << "psi = " << psi_deg.toString(3) << "°  rho_evo = " << rho_evo << "\n";
 
 		for (int j = 1; j <= RHO_STEPS; ++j) {
 			const mpreal rho = rho_max * mpreal(j) / mpreal(RHO_STEPS);
@@ -101,8 +104,10 @@ int main() {
 				// phi via phi_evo_sin_pow_dense:
 				//   series = (phi - sgn*pi/2) / (sgn*|cos(psi)|)
 				//   phi    = sgn*pi/2 + sgn*|cos(psi)| * series
-				const mpreal phi_series = phi_evo_sin_pow_dense<mpreal>(
-						N, N, abs_sin_psi, rho_ae2_v, b_a_v);
+//				const mpreal phi_series = phi_evo_sin_pow_dense<mpreal>(
+//						N, N, abs_sin_psi, rho_ae2_v, b_a_v);
+				const mpreal phi_series = phi_evo_sin_pow_dense_m<mpreal>(
+						N, abs_sin_psi, rho_ae2_v, b_a_v);
 				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_series;
 				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
 
@@ -113,7 +118,8 @@ int main() {
 				const mpreal h_approx = h_series * a;
 				const mpreal h_err    = mpfr::abs(h_approx - true_h);
 
-				out << psi_deg_int           << ","
+				out << psi_deg_int  << ","
+//				out << psi_deg.toString(10)  << ","
 					<< rho.toString(10)      << ","
 					<< rho_evo.toString(10)  << ","
 					<< N                     << ","
