@@ -107,3 +107,29 @@ target_compile_definitions(bench_coefficients
         ELLIPSE_A="1.0"
         ELLIPSE_B="0.25"
         )
+
+# Inside-evolute series evaluation benchmarks (mpreal numeric path).
+add_executable(bench_series_evo
+        benchmarks/bench_series_evo.cpp
+        coefficients.cpp
+        coefficients_evo.cpp
+        series.cpp
+        )
+
+target_include_directories(bench_series_evo
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
+target_link_libraries(bench_series_evo
+        PRIVATE
+        symengine
+        mpfr
+        gmp
+        )
+
+target_compile_definitions(bench_series_evo
+        PRIVATE
+        ELLIPSE_A="1.0"
+        ELLIPSE_B="0.25"
+        )

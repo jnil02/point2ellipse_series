@@ -1,47 +1,75 @@
 #!/usr/bin/env bash
-# Run cold-call benchmarks for key coefficient functions at increasing orders.
+# Run cold-call benchmarks for coefficient functions and series evaluation.
 # Output is tab-separated: function  args...  wall_ms
 #
 # Usage:
-#   ./run_benchmarks.sh [path/to/bench_coefficients]
+#   ./run_benchmarks.sh [build_dir]
 #
-# If no path is given, looks for the binary next to this script's build
-# output (../build/bench_coefficients relative to this script).
+# If no build_dir is given, defaults to ../build relative to this script.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BENCH="${1:-"$SCRIPT_DIR/../build/bench_coefficients"}"
+BUILD="${1:-"$SCRIPT_DIR/../build"}"
+BENCH_COEFF="$BUILD/bench_coefficients"
+BENCH_SERIES="$BUILD/bench_series_evo"
 
-if [[ ! -x "$BENCH" ]]; then
-    echo "bench_coefficients binary not found at: $BENCH" >&2
-    echo "Build it first: cd cpp/build && make bench_coefficients" >&2
-    exit 1
-fi
+for bin in "$BENCH_COEFF" "$BENCH_SERIES"; do
+    if [[ ! -x "$bin" ]]; then
+        echo "Binary not found: $bin" >&2
+        echo "Build with: cd cpp/build && make bench_coefficients bench_series_evo" >&2
+        exit 1
+    fi
+done
 
+# Representative point: ellipse with b/a=0.97 (~WGS-84 flattening), moderate rho.
+SIN_PSI=0.5
+RHO_AE2=0.3
+B_A=0.97
+
+echo "=== Coefficient benchmarks (cold, one call per process) ==="
 echo -e "function\targs\twall_ms"
-echo -e "--------\t----\t-------"
 
-# a_mr(m, r) — moderate growth, good warm-up
+echo "--- a_mr ---"
 for m in 2 4 6 8 10; do
-    r=$((m / 2))
-    "$BENCH" a_mr $m $r
+    "$BENCH_COEFF" a_mr $m $((m/2))
 done
 
-echo ""
-
-# d_phi_evo(n, k, l) — shallowest coefficient.
+echo "--- d_phi_evo ---"
 for n in 2 4 6 8 10; do
-    k=$n
-    l=$n
-    "$BENCH" d_phi_evo $n $k $l
+    "$BENCH_COEFF" d_phi_evo $n $n $n
+done
+
+echo "--- d_h_evo ---"
+for n in 2 4 6 8; do
+    "$BENCH_COEFF" d_h_evo $n $n $n
 done
 
 echo ""
+echo "=== Series evaluation benchmarks (mpreal, includes warm coefficient cache) ==="
+echo -e "series\tN\tK\twall_ms"
 
-# d_h_evo(n, k, l) — deepest coefficient.
-for n in 2 4 6 8; do
-    k=$n
-    l=$n
-    "$BENCH" d_h_evo $n $n $n
+echo "--- phi_evo_dense_m (the sweep series) ---"
+for M in 2 4 6 8 10 12 14; do
+    "$BENCH_SERIES" phi_evo_dense_m $M $M $SIN_PSI $RHO_AE2 $B_A
+done
+
+echo "--- phi_evo_dense ---"
+for N in 2 4 6 8 10; do
+    "$BENCH_SERIES" phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
+done
+
+echo "--- sin_phi_evo_dense ---"
+for N in 2 4 6 8 10; do
+    "$BENCH_SERIES" sin_phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
+done
+
+echo "--- cos_phi_evo_dense ---"
+for N in 2 4 6 8 10; do
+    "$BENCH_SERIES" cos_phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
+done
+
+echo "--- h_a_evo_dense ---"
+for N in 2 4 6 8 10; do
+    "$BENCH_SERIES" h_a_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
 done
