@@ -23,7 +23,7 @@ rc C_mt(int m, int t);
 rc R(int n, int k, int l, int i);
 rc B_p(int n, int k, int p);
 rc cp_evo_nkl(int n, int k, int l);
-rc ch_evo(int n, int k, int l);
-rc dh_evo(int n, int k, int l);
+rc c_h_evo(int n, int k, int l);
+rc d_h_evo(int n, int k, int l);
 
 }  // namespace point_to_ellipse_series

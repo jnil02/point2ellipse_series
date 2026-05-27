@@ -28,7 +28,7 @@ using point_to_ellipse_series::C_mt;
 using point_to_ellipse_series::R;
 using point_to_ellipse_series::B_p;
 using point_to_ellipse_series::cp_evo_nkl;
-using point_to_ellipse_series::ch_evo;
+using point_to_ellipse_series::c_h_evo;
 
 // ---------------------------------------------------------------------------
 // CSV helpers
@@ -275,7 +275,7 @@ TEST_CASE("cp_evo_nkl Python reference", "[coefficients][evo]") {
 	check_against_csv_3(csv_path, cp_evo_nkl);
 }
 
-TEST_CASE("ch_evo Python reference", "[coefficients][evo]") {
-	const std::string csv_path = std::string(TEST_DATA_DIR) + "/ch_evo.csv";
-	check_against_csv_3(csv_path, ch_evo);
+TEST_CASE("c_h_evo Python reference", "[coefficients][evo]") {
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/c_h_evo.csv";
+	check_against_csv_3(csv_path, c_h_evo);
 }

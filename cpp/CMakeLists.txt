@@ -81,3 +81,29 @@ target_compile_definitions(sweep_evo
         ELLIPSE_B="0.25"
         TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
         )
+
+# Coefficient micro-benchmarks.
+add_executable(bench_coefficients
+        benchmarks/bench_coefficients.cpp
+        coefficients.cpp
+        coefficients_evo.cpp
+        series.cpp
+        )
+
+target_include_directories(bench_coefficients
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
+target_link_libraries(bench_coefficients
+        PRIVATE
+        symengine
+        mpfr
+        gmp
+        )
+
+target_compile_definitions(bench_coefficients
+        PRIVATE
+        ELLIPSE_A="1.0"
+        ELLIPSE_B="0.25"
+        )

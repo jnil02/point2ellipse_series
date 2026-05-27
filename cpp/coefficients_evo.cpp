@@ -392,7 +392,7 @@ rc cp_evo_nkl(int n, int k, int l) {
 	return ret;
 }
 
-rc ch_evo(int n, int k, int l) {
+rc c_h_evo(int n, int k, int l) {
 	assert(n >= 0 && k >= n && l >= 0 && l <= k + 1);
 
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
@@ -420,9 +420,9 @@ rc ch_evo(int n, int k, int l) {
 	return ret;
 }
 
-rc dh_evo(int n, int k, int l) {
+rc d_h_evo(int n, int k, int l) {
 	int sn = n % 2;
-	return ch_evo(n, 2 * k + n, 2 * l + 1 - sn);
+	return c_h_evo(n, 2 * k + n, 2 * l + 1 - sn);
 }
 
 }  // namespace point_to_ellipse_series

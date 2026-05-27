@@ -11,8 +11,8 @@ using point_to_ellipse_series::d_phi_evo;
 using point_to_ellipse_series::c_phi_evo;
 using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
-using point_to_ellipse_series::ch_evo;
-using point_to_ellipse_series::dh_evo;
+using point_to_ellipse_series::c_h_evo;
+using point_to_ellipse_series::d_h_evo;
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
  *
@@ -177,7 +177,7 @@ inline T h_a_evo(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = n; k <= K; ++k)
 			for (int l = 0; l <= k + 1; ++l)
-				s = s + series_coeff<T>(ch_evo(n, k, l))
+				s = s + series_coeff<T>(c_h_evo(n, k, l))
 						* series_pow(b_a_v, l)
 						* series_pow(rho_ae2_v, k)
 						* series_pow(sin_psi_v, n);
@@ -207,7 +207,7 @@ inline T h_a_evo_dense(int N, int K,
 		int sn = n % 2;
 		for (int k = 0; n + 2 * k <= K; ++k)
 			for (int l = 0; l <= k + (n + 1) / 2; ++l)
-				s = s + series_coeff<T>(dh_evo(n, k, l))
+				s = s + series_coeff<T>(d_h_evo(n, k, l))
 						* series_pow(b_a_v, 1 - sn + 2 * l)
 						* series_pow(rho_ae2_v, n + 2 * k)
 						* series_pow(sin_psi_v, n);
