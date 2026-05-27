@@ -113,10 +113,10 @@ static std::shared_ptr<SeriesBase> double_series_power_coeff(int n, int i) {
  * @return Expression for the finite series in e2.
  */
 static Expression a_nk_ser(int n, int k, int n_offset,
-                            const std::function<rc(int, int, int)> &d_nkl) {
+						   const std::function<mpq_class(int, int, int)> &d_nkl) {
 	Expression a_nk(0);
 	for (int l = std::max(k, n + n_offset); l <= n + k; ++l)
-		a_nk = a_nk + rc_expr(d_nkl(n, k, l)) * pow(e2, l);
+		a_nk = a_nk + mpq_to_expr(d_nkl(n, k, l)) * pow(e2, l);
 	return a_nk;
 }
 
@@ -130,12 +130,12 @@ static Expression a_nk_ser(int n, int k, int n_offset,
  * @return Expression for the finite series in e2.
  */
 static Expression a_nk_C(int n, int k,
-                          const std::function<rc(int, int, int)> &c_nkl) {
+						 const std::function<mpq_class(int, int, int)> &c_nkl) {
 	Expression a_nk(0);
 	if (k < n + 1)
 		return a_nk;
 	for (int l = 1; l <= k; ++l)
-		a_nk = a_nk + rc_expr(c_nkl(n, k, l)) * pow(e2, l);
+		a_nk = a_nk + mpq_to_expr(c_nkl(n, k, l)) * pow(e2, l);
 	return a_nk;
 }
 
@@ -149,7 +149,7 @@ static Expression a_nk_C(int n, int k,
  * @return Polynomial with substitutions applied.
  */
 static Expression a_nk_sub(const Expression &p,
-                            const std::function<Expression(int, int)> &a_nk) {
+						   const std::function<Expression(int, int)> &a_nk) {
 	Expression pTot{0};
 
 	// Loop over additive terms

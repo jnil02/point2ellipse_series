@@ -10,20 +10,20 @@
 
 namespace point_to_ellipse_series {
 
-// Convert rational coefficient rc to type T.
+// Convert rational coefficient to type T.
 template<typename T>
-T series_coeff(const rc& c);
+T series_coeff(const mpq_class& c);
 
 template<>
-inline SymEngine::Expression series_coeff<SymEngine::Expression>(const rc& c) {
-	return rc_expr(c);
+inline SymEngine::Expression series_coeff<SymEngine::Expression>(const mpq_class& c) {
+	return mpq_to_expr(c);
 }
 
 template<>
-inline mpfr::mpreal series_coeff<mpfr::mpreal>(const rc& c) {
+inline mpfr::mpreal series_coeff<mpfr::mpreal>(const mpq_class& c) {
 	mpfr::mpreal num, den;
-	mpfr_set_z(num.mpfr_ptr(), c.num.get_mpz_t(), mpfr::mpreal::get_default_rnd());
-	mpfr_set_z(den.mpfr_ptr(), c.den.get_mpz_t(), mpfr::mpreal::get_default_rnd());
+	mpfr_set_z(num.mpfr_ptr(), c.get_num().get_mpz_t(), mpfr::mpreal::get_default_rnd());
+	mpfr_set_z(den.mpfr_ptr(), c.get_den().get_mpz_t(), mpfr::mpreal::get_default_rnd());
 	return num / den;
 }
 

@@ -36,12 +36,12 @@ using SymEngine::factorial;
  */
 inline Expression
 sin_pow_to_cos_mul(int n, int k, int l, int n_min, int k_pp,
-				   const std::function<rc(int, int, int)> &d_nkl) {
+				   const std::function<mpq_class(int, int, int)> &d_nkl) {
 	assert(n >= 0 && k >= 0 && l >= 0);
 
 	Expression c_nkl(0);
 	for (int i = std::max({n, n_min, l - k - k_pp}); i <= l; ++i)
-		c_nkl = c_nkl + rc_expr(d_nkl(i, k, l)) * rational(1, 1L << (2 * i))
+		c_nkl = c_nkl + mpq_to_expr(d_nkl(i, k, l)) * rational(1, 1L << (2 * i))
 						* binomial(Integer(2 * i), (unsigned long) (i - n));
 	// Common factor 2*(-1)^n / (n == 0 ? 2 : 1)
 	c_nkl = c_nkl * ((1 + !!n) * powm1(n));

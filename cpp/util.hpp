@@ -13,12 +13,10 @@
 namespace point_to_ellipse_series {
 
 using SymEngine::Expression;
-using SymEngine::rational;
 using SymEngine::Symbol;
 using SymEngine::Add;
 using SymEngine::Basic;
 using SymEngine::RCP;
-using SymEngine::factorial;
 using SymEngine::Mul;
 using SymEngine::Pow;
 using SymEngine::Integer;
@@ -32,25 +30,26 @@ inline mpz_class se_integer_to_mpz(const Integer& i) {
 
 inline std::string mpz_to_str(const mpz_class& x) { return x.get_str(10); }
 
-inline static Expression rc_expr(const rc &d)
+inline static Expression mpq_to_expr(const mpq_class& d)
 {
-	SymEngine::integer_class num_ic(d.num.get_mpz_t());
-	SymEngine::integer_class den_ic(d.den.get_mpz_t());
-	SymEngine::rational_class q(num_ic, den_ic);
+	SymEngine::rational_class q(d.get_mpq_t());
 	return Expression(SymEngine::Rational::from_mpq(std::move(q)));
 }
 
-inline static rc expr_rc(const Expression &d)
+inline static mpq_class expr_to_mpq(const Expression& d)
 {
 	RCP<const Basic> b = d.get_basic();
 
 	if (is_a<SymEngine::Rational>(*b)) {
 		auto r = rcp_static_cast<const SymEngine::Rational>(b);
-		return {se_integer_to_mpz(*r->get_num()), se_integer_to_mpz(*r->get_den())};
+		mpq_class q;
+		mpq_set_num(q.get_mpq_t(), se_integer_to_mpz(*r->get_num()).get_mpz_t());
+		mpq_set_den(q.get_mpq_t(), se_integer_to_mpz(*r->get_den()).get_mpz_t());
+		return q;
 	}
 	else if (is_a<Integer>(*b)) {
 		auto i = rcp_static_cast<const Integer>(b);
-		return {se_integer_to_mpz(*i), mpz_class(1)};
+		return mpq_class(se_integer_to_mpz(*i));
 	}
 	else {
 		throw std::runtime_error("Expression is not a Rational or Integer");
@@ -63,15 +62,14 @@ inline static rc expr_rc(const Expression &d)
  * @param n
  * @return
  */
-inline Expression rf_half(unsigned long k, unsigned long n) {
-	mpz_class r(1), s((unsigned long)k);
-	for (int i = 0; i < n; ++i) { r *= s; s += 2; }
+inline mpq_class rf_half(unsigned long k, unsigned long n) {
+	mpz_class r(1), s(k);
+	for (unsigned long i = 0; i < n; ++i) { r *= s; s += 2; }
 	mpz_class denom;
 	mpz_ui_pow_ui(denom.get_mpz_t(), 2, n);
-	SymEngine::integer_class num_ic(r.get_mpz_t());
-	SymEngine::integer_class den_ic(denom.get_mpz_t());
-	SymEngine::rational_class q(num_ic, den_ic);
-	return Expression(SymEngine::Rational::from_mpq(std::move(q)));
+	mpq_class result(r, denom);
+	result.canonicalize();
+	return result;
 }
 
 /** (-1)^n
@@ -86,20 +84,50 @@ inline long powm1(long n) {
 	return 1L - ((n & 1L) << 1);
 }
 
-/** Compute the binomial coefficient for (n,k) where n is a rational number.
+/** Generalised integer binomial C(n, k) for arbitrary integer n and any k.
+ *
+ * Returns 0 for k < 0. For n < 0 uses C(n,k) = (-1)^k * C(k-n-1, k).
+ *
+ * @param n Integer (may be negative).
+ * @param k Integer.
+ * @return
+ */
+inline mpq_class int_bin(long n, long k) {
+	if (k < 0) return mpq_class(0);
+	if (n >= 0) {
+		if (k > n) return mpq_class(0);
+		mpz_class result;
+		mpz_bin_uiui(result.get_mpz_t(), (unsigned long) n, (unsigned long) k);
+		return mpq_class(result);
+	}
+	// n < 0: C(n,k) = (-1)^k * C(k-n-1, k)
+	mpz_class result;
+	mpz_bin_uiui(result.get_mpz_t(), (unsigned long) (k - n - 1), (unsigned long) k);
+	return mpq_class(mpz_class(powm1(k)) * result);
+}
+
+/** Compute the binomial coefficient for rational n and integer k.
+ *
+ * Computes (n-k+1)*(n-k+2)*...*n / k!  Returns 0 for k < 0.
  *
  * @param n Rational number.
  * @param k Integer.
  * @return
  */
-inline Expression binomial_rational(RCP<const Basic> n, unsigned long k) {
-	Expression d = Expression(n) - k;
-	Expression result(1);
-	for (int i = 1; i < k + 1; i++) {
-		d += 1;
+inline mpq_class binomial_rational(const mpq_class& n, long k) {
+	if (k < 0) return mpq_class(0);
+	if (k == 0) return mpq_class(1);
+	mpq_class result(1);
+	mpq_class d = n - mpq_class(k - 1);
+	for (long i = 0; i < k; ++i) {
 		result *= d;
+		d += 1;
 	}
-	return result / factorial(k);
+	mpz_class fact;
+	mpz_fac_ui(fact.get_mpz_t(), (unsigned long) k);
+	result /= mpq_class(fact);
+	result.canonicalize();
+	return result;
 }
 
 /** Euler secant number E_{2n}.
@@ -119,12 +147,10 @@ inline mpz_class E2(int n) {
 	if (n == 0)
 		return mpz_class(1);
 
-	// Compute binomial coefficients C(2n, 2j) for j=0..n-1.
 	mpz_class result(0);
 	for (int j = 0; j < n; ++j) {
-		mpz_class binom = se_integer_to_mpz(*SymEngine::binomial(
-				*SymEngine::integer(2 * n),
-				(unsigned long)(2 * j)));
+		mpz_class binom;
+		mpz_bin_uiui(binom.get_mpz_t(), (unsigned long)(2 * n), (unsigned long)(2 * j));
 		result += mpz_class(powm1(n - j + 1)) * binom * E2(j);
 	}
 

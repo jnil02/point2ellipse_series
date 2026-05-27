@@ -5,13 +5,10 @@
 #include <vector>
 #include <stdexcept>
 
-#include <symengine/expression.h>
-
 #include "util.hpp"
 #include "coefficients.hpp"
 #include "coefficients_evo.hpp"
 
-using point_to_ellipse_series::rc;
 using point_to_ellipse_series::mpz_to_str;
 using point_to_ellipse_series::d_phi;
 using point_to_ellipse_series::d_cos;
@@ -130,7 +127,7 @@ static std::vector<TestRow2> load_csv_2(const std::string &path) {
 }
 
 static void check_against_csv_3(const std::string &csv_path,
-								const std::function<rc(int, int, int)> &fn) {
+								const std::function<mpq_class(int, int, int)> &fn) {
 	std::vector<TestRow3> rows;
 	REQUIRE_NOTHROW(rows = load_csv_3(csv_path));
 	REQUIRE(!rows.empty());
@@ -139,19 +136,19 @@ static void check_against_csv_3(const std::string &csv_path,
 		INFO("indices: n=" << row.n << " k=" << row.k << " l=" << row.l);
 		INFO(csv_path);
 
-		rc result = fn(row.n, row.k, row.l);
+		mpq_class result = fn(row.n, row.k, row.l);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << mpz_to_str(result.num) << " / " << mpz_to_str(result.den));
+		INFO("c++:    " << mpz_to_str(result.get_num()) << " / " << mpz_to_str(result.get_den()));
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
-		mpz_class lhs = result.num * row.den;
-		mpz_class rhs = mpz_class(row.num) * result.den;
+		mpz_class lhs = result.get_num() * row.den;
+		mpz_class rhs = mpz_class(row.num) * result.get_den();
 		CHECK(lhs == rhs);
 	}
 }
 
 static void check_against_csv_4(const std::string &csv_path,
-								const std::function<rc(int, int, int, int)> &fn) {
+								const std::function<mpq_class(int, int, int, int)> &fn) {
 	std::vector<TestRow4> rows;
 	REQUIRE_NOTHROW(rows = load_csv_4(csv_path));
 	REQUIRE(!rows.empty());
@@ -160,20 +157,20 @@ static void check_against_csv_4(const std::string &csv_path,
 		INFO("indices: n=" << row.n << " k=" << row.k << " l=" << row.l << " i=" << row.i);
 		INFO(csv_path);
 
-		rc result = fn(row.n, row.k, row.l, row.i);
+		mpq_class result = fn(row.n, row.k, row.l, row.i);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << mpz_to_str(result.num) << " / " << mpz_to_str(result.den));
+		INFO("c++:    " << mpz_to_str(result.get_num()) << " / " << mpz_to_str(result.get_den()));
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
-		mpz_class lhs = result.num * row.den;
-		mpz_class rhs = mpz_class(row.num) * result.den;
+		mpz_class lhs = result.get_num() * row.den;
+		mpz_class rhs = mpz_class(row.num) * result.get_den();
 		CHECK(lhs == rhs);
 	}
 }
 
 static void check_against_csv_2(const std::string &csv_path,
-								const std::function<rc(int, int)> &fn) {
+								const std::function<mpq_class(int, int)> &fn) {
 	std::vector<TestRow2> rows;
 	REQUIRE_NOTHROW(rows = load_csv_2(csv_path));
 	REQUIRE(!rows.empty());
@@ -182,14 +179,14 @@ static void check_against_csv_2(const std::string &csv_path,
 		INFO("indices: n=" << row.n << " k=" << row.k);
 		INFO(csv_path);
 
-		rc result = fn(row.n, row.k);
+		mpq_class result = fn(row.n, row.k);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << mpz_to_str(result.num) << " / " << mpz_to_str(result.den));
+		INFO("c++:    " << mpz_to_str(result.get_num()) << " / " << mpz_to_str(result.get_den()));
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
-		mpz_class lhs = result.num * row.den;
-		mpz_class rhs = mpz_class(row.num) * result.den;
+		mpz_class lhs = result.get_num() * row.den;
+		mpz_class rhs = mpz_class(row.num) * result.get_den();
 		CHECK(lhs == rhs);
 	}
 }
@@ -197,15 +194,6 @@ static void check_against_csv_2(const std::string &csv_path,
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
-
-TEST_CASE("SymEngine binomial(-1, 0) returns 1", "[symengine]") {
-	using SymEngine::Expression;
-	using SymEngine::Integer;
-	using SymEngine::binomial;
-	Expression result = Expression(binomial(Integer(-1), (unsigned long) 0));
-	// binomial(n, 0) = 1 for any n by convention.
-	CHECK(result == Expression(1));
-}
 
 TEST_CASE("d_phi matches Python reference", "[coefficients]") {
 	const std::string csv_path = std::string(TEST_DATA_DIR) + "/d_phi.csv";
