@@ -41,7 +41,7 @@ for n in 2 4 6 8 10; do
 done
 
 echo "--- d_h_evo ---"
-for n in 2 4 6 8; do
+for n in 2 4 6; do
     "$BENCH_COEFF" d_h_evo $n $n $n
 done
 
@@ -50,26 +50,26 @@ echo "=== Series evaluation benchmarks (mpreal, includes warm coefficient cache)
 echo -e "series\tN\tK\twall_ms"
 
 echo "--- phi_evo_dense_m (the sweep series) ---"
-for M in 2 4 6 8 10 12 14; do
+for M in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
     "$BENCH_SERIES" phi_evo_dense_m $M $M $SIN_PSI $RHO_AE2 $B_A
 done
 
 echo "--- phi_evo_dense ---"
-for N in 2 4 6 8 10; do
+for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
     "$BENCH_SERIES" phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
 done
 
 echo "--- sin_phi_evo_dense ---"
-for N in 2 4 6 8 10; do
+for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
     "$BENCH_SERIES" sin_phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
 done
 
 echo "--- cos_phi_evo_dense ---"
-for N in 2 4 6 8 10; do
+for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
     "$BENCH_SERIES" cos_phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
 done
 
 echo "--- h_a_evo_dense ---"
-for N in 2 4 6 8 10; do
+for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
     "$BENCH_SERIES" h_a_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
 done
