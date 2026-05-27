@@ -421,8 +421,15 @@ rc c_h_evo(int n, int k, int l) {
 }
 
 rc d_h_evo(int n, int k, int l) {
-	int sn = n % 2;
-	return c_h_evo(n, 2 * k + n, 2 * l + 1 - sn);
+	return c_h_evo(n, 2 * k + n, 2 * l + 1 - (n % 2));
+}
+
+rc d_sin_phi_evo(int n, int k, int l) {
+	return c_sin_phi_evo(n, n + 2 * k, 2 * l + (n % 2));
+}
+
+rc d_cos_phi_evo(int n, int k, int l) {
+	return c_cos_phi_evo(n, n + 1 + 2 * k, 2 * l + 1 - (n % 2));
 }
 
 }  // namespace point_to_ellipse_series

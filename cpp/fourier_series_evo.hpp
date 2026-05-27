@@ -8,6 +8,8 @@
 #include "coefficients_evo.hpp"
 
 using point_to_ellipse_series::d_phi_evo;
+using point_to_ellipse_series::d_sin_phi_evo;
+using point_to_ellipse_series::d_cos_phi_evo;
 using point_to_ellipse_series::c_phi_evo;
 using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
@@ -119,8 +121,8 @@ inline T sin_phi_evo_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; n + 2 * k <= K; ++k)
 			for (int l = 1; l <= n / 2 + k; ++l)
-				s = s + series_coeff<T>(c_sin_phi_evo(n, n + 2 * k, 2 * l + (n % 2)))
-						* series_pow(b_a_v, 2 * l + (n % 2))
+				s = s + series_coeff<T>(d_sin_phi_evo(n, k, l))
+				        * series_pow(b_a_v, 2 * l + (n % 2))
 						* series_pow(rho_ae2_v, n + 2 * k)
 						* series_pow(sin_psi_v, n);
 	return s;
@@ -148,7 +150,7 @@ inline T cos_phi_evo_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; n + 1 + 2 * k <= K; ++k)
 			for (int l = n % 2; l <= (n + 1) / 2 + k; ++l)
-				s = s + series_coeff<T>(c_cos_phi_evo(n, n + 1 + 2 * k, 2 * l + 1 - (n % 2)))
+				s = s + series_coeff<T>(d_cos_phi_evo(n, k, l))
 						* series_pow(b_a_v, 2 * l + 1 - (n % 2))
 						* series_pow(rho_ae2_v, n + 1 + 2 * k)
 						* series_pow(sin_psi_v, n);

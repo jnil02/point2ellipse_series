@@ -194,6 +194,16 @@ def c_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return d
 
 @cache.ints_cache
+def d_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+    """Dense sin(phi) series coefficients — all non-zero by construction.
+
+    d_sin_phi_evo(n, k, l) = c_sin_phi_evo(n, n + 2*k, 2*l + (n % 2))
+    """
+    assert n >= 0 and k >= 0 and l >= 1 and l <= n // 2 + k, \
+        f"d_sin_phi_evo indices out of range. n: {n} k: {k} l: {l}"
+    return c_sin_phi_evo(n, n + 2 * k, 2 * l + (n % 2))
+
+@cache.ints_cache
 def c_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     assert n >= 0 and k >= n and l >= 1 and l <= k, f"c_cos_phi_evo indices out of range. n: {n} k: {k} l: {l}"
     if (n+1-k) % 2 != 0 or (l-k) % 2 != 0:
@@ -204,6 +214,15 @@ def c_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
             d += sp.Rational((-1) ** (i+1+j), sp.factorial(2*i+1)) * sp.binomial(i,j) * c_phi_pow_evo(n - 2 * j, k, l, 2 * i + 1)
     return d
 
+@cache.ints_cache
+def d_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+    """Dense cos(phi)/|cos(psi)| series coefficients — all non-zero by construction.
+
+    d_cos_phi_evo(n, k, l) = c_cos_phi_evo(n, n + 1 + 2*k, 2*l + 1 - (n % 2))
+    """
+    assert n >= 0 and k >= 0 and l >= n % 2 and l <= (n + 1) // 2 + k, \
+        f"d_cos_phi_evo indices out of range. n: {n} k: {k} l: {l}"
+    return c_cos_phi_evo(n, n + 1 + 2 * k, 2 * l + 1 - (n % 2))
 
 @cache.ints_cache
 def c_sin_phi_inv_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
