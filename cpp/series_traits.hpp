@@ -21,7 +21,10 @@ inline SymEngine::Expression series_coeff<SymEngine::Expression>(const rc& c) {
 
 template<>
 inline mpfr::mpreal series_coeff<mpfr::mpreal>(const rc& c) {
-	return mpfr::mpreal(i128_to_str(c.num)) / mpfr::mpreal(i128_to_str(c.den));
+	mpfr::mpreal num, den;
+	mpfr_set_z(num.mpfr_ptr(), c.num.get_mpz_t(), mpfr::mpreal::get_default_rnd());
+	mpfr_set_z(den.mpfr_ptr(), c.den.get_mpz_t(), mpfr::mpreal::get_default_rnd());
+	return num / den;
 }
 
 // Raise base to integer power.

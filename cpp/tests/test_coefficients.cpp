@@ -12,7 +12,7 @@
 #include "coefficients_evo.hpp"
 
 using point_to_ellipse_series::rc;
-using point_to_ellipse_series::i128_to_str;
+using point_to_ellipse_series::mpz_to_str;
 using point_to_ellipse_series::d_phi;
 using point_to_ellipse_series::d_cos;
 using point_to_ellipse_series::d_sin;
@@ -141,11 +141,12 @@ static void check_against_csv_3(const std::string &csv_path,
 
 		rc result = fn(row.n, row.k, row.l);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << i128_to_str(result.num) << " / " << i128_to_str(result.den));
-
+		INFO("c++:    " << mpz_to_str(result.num) << " / " << mpz_to_str(result.den));
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
-		CHECK(result.num * row.den == row.num * result.den);
+		mpz_class lhs = result.num * row.den;
+		mpz_class rhs = mpz_class(row.num) * result.den;
+		CHECK(lhs == rhs);
 	}
 }
 
@@ -161,11 +162,13 @@ static void check_against_csv_4(const std::string &csv_path,
 
 		rc result = fn(row.n, row.k, row.l, row.i);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << i128_to_str(result.num) << " / " << i128_to_str(result.den));
+		INFO("c++:    " << mpz_to_str(result.num) << " / " << mpz_to_str(result.den));
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
-		CHECK(result.num * row.den == row.num * result.den);
+		mpz_class lhs = result.num * row.den;
+		mpz_class rhs = mpz_class(row.num) * result.den;
+		CHECK(lhs == rhs);
 	}
 }
 
@@ -181,11 +184,13 @@ static void check_against_csv_2(const std::string &csv_path,
 
 		rc result = fn(row.n, row.k);
 		INFO("python: " << row.num << " / " << row.den);
-		INFO("c++:    " << i128_to_str(result.num) << " / " << i128_to_str(result.den));
+		INFO("c++:    " << mpz_to_str(result.num) << " / " << mpz_to_str(result.den));
 
 		// Normalise both fractions before comparing:
 		// a/b == c/d  iff  a*d == b*c
-		CHECK(result.num * row.den == row.num * result.den);
+		mpz_class lhs = result.num * row.den;
+		mpz_class rhs = mpz_class(row.num) * result.den;
+		CHECK(lhs == rhs);
 	}
 }
 

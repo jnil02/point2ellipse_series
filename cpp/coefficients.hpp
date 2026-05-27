@@ -4,15 +4,14 @@
  * Point-to-ellipse Fourier and sin-power series expansion coefficients.
  */
 
+#include <gmpxx.h>
+
 namespace point_to_ellipse_series {
 
-// Rational coefficient.
-// __int128 is used instead of long to avoid overflow at higher truncation
-// orders. long, with its 9 decimal digits, overflows around order 13 while
-// __int128 extends the range to ~39 decimal digits.
+// Rational coefficient with arbitrary-precision numerator and denominator.
 struct rc {
-	__int128 num;
-	__int128 den;
+	mpz_class num;
+	mpz_class den;
 };
 
 rc c_phi(int n, int k, int l);

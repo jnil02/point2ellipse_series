@@ -17,6 +17,7 @@ target_link_libraries(test_coefficients
         PRIVATE
         symengine
         mpfr
+        gmpxx
         gmp
         )
 

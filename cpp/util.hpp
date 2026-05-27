@@ -1,9 +1,5 @@
 #pragma once
 
-#include <cassert>
-#include <cstdint>
-#include <string>
-#include <algorithm>
 #include <unordered_map>
 #include <gmpxx.h>
 
@@ -27,43 +23,20 @@ using SymEngine::Mul;
 using SymEngine::Pow;
 using SymEngine::Integer;
 
-// Convert __int128 to a decimal string (for passing to SymEngine / mpreal).
-inline std::string i128_to_str(__int128 x) {
-	if (x == 0) return "0";
-	bool neg = x < 0;
-	unsigned __int128 ux = neg ? -(unsigned __int128)x : (unsigned __int128)x;
-	std::string s;
-	do { s += ('0' + (int)(ux % 10)); ux /= 10; } while (ux > 0);
-	if (neg) s += '-';
-	std::reverse(s.begin(), s.end());
-	return s;
+// Convert a SymEngine Integer to mpz_class via its decimal string representation.
+inline mpz_class se_integer_to_mpz(const Integer& i) {
+	mpz_class result;
+	result.set_str(i.__str__(), 10);
+	return result;
 }
 
-// Convert a SymEngine Integer to __int128 via its decimal string representation.
-// as_int() is limited to long range.
-inline __int128 se_integer_to_i128(const Integer& i) {
-	std::string s = i.__str__();
-	bool neg = !s.empty() && s[0] == '-';
-	size_t start  = neg ? 1 : 0;
-	size_t digits = s.size() - start;
-
-	// __int128 holds up to 39 decimal digits; at exactly 39, compare against the bound.
-	static constexpr const char* i128_max     = "170141183460469231731687303715884105727";
-	static constexpr const char* i128_min_abs = "170141183460469231731687303715884105728";
-	assert((digits < 39 || (digits == 39 && s.compare(start, 39, neg ? i128_min_abs : i128_max) <= 0))
-		   && "se_integer_to_i128: value exceeds __int128 range — truncation order too high");
-
-	__int128 result = 0;
-	for (size_t k = start; k < s.size(); ++k)
-		result = result * 10 + (s[k] - '0');
-	return neg ? -result : result;
-}
+inline std::string mpz_to_str(const mpz_class& x) { return x.get_str(10); }
 
 inline static Expression rc_expr(const rc &d)
 {
-	mpz_class num(i128_to_str(d.num));
-	mpz_class den(i128_to_str(d.den));
-	SymEngine::rational_class q(num.get_mpz_t(), den.get_mpz_t());
+	SymEngine::integer_class num_ic(d.num.get_mpz_t());
+	SymEngine::integer_class den_ic(d.den.get_mpz_t());
+	SymEngine::rational_class q(num_ic, den_ic);
 	return Expression(SymEngine::Rational::from_mpq(std::move(q)));
 }
 
@@ -73,11 +46,11 @@ inline static rc expr_rc(const Expression &d)
 
 	if (is_a<SymEngine::Rational>(*b)) {
 		auto r = rcp_static_cast<const SymEngine::Rational>(b);
-		return {se_integer_to_i128(*r->get_num()), se_integer_to_i128(*r->get_den())};
+		return {se_integer_to_mpz(*r->get_num()), se_integer_to_mpz(*r->get_den())};
 	}
 	else if (is_a<Integer>(*b)) {
 		auto i = rcp_static_cast<const Integer>(b);
-		return {se_integer_to_i128(*i), 1};   // implicit denominator = 1
+		return {se_integer_to_mpz(*i), mpz_class(1)};
 	}
 	else {
 		throw std::runtime_error("Expression is not a Rational or Integer");
@@ -91,13 +64,14 @@ inline static rc expr_rc(const Expression &d)
  * @return
  */
 inline Expression rf_half(unsigned long k, unsigned long n) {
-	long r = 1L;
-	long s = (long) k;
-	for (int i = 0; i < n; ++i) {
-		r = r * s;
-		s += 2L;
-	}
-	return {rational(r, 1L << n)};
+	mpz_class r(1), s((unsigned long)k);
+	for (int i = 0; i < n; ++i) { r *= s; s += 2; }
+	mpz_class denom;
+	mpz_ui_pow_ui(denom.get_mpz_t(), 2, n);
+	SymEngine::integer_class num_ic(r.get_mpz_t());
+	SymEngine::integer_class den_ic(denom.get_mpz_t());
+	SymEngine::rational_class q(num_ic, den_ic);
+	return Expression(SymEngine::Rational::from_mpq(std::move(q)));
 }
 
 /** (-1)^n
@@ -134,25 +108,24 @@ inline Expression binomial_rational(RCP<const Basic> n, unsigned long k) {
  * Defined by: E2(0)=1, E2(n) = sum_{j=0}^{n-1} (-1)^(n-j+1) * C(2n,2j) * E2(j)
  *
  * @param n Non-negative integer.
- * @return E_{2n} as a __int128.
+ * @return E_{2n} as mpz_class.
  */
-inline __int128 E2(int n) {
-	static std::unordered_map<int, __int128> cache;
+inline mpz_class E2(int n) {
+	static std::unordered_map<int, mpz_class> cache;
 	auto it = cache.find(n);
 	if (it != cache.end())
 		return it->second;
 
 	if (n == 0)
-		return __int128(1);
+		return mpz_class(1);
 
 	// Compute binomial coefficients C(2n, 2j) for j=0..n-1.
-	__int128 result(0);
+	mpz_class result(0);
 	for (int j = 0; j < n; ++j) {
-		// C(2n, 2j) computed via SymEngine to avoid overflow for large n.
-		__int128 binom = se_integer_to_i128(*SymEngine::binomial(
+		mpz_class binom = se_integer_to_mpz(*SymEngine::binomial(
 				*SymEngine::integer(2 * n),
 				(unsigned long)(2 * j)));
-		result += powm1(n - j + 1) * binom * E2(j);
+		result += mpz_class(powm1(n - j + 1)) * binom * E2(j);
 	}
 
 	cache[n] = result;

@@ -228,7 +228,8 @@ rc c_sin_phi_inv_evo(int n, int k, int l) {
 		const int j_min = std::max(0, (n + 2 * i - k + 1) / 2);
 		const int j_max = n / 2;
 		for (int j = j_min; j <= j_max; ++j) {
-			d += Expression(E2(i) * powm1(j))
+			mpz_class e2_val = E2(i) * mpz_class(powm1(j));
+			d += rc_expr({e2_val, mpz_class(1)})
 				 * binomial(Integer(i), (unsigned long) j)
 				 * rc_expr(c_phi_pow_evo(n - 2 * j, k, l, 2 * i))
 				 / Expression(factorial(2 * i));
