@@ -14,10 +14,16 @@ using point_to_ellipse_series::d_phi;
 using point_to_ellipse_series::d_cos;
 using point_to_ellipse_series::d_sin;
 using point_to_ellipse_series::d_h;
+using point_to_ellipse_series::d_phi_pow_se;
+using point_to_ellipse_series::d_phi_pow_se2;
+using point_to_ellipse_series::d_sin_pow_se;
+using point_to_ellipse_series::d_sin_pow_se2;
 using point_to_ellipse_series::d_phi_evo;
 using point_to_ellipse_series::d_sin_phi_evo;
 using point_to_ellipse_series::d_cos_phi_evo;
 using point_to_ellipse_series::c_phi_evo;
+using point_to_ellipse_series::c_phi_pow_evo_se;
+using point_to_ellipse_series::c_phi_pow_evo_se2;
 using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
 using point_to_ellipse_series::c_sin_phi_inv_evo;
@@ -283,4 +289,40 @@ TEST_CASE("cp_evo_nkl Python reference", "[coefficients][evo]") {
 TEST_CASE("c_h_evo Python reference", "[coefficients][evo]") {
 	const std::string csv_path = std::string(TEST_DATA_DIR) + "/c_h_evo.csv";
 	check_against_csv_3(csv_path, c_h_evo);
+}
+
+
+// ---------------------------------------------------------------------------
+// Consistency tests: _se2 matches _se (duplicate pipeline vs original)
+// ---------------------------------------------------------------------------
+
+TEST_CASE("d_phi_pow_se2 matches d_phi_pow_se", "[consistency]") {
+	for (int i = 1; i <= 3; ++i)
+		for (int k = i; k <= 6; ++k)
+			for (int n = 0; n <= k - i; ++n)
+				for (int l = std::max(n + i, k); l <= n + k; ++l) {
+					INFO("n=" << n << " k=" << k << " l=" << l << " i=" << i);
+					CHECK(d_phi_pow_se(n, k, l, i) == d_phi_pow_se2(n, k, l, i));
+				}
+}
+
+TEST_CASE("d_sin_pow_se2 matches d_sin_pow_se", "[consistency]") {
+	for (int i = 0; i <= 3; ++i)
+		for (int k = 1; k <= 6; ++k)
+			for (int n = 0; n <= k; ++n)
+				for (int l = std::max(n, k); l <= n + k; ++l) {
+					INFO("n=" << n << " k=" << k << " l=" << l << " i=" << i);
+					CHECK(d_sin_pow_se(n, k, l, i) == d_sin_pow_se2(n, k, l, i));
+				}
+}
+
+TEST_CASE("c_phi_pow_evo_se2 matches c_phi_pow_evo_se", "[consistency]") {
+	for (int i = 0; i <= 3; ++i)
+		for (int k = i; k <= 6; ++k)
+			for (int n = 0; n + i <= k; ++n)
+				for (int l = i; l <= k; ++l) {
+					if ((i + n - k) % 2 != 0 || (l - k) % 2 != 0) continue;
+					INFO("n=" << n << " k=" << k << " l=" << l << " i=" << i);
+					CHECK(c_phi_pow_evo_se(n, k, l, i) == c_phi_pow_evo_se2(n, k, l, i));
+				}
 }

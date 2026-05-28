@@ -213,4 +213,56 @@ coeff_of(const Expression &expr, const RCP<const Symbol> &sym, int exp) {
 	return (power == exp) ? rest : Expression(0);
 }
 
+static Expression
+coeff_of2(const Expression &expr, const RCP<const Symbol> &sym, int exp) {
+	const RCP<const Basic> b = expr.get_basic();
+
+	if (is_a<Add>(*b)) {
+		Expression acc(0);
+		for (const auto &term: b->get_args()) {
+			acc = acc + coeff_of2(Expression(term), sym, exp);
+		}
+		return acc;
+	}
+
+	long power = 0;
+	Expression rest(1);
+
+	if (is_a<Mul>(*b)) {
+		for (const auto &f: b->get_args()) {
+			if (is_a<Pow>(*f)) {
+				auto pw = rcp_static_cast<const Pow>(f);
+				const RCP<const Basic> base = pw->get_base();
+				if (eq(*base, *sym)) {
+					const auto &iexp = SymEngine::down_cast<const Integer &>(
+							*pw->get_exp());
+					power += iexp.as_int();
+				} else {
+					rest = rest * Expression(f);
+				}
+			} else if (is_a<Symbol>(*f) && eq(*f, *sym)) {
+				power += 1;
+			} else {
+				rest = rest * Expression(f);
+			}
+		}
+	} else if (is_a<Pow>(*b)) {
+		auto pw = rcp_static_cast<const Pow>(b);
+		const RCP<const Basic> base = pw->get_base();
+		if (eq(*base, *sym)) {
+			const auto &iexp = SymEngine::down_cast<const Integer &>(
+					*pw->get_exp());
+			power += iexp.as_int();
+		} else {
+			rest = Expression(b);
+		}
+	} else if (is_a<Symbol>(*b) && eq(*b, *sym)) {
+		power = 1;
+	} else {
+		rest = Expression(b);
+	}
+
+	return (power == exp) ? rest : Expression(0);
+}
+
 } // namespace point_to_ellipse_series

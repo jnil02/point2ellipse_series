@@ -127,6 +127,53 @@ inline Expression ordinary_potential_polynomial(int n, int i, const std::string 
 	return A;
 }
 
+inline Expression partial_ordinary_bell_polynomial2(int k, int i, const std::string &a) {
+	static std::map<std::tuple<int, std::string>, Expression> cache;
+	auto key = std::make_tuple(cantor_pairing_two(k, i), a);
+	auto it = cache.find(key);
+	if (it != cache.end())
+		return it->second;
+
+	Expression B;
+	if (i == 0) {
+		B = {(k == 0) ? integer(1) : integer(0)};
+	} else {
+		B = {integer(0)};
+		for (int j = 1; j <= k - i + 1; ++j)
+			B += Expression(symbol(a + "_" + std::to_string(j)))
+				 * partial_ordinary_bell_polynomial2(k - j, i - 1, a);
+	}
+
+	cache[key] = expand(B);
+	return B;
+}
+
+inline Expression ordinary_potential_polynomial2(int n, int i, const std::string &a) {
+	static std::map<std::tuple<int, std::string>, Expression> cache;
+	auto key = std::make_tuple(cantor_pairing_two(n, i), a);
+	auto it = cache.find(key);
+	if (it != cache.end())
+		return it->second;
+
+	Expression x0(symbol(a + "_0"));
+
+	Expression A;
+	if (n == 0) {
+		A = expand(pow(x0, i));
+	} else {
+		Expression clj(integer(0));
+		for (int k = 1; k <= n; ++k)
+			clj = clj + integer(k * i - n + k)
+						* Expression(a + "_" + std::to_string(k)) *
+						ordinary_potential_polynomial2(n - k, i, a);
+
+		A = clj / (integer(n) * x0);
+	}
+
+	cache[key] = expand(A);
+	return A;
+}
+
 // "Sigma" polynomial giving one common component of the sin(phi)/sin(psi) and the cos(phi)/cos(psi) expansions.
 inline Expression sigma(int J, const Expression &delta) {
 	Expression d(0);

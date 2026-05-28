@@ -205,4 +205,130 @@ static Expression a_nk_sub(const Expression &p,
 	return pTot;
 }
 
+static std::shared_ptr<SeriesBase> poly_bell_substitution2(const Expression &p) {
+	std::shared_ptr<SeriesBase> seqTot = std::make_shared<SeriesEmpty>();
+
+	for (const auto &polyTerm: get_add_args(expand(p.get_basic()))) {
+		std::shared_ptr<SeriesBase> seqTerm = std::make_shared<SeriesFactor>(
+				Expression(1));
+
+		for (const auto &termFactor: get_mul_args(polyTerm)) {
+			if (SymEngine::is_a_Number(*termFactor)) {
+				seqTerm = (*seqTerm) * Expression(termFactor);
+			} else if (SymEngine::is_a<Pow>(*termFactor) ||
+					   SymEngine::is_a<Symbol>(*termFactor)) {
+				RCP<const Basic> base;
+				RCP<const Basic> exp;
+
+				if (SymEngine::is_a<Pow>(*termFactor)) {
+					auto pow_ptr = rcp_static_cast<const Pow>(termFactor);
+					base = pow_ptr->get_base();
+					exp = pow_ptr->get_exp();
+				} else {
+					base = termFactor;
+					exp = integer(1);
+				}
+
+				auto sym = rcp_static_cast<const Symbol>(base);
+				std::string name = sym->get_name();
+				std::string ix = name.substr(name.find('_'));
+
+				int j = SymEngine::down_cast<const SymEngine::Integer &>(
+						*exp).as_int();
+
+				auto bellLambdaGen = [j, ix](int n) -> Expression {
+					if (n >= j) {
+						return partial_ordinary_bell_polynomial2(n, j, "a" + ix);
+					} else {
+						return {0};
+					}
+				};
+
+				seqTerm = (*seqTerm) * std::make_shared<Series>(bellLambdaGen);
+			} else {
+				throw std::runtime_error(
+						"Unhandled factor in SymEngine expression. (poly_bell_substitution2)");
+			}
+		}
+
+		seqTot = (*seqTot) + seqTerm;
+	}
+
+	return seqTot;
+}
+
+static std::shared_ptr<SeriesBase> double_series_power_coeff2(int n, int i) {
+	Expression b_ni = ordinary_potential_polynomial2(n, i, "a");
+	return poly_bell_substitution2(b_ni);
+}
+
+static Expression a_nk_ser2(int n, int k, int n_offset,
+							const std::function<mpq_class(int, int, int)> &d_nkl) {
+	Expression a_nk(0);
+	for (int l = std::max(k, n + n_offset); l <= n + k; ++l)
+		a_nk = a_nk + mpq_to_expr(d_nkl(n, k, l)) * pow(e2, l);
+	return a_nk;
+}
+
+static Expression a_nk_C2(int n, int k,
+						  const std::function<mpq_class(int, int, int)> &c_nkl) {
+	Expression a_nk(0);
+	if (k < n + 1)
+		return a_nk;
+	for (int l = 1; l <= k; ++l)
+		a_nk = a_nk + mpq_to_expr(c_nkl(n, k, l)) * pow(e2, l);
+	return a_nk;
+}
+
+static Expression a_nk_sub2(const Expression &p,
+							const std::function<Expression(int, int)> &a_nk) {
+	Expression pTot{0};
+
+	for (const auto &polyTerm: get_add_args(SymEngine::expand(p.get_basic()))) {
+		Expression pTerm = 1;
+
+		for (const auto &termFactor: get_mul_args(polyTerm)) {
+			if (SymEngine::is_a_Number(*termFactor)) {
+				pTerm = pTerm * Expression(termFactor);
+			} else if (SymEngine::is_a<Pow>(*termFactor) ||
+					   SymEngine::is_a<Symbol>(*termFactor)) {
+				RCP<const Basic> base;
+				RCP<const Basic> exp;
+
+				if (SymEngine::is_a<Pow>(*termFactor)) {
+					auto pow_ptr = rcp_static_cast<const Pow>(termFactor);
+					base = pow_ptr->get_base();
+					exp = pow_ptr->get_exp();
+				} else {
+					base = termFactor;
+					exp = integer(1);
+				}
+
+				auto sym = rcp_static_cast<const Symbol>(base);
+				std::string name = sym->get_name();
+				auto first_us = name.find('_');
+				auto second_us = name.find('_', first_us + 1);
+
+				int n = std::stoi(
+						name.substr(first_us + 1, second_us - first_us - 1));
+				int k = std::stoi(name.substr(second_us + 1));
+
+				int exp_int = SymEngine::down_cast<const SymEngine::Integer &>(
+						*exp).as_int();
+
+				pTerm = pTerm * pow(a_nk(n, k), exp_int);
+			} else {
+				std::cout << p << std::endl;
+				std::cout << Expression(termFactor) << std::endl;
+				throw std::runtime_error(
+						"Unhandled factor in SymEngine expression. (a_nk_sub2)");
+			}
+		}
+
+		pTot = pTot + pTerm;
+	}
+
+	return pTot;
+}
+
 }  // namespace point_to_ellipse_series
