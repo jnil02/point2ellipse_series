@@ -172,7 +172,7 @@ mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	mpq_class ret = c_phi_pow_evo_se(n, k, l, i);
+	mpq_class ret = c_phi_pow_evo_se2(n, k, l, i);
 
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;

@@ -174,6 +174,75 @@ inline Expression ordinary_potential_polynomial2(int n, int i, const std::string
 	return A;
 }
 
+// ---------------------------------------------------------------------------
+// GMP-only polynomial type for a_j variables (index → exponent).
+// ---------------------------------------------------------------------------
+
+// Monomial: maps variable index j to its exponent.
+using AMonomial = std::map<int, int>;
+// Polynomial: maps monomial to its rational coefficient.
+using APoly = std::map<AMonomial, mpq_class>;
+
+// Add (scale * a_j * q) into p in-place.
+inline static void apoly_add_scaled_mul_var(APoly &p, const APoly &q, int j,
+											const mpq_class &scale) {
+	for (const auto &[mono, coeff] : q) {
+		AMonomial new_mono = mono;
+		new_mono[j]++;
+		mpq_class c = scale * coeff;
+		c.canonicalize();
+		p[new_mono] += c;
+	}
+}
+
+// Divide every monomial by a_0 (asserts a_0 exponent >= 1 in each term).
+inline static APoly apoly_div_a0(const APoly &p) {
+	APoly result;
+	for (const auto &[mono, coeff] : p) {
+		AMonomial new_mono = mono;
+		auto it = new_mono.find(0);
+		assert(it != new_mono.end() && it->second >= 1);
+		if (--it->second == 0)
+			new_mono.erase(it);
+		result[new_mono] += coeff;
+	}
+	return result;
+}
+
+// Compute the n-th coefficient polynomial of (sum_j a_j x^j)^i using GMP arithmetic.
+// Returns a polynomial in indexed a_j variables with mpq_class coefficients.
+inline APoly ordinary_potential_polynomial2(int n, int i) {
+	assert(n >= 0 && i >= 0);
+	static auto cache = UintsCache<APoly>();
+	if (auto *ret = cache.get((uint) n, (uint) i))
+		return *ret;
+
+	APoly A;
+	if (n == 0) {
+		AMonomial mono;
+		if (i > 0) mono[0] = i;
+		A[mono] = mpq_class(1);
+	} else {
+		APoly clj;
+		for (int k = 1; k <= n; ++k) {
+			long factor = (long) k * i - n + k;
+			if (factor == 0) continue;
+			apoly_add_scaled_mul_var(clj, ordinary_potential_polynomial2(n - k, i), k,
+									 mpq_class(factor));
+		}
+		APoly div = apoly_div_a0(clj);
+		mpq_class inv_n(1, n);
+		for (auto &[mono, coeff] : div) {
+			coeff *= inv_n;
+			coeff.canonicalize();
+		}
+		A = std::move(div);
+	}
+
+	cache.insert(A, (uint) n, (uint) i);
+	return A;
+}
+
 // "Sigma" polynomial giving one common component of the sin(phi)/sin(psi) and the cos(phi)/cos(psi) expansions.
 inline Expression sigma(int J, const Expression &delta) {
 	Expression d(0);

@@ -202,7 +202,7 @@ mpq_class d_phi_pow(int n, int k, int l, int i) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	mpq_class ret = d_phi_pow_se(n, k, l, i);
+	mpq_class ret = d_phi_pow_se2(n, k, l, i);
 
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;
@@ -286,7 +286,7 @@ mpq_class d_sin_pow(int n, int k, int l, int i) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	mpq_class ret = d_sin_pow_se(n, k, l, i);
+	mpq_class ret = d_sin_pow_se2(n, k, l, i);
 
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;

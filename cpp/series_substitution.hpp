@@ -205,50 +205,23 @@ static Expression a_nk_sub(const Expression &p,
 	return pTot;
 }
 
-static std::shared_ptr<SeriesBase> poly_bell_substitution2(const Expression &p) {
+static std::shared_ptr<SeriesBase> poly_bell_substitution2(const APoly &poly) {
+	if (poly.empty())
+		return std::make_shared<SeriesFactor>(Expression{0});
+
 	std::shared_ptr<SeriesBase> seqTot = std::make_shared<SeriesEmpty>();
 
-	for (const auto &polyTerm: get_add_args(expand(p.get_basic()))) {
+	for (const auto &[monomial, coeff] : poly) {
 		std::shared_ptr<SeriesBase> seqTerm = std::make_shared<SeriesFactor>(
-				Expression(1));
+				mpq_to_expr(coeff));
 
-		for (const auto &termFactor: get_mul_args(polyTerm)) {
-			if (SymEngine::is_a_Number(*termFactor)) {
-				seqTerm = (*seqTerm) * Expression(termFactor);
-			} else if (SymEngine::is_a<Pow>(*termFactor) ||
-					   SymEngine::is_a<Symbol>(*termFactor)) {
-				RCP<const Basic> base;
-				RCP<const Basic> exp;
-
-				if (SymEngine::is_a<Pow>(*termFactor)) {
-					auto pow_ptr = rcp_static_cast<const Pow>(termFactor);
-					base = pow_ptr->get_base();
-					exp = pow_ptr->get_exp();
-				} else {
-					base = termFactor;
-					exp = integer(1);
-				}
-
-				auto sym = rcp_static_cast<const Symbol>(base);
-				std::string name = sym->get_name();
-				std::string ix = name.substr(name.find('_'));
-
-				int j = SymEngine::down_cast<const SymEngine::Integer &>(
-						*exp).as_int();
-
-				auto bellLambdaGen = [j, ix](int n) -> Expression {
-					if (n >= j) {
-						return partial_ordinary_bell_polynomial2(n, j, "a" + ix);
-					} else {
-						return {0};
-					}
-				};
-
-				seqTerm = (*seqTerm) * std::make_shared<Series>(bellLambdaGen);
-			} else {
-				throw std::runtime_error(
-						"Unhandled factor in SymEngine expression. (poly_bell_substitution2)");
-			}
+		for (const auto &[j, e] : monomial) {
+			std::string base = "a_" + std::to_string(j);
+			auto bellLambdaGen = [e, base](int n) -> Expression {
+				return (n >= e) ? partial_ordinary_bell_polynomial2(n, e, base)
+								: Expression{0};
+			};
+			seqTerm = (*seqTerm) * std::make_shared<Series>(bellLambdaGen);
 		}
 
 		seqTot = (*seqTot) + seqTerm;
@@ -258,7 +231,7 @@ static std::shared_ptr<SeriesBase> poly_bell_substitution2(const Expression &p) 
 }
 
 static std::shared_ptr<SeriesBase> double_series_power_coeff2(int n, int i) {
-	Expression b_ni = ordinary_potential_polynomial2(n, i, "a");
+	APoly b_ni = ordinary_potential_polynomial2(n, i);
 	return poly_bell_substitution2(b_ni);
 }
 
