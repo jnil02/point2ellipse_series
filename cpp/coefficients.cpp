@@ -171,16 +171,19 @@ Expression d_phi_pow_polynomial(int n, int k, int i) {
 	return d;
 }
 
+static mpq_class d_phi_pow_se(int n, int k, int l, int i) {
+	Expression poly = d_phi_pow_polynomial(n, k, i);
+	return expr_to_mpq(coeff_of(expand(poly).get_basic(), e2sym, l));
+}
+
 mpq_class d_phi_pow(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= i && l >= std::max(n + i, k) && l <= n + k && i >= 1);
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	Expression poly = d_phi_pow_polynomial(n, k, i);
-	auto d = coeff_of(expand(poly).get_basic(), e2sym, l);
+	mpq_class ret = d_phi_pow_se(n, k, l, i);
 
-	mpq_class ret = expr_to_mpq(d);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;
 }
@@ -232,16 +235,19 @@ Expression d_sin_pow_polynomial(int n, int k, int i) {
 	return d;
 }
 
+static mpq_class d_sin_pow_se(int n, int k, int l, int i) {
+	Expression poly = d_sin_pow_polynomial(n, k, i);
+	return expr_to_mpq(Expression(coeff_of(expand(poly), e2sym, l)));
+}
+
 mpq_class d_sin_pow(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= 0 && l >= 0 && l <= n + k && i >= 0);
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	Expression poly = d_sin_pow_polynomial(n, k, i);
-	Expression d(coeff_of(expand(poly), e2sym, l));
+	mpq_class ret = d_sin_pow_se(n, k, l, i);
 
-	mpq_class ret = expr_to_mpq(d);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;
 }

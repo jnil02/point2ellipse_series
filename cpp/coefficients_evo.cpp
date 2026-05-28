@@ -136,6 +136,11 @@ Expression d_phi_pow_evo_polynomial(int n, int k, int i) {
 	return d;
 }
 
+static mpq_class c_phi_pow_evo_se(int n, int k, int l, int i) {
+	Expression poly = d_phi_pow_evo_polynomial(n, k, i);
+	return expr_to_mpq(coeff_of(expand(poly).get_basic(), e2sym, l));
+}
+
 mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= n + i && l >= i && l <= k && i >= 0);
 
@@ -147,10 +152,8 @@ mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	Expression poly = d_phi_pow_evo_polynomial(n, k, i);
-	auto d = coeff_of(expand(poly).get_basic(), e2sym, l);
+	mpq_class ret = c_phi_pow_evo_se(n, k, l, i);
 
-	mpq_class ret = expr_to_mpq(d);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;
 }
