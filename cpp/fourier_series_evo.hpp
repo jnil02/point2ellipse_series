@@ -133,6 +133,34 @@ inline Expression sin_phi_evo_dense(int N, int K) {
 	return sin_phi_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
 }
 
+template<typename T>
+inline T sin_phi_evo_dense_m(int M,
+							 const T& sin_psi_v,
+							 const T& rho_ae2_v,
+							 const T& b_a_v) {
+	T s(0);
+
+	for (int m = 0; m <= M; ++m) {
+		T cm(0);
+		for (int k = 0; k <= m / 2; ++k) {
+			const int n = m - 2 * k;
+			for (int l = 1; l <= m / 2; ++l) {
+				cm = cm + series_coeff<T>(d_sin_phi_evo(n, k, l))
+						  * series_pow(b_a_v, 2 * l + (m % 2))
+						  * series_pow(sin_psi_v, n);
+			}
+		}
+		s = s + cm * series_pow(rho_ae2_v, m);
+	}
+	return s;
+}
+
+
+inline Expression sin_phi_evo_dense_m(int K) {
+	return sin_phi_evo_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
+}
+
+
 /** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (dense).
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
@@ -161,6 +189,34 @@ inline T cos_phi_evo_dense(int N, int K,
 inline Expression cos_phi_evo_dense(int N, int K) {
 	return cos_phi_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
 }
+
+template<typename T>
+inline T cos_phi_evo_dense_m(int M,
+									  const T& sin_psi_v,
+									  const T& rho_ae2_v,
+									  const T& b_a_v) {
+	T s(0);
+
+	for (int m = 1; m <= M; ++m) {
+		T cm(0);
+		for (int k = 0; k <= (m - 1) / 2; ++k) {
+			const int n = m - 1 - 2 * k;
+			const int p = n % 2;  // same as (m - 1) % 2
+			for (int l = p; l <= m / 2; ++l) {
+				cm = cm + series_coeff<T>(d_cos_phi_evo(n, k, l))
+						  * series_pow(b_a_v, 2 * l + 1 - p)
+						  * series_pow(sin_psi_v, n);
+			}
+		}
+		s = s + cm * series_pow(rho_ae2_v, m);
+	}
+	return s;
+}
+
+inline Expression cos_phi_evo_dense_m(int N) {
+	return cos_phi_evo_dense_m<Expression>(N, sin_psi, rho_ae2, b_a);
+}
+
 
 /** Inside-evolute series for h/a in sin-powers.
  *
@@ -220,4 +276,32 @@ inline T h_a_evo_dense(int N, int K,
 /** Symbolic convenience overload: returns Expression using the global symbolic variables. */
 inline Expression h_a_evo_dense(int N, int K) {
 	return h_a_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
+}
+
+template<typename T>
+inline T h_a_evo_dense_m(int M,
+								  const T& sin_psi_v,
+								  const T& rho_ae2_v,
+								  const T& b_a_v) {
+	T s(0);
+
+	for (int m = 0; m <= M; ++m) {
+		T cm(0);
+
+		for (int k = 0; k <= m / 2; ++k) {
+			const int n = m - 2 * k;
+			const int sn = m % 2;  // same as n % 2
+			for (int l = 0; l <= (m + 1) / 2; ++l) {
+				cm = cm + series_coeff<T>(d_h_evo(n, k, l))
+						  * series_pow(b_a_v, 1 - sn + 2 * l)
+						  * series_pow(sin_psi_v, n);
+			}
+		}
+		s = s + cm * series_pow(rho_ae2_v, m);
+	}
+	return s;
+}
+
+inline Expression h_a_evo_dense_m(int K) {
+	return h_a_evo_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
 }

@@ -199,6 +199,7 @@ inline static void apoly_add_scaled_mul_var(APoly &p, const APoly &q, int j,
 inline static APoly apoly_div_a0(const APoly &p) {
 	APoly result;
 	for (const auto &[mono, coeff] : p) {
+		if (coeff == mpq_class(0)) continue;
 		AMonomial new_mono = mono;
 		auto it = new_mono.find(0);
 		assert(it != new_mono.end() && it->second >= 1);
