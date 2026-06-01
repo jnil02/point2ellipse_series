@@ -36,11 +36,12 @@ public:
 		return nullptr;
 	}
 
-	// Insert into cache.
+	// Insert into cache and return a reference to the stored value.
 	template<std::unsigned_integral... UInts>
-	void insert(R val, UInts... args) {
+	const R& insert(R val, UInts... args) {
 		auto key = cantor_pairing(args...);
-		cache.emplace(key, std::move(val));
+		auto [it, _] = cache.emplace(key, std::move(val));
+		return it->second;
 	}
 
 private:

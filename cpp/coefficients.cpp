@@ -46,8 +46,7 @@ mpq_class d_phi(int n, int k, int l) {
 				}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class d_phi2(int n, int k, int l) {
@@ -85,8 +84,7 @@ mpq_class d_phi2(int n, int k, int l) {
 				}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class c_phi(int n, int k, int l) {
@@ -144,8 +142,7 @@ mpq_class c_phi(int n, int k, int l) {
 				}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 static E2Poly d_phi_pow_e2poly_se4(int n, int k, int i) {
@@ -162,8 +159,7 @@ static E2Poly d_phi_pow_e2poly_se4(int n, int k, int i) {
 		return a_nk_ser_lexpr(j, m, 1, d_phi);
 	});
 
-	cache.insert(result, (uint) n, (uint) k, (uint) i);
-	return result;
+	return cache.insert(result, (uint) n, (uint) k, (uint) i);
 }
 
 mpq_class d_phi_pow_se4(int n, int k, int l, int i) {
@@ -179,8 +175,7 @@ mpq_class d_phi_pow(int n, int k, int l, int i) {
 
 	mpq_class ret = d_phi_pow_se4(n, k, l, i);  // ← LExpr/GMP pipeline (was: _se2)
 
-	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 }
 
 mpq_class d_sin(int n, int k, int l) {
@@ -207,8 +202,7 @@ mpq_class d_sin(int n, int k, int l) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 static E2Poly d_sin_pow_e2poly_se4(int n, int k, int i) {
@@ -225,8 +219,7 @@ static E2Poly d_sin_pow_e2poly_se4(int n, int k, int i) {
 		return a_nk_ser_lexpr(j, m, 0, d_sin);
 	});
 
-	cache.insert(result, (uint) n, (uint) k, (uint) i);
-	return result;
+	return cache.insert(result, (uint) n, (uint) k, (uint) i);
 }
 
 mpq_class d_sin_pow_se4(int n, int k, int l, int i) {
@@ -242,8 +235,7 @@ mpq_class d_sin_pow(int n, int k, int l, int i) {
 
 	mpq_class ret = d_sin_pow_se4(n, k, l, i);  // ← LExpr/GMP pipeline (was: _se2)
 
-	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 }
 
 mpq_class c_sin(int n, int k, int l) {
@@ -253,8 +245,7 @@ mpq_class c_sin(int n, int k, int l) {
 		return *ret;
 
 	mpq_class ret = sin_pow_to_cos_mul(n, k, l, 0, 0, d_sin);
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class d_cos(int n, int k, int l) {
@@ -281,8 +272,7 @@ mpq_class d_cos(int n, int k, int l) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class c_cos(int n, int k, int l) {
@@ -292,8 +282,7 @@ mpq_class c_cos(int n, int k, int l) {
 		return *ret;
 
 	mpq_class ret = sin_pow_to_cos_mul(n, k, l, 0, -1, d_cos);
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class d_N_nkl(int n, int k, int l) {
@@ -314,8 +303,7 @@ mpq_class d_N_nkl(int n, int k, int l) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class bp_nkl(int n, int k, int l) {
@@ -338,8 +326,7 @@ mpq_class bp_nkl(int n, int k, int l) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class d_h(int n, int k, int l) {
@@ -354,8 +341,7 @@ mpq_class d_h(int n, int k, int l) {
 	} else {
 		ret = bp_nkl(n, k + 1, l) - d_N_nkl(n, k, l);
 	}
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class c_h(int n, int k, int l) {
@@ -365,8 +351,7 @@ mpq_class c_h(int n, int k, int l) {
 		return *ret;
 
 	mpq_class ret = sin_pow_to_cos_mul(n, k, l, 1, 0, d_h);
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 }  // namespace point_to_ellipse_series

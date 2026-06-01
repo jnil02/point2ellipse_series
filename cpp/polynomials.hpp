@@ -109,8 +109,7 @@ inline APoly ordinary_potential_polynomial2(int n, int i) {
 		A = std::move(div);
 	}
 
-	cache.insert(A, (uint) n, (uint) i);
-	return A;
+	return cache.insert(A, (uint) n, (uint) i);
 }
 
 // ---------------------------------------------------------------------------

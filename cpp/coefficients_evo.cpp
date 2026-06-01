@@ -61,8 +61,7 @@ mpq_class d_phi_evo(int n, int k, int l) {
 	result.canonicalize();
 
 	mpq_class ret = result;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class c_phi_evo(int n, int k, int l) {
@@ -110,8 +109,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 	}
 
 	mpq_class ret = c;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
@@ -128,8 +126,7 @@ static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
 		return a_nk_C_lexpr(j, m, c_phi_evo);
 	});
 
-	cache.insert(result, (uint) n, (uint) k, (uint) i);
-	return result;
+	return cache.insert(result, (uint) n, (uint) k, (uint) i);
 }
 
 mpq_class c_phi_pow_evo_se4(int n, int k, int l, int i) {
@@ -150,8 +147,7 @@ mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 
 	mpq_class ret = c_phi_pow_evo_se4(n, k, l, i);  // ← LExpr/GMP pipeline (was: _se2)
 
-	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 }
 
 mpq_class c_sin_phi_evo(int n, int k, int l) {
@@ -182,8 +178,7 @@ mpq_class c_sin_phi_evo(int n, int k, int l) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class c_cos_phi_evo(int n, int k, int l) {
@@ -214,8 +209,7 @@ mpq_class c_cos_phi_evo(int n, int k, int l) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class c_sin_phi_inv_evo(int n, int k, int l) {
@@ -246,8 +240,7 @@ mpq_class c_sin_phi_inv_evo(int n, int k, int l) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class a_mr(int m, int r) {
@@ -285,8 +278,7 @@ mpq_class a_mr(int m, int r) {
 	result.canonicalize();
 
 	mpq_class ret = result;
-	cache.insert(ret, (uint) m, (uint) r);
-	return ret;
+	return cache.insert(ret, (uint) m, (uint) r);
 }
 
 mpq_class B_rt(int r, int t) {
@@ -306,8 +298,7 @@ mpq_class B_rt(int r, int t) {
 	}
 
 	mpq_class ret = B;
-	cache.insert(ret, (uint) r, (uint) t);
-	return ret;
+	return cache.insert(ret, (uint) r, (uint) t);
 }
 
 mpq_class C_mt(int m, int t) {
@@ -322,8 +313,7 @@ mpq_class C_mt(int m, int t) {
 		C += a_mr(m, r) * B_rt(r, t);
 
 	mpq_class ret = C;
-	cache.insert(ret, (uint) m, (uint) t);
-	return ret;
+	return cache.insert(ret, (uint) m, (uint) t);
 }
 
 mpq_class R(int n, int k, int l, int i) {
@@ -346,8 +336,7 @@ mpq_class R(int n, int k, int l, int i) {
 	}
 
 	mpq_class ret = s;
-	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 }
 
 mpq_class B_p(int n, int k, int p) {
@@ -372,8 +361,7 @@ mpq_class B_p(int n, int k, int p) {
 	}
 
 	mpq_class ret = d;
-	cache.insert(ret, (uint) n, (uint) k, (uint) p);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) p);
 }
 
 mpq_class cp_evo_nkl(int n, int k, int l) {
@@ -397,8 +385,7 @@ mpq_class cp_evo_nkl(int n, int k, int l) {
 		ret = -c_sin_phi_inv_evo(n - 1, k - 1, l - 2);
 	}
 
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class c_h_evo(int n, int k, int l) {
@@ -421,8 +408,7 @@ mpq_class c_h_evo(int n, int k, int l) {
 		ret = cp_evo_nkl(n, k, l) - B_p(n, k, l);
 	}
 
-	cache.insert(ret, (uint) n, (uint) k, (uint) l);
-	return ret;
+	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
 mpq_class d_h_evo(int n, int k, int l) {

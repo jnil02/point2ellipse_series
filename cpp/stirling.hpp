@@ -18,8 +18,7 @@ inline mpz_class stirling2(unsigned n, unsigned k)
 	else if (k == n)        result = 1;
 	else result = mpz_class(k) * stirling2(n - 1, k) + stirling2(n - 1, k - 1);
 
-	cache.insert(result, n, k);
-	return result;
+	return cache.insert(result, n, k);
 }
 
 // Unsigned Stirling numbers of the first kind: c(n,k)
@@ -34,8 +33,7 @@ inline mpz_class stirling1_unsigned(unsigned n, unsigned k)
 	else if (k == n)        result = 1;
 	else result = mpz_class(n - 1) * stirling1_unsigned(n - 1, k) + stirling1_unsigned(n - 1, k - 1);
 
-	cache.insert(result, n, k);
-	return result;
+	return cache.insert(result, n, k);
 }
 
 // Signed Stirling numbers of the first kind: s(n,k)
