@@ -70,7 +70,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 
 	// Parity constraints — coefficient is zero unless both hold.
 	if ((k - n - 1) % 2 != 0 || (l - k) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
@@ -142,7 +142,7 @@ mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 
 	// Parity constraints from underlying c_phi_evo coefficients.
 	if ((i + n - k) % 2 != 0 || (l - k) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
@@ -159,7 +159,7 @@ mpq_class c_sin_phi_evo(int n, int k, int l) {
 
 	// Parity constraints.
 	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
@@ -191,7 +191,7 @@ mpq_class c_cos_phi_evo(int n, int k, int l) {
 
 	// Parity constraints.
 	if ((n + 1 - k) % 2 != 0 || (l - k) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
@@ -223,7 +223,7 @@ mpq_class c_sin_phi_inv_evo(int n, int k, int l) {
 
 	// Parity constraints — same as d_sin_phi_evo.
 	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
@@ -354,7 +354,7 @@ mpq_class B_p(int n, int k, int p) {
 	assert(n >= 0 && k >= n && p >= 0 && p <= k + 1);
 
 	if ((n - k) % 2 != 0 || (n - p - 1) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) p))
@@ -380,7 +380,7 @@ mpq_class cp_evo_nkl(int n, int k, int l) {
 	assert(n >= 1 && k >= n && l >= 0 && l <= k + 1);
 
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
@@ -405,7 +405,7 @@ mpq_class c_h_evo(int n, int k, int l) {
 	assert(n >= 0 && k >= n && l >= 0 && l <= k + 1);
 
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
-		return mpq_class(0);
+		return {0};
 
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))

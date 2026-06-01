@@ -63,7 +63,7 @@ inline mpq_class lexpr_eval(
 		const LExpr& e,
 		const std::function<mpq_class(int, int)>& var_fn,
 		std::unordered_map<const LNode*, mpq_class>& memo) {
-	if (!e) return mpq_class(0);
+	if (!e) return {0};
 
 	auto it = memo.find(e.get());
 	if (it != memo.end()) return it->second;
@@ -79,7 +79,7 @@ inline mpq_class lexpr_eval(
 				   + lexpr_eval(node.b, var_fn, memo);
 		} else { // LMulNode
 			mpq_class lv = lexpr_eval(node.a, var_fn, memo);
-			if (lv == 0) return mpq_class(0);
+			if (lv == 0) return {0};
 			return lv * lexpr_eval(node.b, var_fn, memo);
 		}
 	}, e->data);

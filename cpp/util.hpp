@@ -46,9 +46,9 @@ inline long powm1(long n) {
  * @return
  */
 inline mpq_class int_bin(long n, long k) {
-	if (k < 0) return mpq_class(0);
+	if (k < 0) return {0};
 	if (n >= 0) {
-		if (k > n) return mpq_class(0);
+		if (k > n) return {0};
 		mpz_class result;
 		mpz_bin_uiui(result.get_mpz_t(), (unsigned long) n, (unsigned long) k);
 		return mpq_class(result);
@@ -68,8 +68,8 @@ inline mpq_class int_bin(long n, long k) {
  * @return
  */
 inline mpq_class binomial_rational(const mpq_class& n, long k) {
-	if (k < 0) return mpq_class(0);
-	if (k == 0) return mpq_class(1);
+	if (k < 0) return {0};
+	if (k == 0) return {1};
 	mpq_class result(1);
 	mpq_class d = n - mpq_class(k - 1);
 	for (long i = 0; i < k; ++i) {
