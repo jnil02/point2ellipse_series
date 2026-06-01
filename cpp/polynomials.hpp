@@ -10,6 +10,7 @@
 
 #include "cache.hpp"
 #include "util.hpp"
+#include "lexpr.hpp"
 
 namespace point_to_ellipse_series {
 
@@ -263,6 +264,53 @@ tau(int J, const Expression &omega, const Expression &delta) {
 		d += Expression(div(integer(powm1(j2)), factorial(j))) * pow(delta, j2);
 	}
 	return omega * d;
+}
+
+// ---------------------------------------------------------------------------
+// Dense polynomial in e² (index = power of e²).
+// ---------------------------------------------------------------------------
+
+using E2Poly = std::vector<mpq_class>;
+
+inline E2Poly e2poly_add(E2Poly a, const E2Poly& b) {
+	if (b.size() > a.size()) a.resize(b.size(), mpq_class(0));
+	for (size_t i = 0; i < b.size(); ++i) {
+		a[i] += b[i];
+		a[i].canonicalize();
+	}
+	return a;
+}
+
+inline E2Poly e2poly_mul(const E2Poly& a, const E2Poly& b) {
+	if (a.empty() || b.empty()) return {};
+	E2Poly result(a.size() + b.size() - 1, mpq_class(0));
+	for (size_t i = 0; i < a.size(); ++i) {
+		if (a[i] == 0) continue;
+		for (size_t j = 0; j < b.size(); ++j) {
+			if (b[j] == 0) continue;
+			result[i + j] += a[i] * b[j];
+			result[i + j].canonicalize();
+		}
+	}
+	return result;
+}
+
+// Partial ordinary Bell polynomial B_{k,i}(a_{j,1}, a_{j,2}, ...) as LExpr.
+// Variables: lexpr_var(j, m) for inner index m = 1, 2, ..., k-i+1.
+inline LExpr partial_bell_lexpr(int k, int i, int j) {
+	static std::map<std::tuple<int,int,int>, LExpr> cache;
+	auto key = std::make_tuple(k, i, j);
+	auto it = cache.find(key);
+	if (it != cache.end()) return it->second;
+
+	LExpr B;
+	if (i == 0) {
+		B = (k == 0) ? lexpr_const(mpq_class(1)) : LExpr{};
+	} else {
+		for (int m = 1; m <= k - i + 1; ++m)
+			B += lexpr_var(j, m) * partial_bell_lexpr(k - m, i - 1, j);
+	}
+	return cache[key] = B;
 }
 
 } // namespace point_to_ellipse_series

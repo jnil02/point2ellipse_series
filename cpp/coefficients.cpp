@@ -196,13 +196,36 @@ mpq_class d_sin_pow_se2(int n, int k, int l, int i) {
 	return expr_to_mpq(Expression(coeff_of2(expand(poly), e2sym, l)));
 }
 
+static E2Poly d_phi_pow_e2poly_se4(int n, int k, int i) {
+	static auto cache = UintsCache<E2Poly>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i)) return *ret;
+
+	static std::map<std::pair<int,int>, std::shared_ptr<TSeriesBase<LExpr>>> series_cache;
+	auto key = std::make_pair(n, i);
+	if (!series_cache.count(key))
+		series_cache[key] = double_series_power_coeff_lexpr(n, i);
+
+	LExpr lp = series_cache[key]->getItem(k);
+	E2Poly result = lexpr_eval_e2poly(lp, [](int j, int m) {
+		return a_nk_ser_lexpr(j, m, 1, d_phi);
+	});
+
+	cache.insert(result, (uint) n, (uint) k, (uint) i);
+	return result;
+}
+
+mpq_class d_phi_pow_se4(int n, int k, int l, int i) {
+	E2Poly ep = d_phi_pow_e2poly_se4(n, k, i);
+	return (l < (int) ep.size()) ? ep[l] : mpq_class(0);
+}
+
 mpq_class d_phi_pow(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= i && l >= std::max(n + i, k) && l <= n + k && i >= 1);
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	mpq_class ret = d_phi_pow_se2(n, k, l, i);
+	mpq_class ret = d_phi_pow_se4(n, k, l, i);  // ← LExpr/GMP pipeline (was: _se2)
 
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;
@@ -280,13 +303,36 @@ mpq_class d_phi_pow_se2(int n, int k, int l, int i) {
 	return expr_to_mpq(coeff_of2(expand(poly).get_basic(), e2sym, l));
 }
 
+static E2Poly d_sin_pow_e2poly_se4(int n, int k, int i) {
+	static auto cache = UintsCache<E2Poly>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i)) return *ret;
+
+	static std::map<std::pair<int,int>, std::shared_ptr<TSeriesBase<LExpr>>> series_cache;
+	auto key = std::make_pair(n, i);
+	if (!series_cache.count(key))
+		series_cache[key] = double_series_power_coeff_lexpr(n, i);
+
+	LExpr lp = series_cache[key]->getItem(k);
+	E2Poly result = lexpr_eval_e2poly(lp, [](int j, int m) {
+		return a_nk_ser_lexpr(j, m, 0, d_sin);
+	});
+
+	cache.insert(result, (uint) n, (uint) k, (uint) i);
+	return result;
+}
+
+mpq_class d_sin_pow_se4(int n, int k, int l, int i) {
+	E2Poly ep = d_sin_pow_e2poly_se4(n, k, i);
+	return (l < (int) ep.size()) ? ep[l] : mpq_class(0);
+}
+
 mpq_class d_sin_pow(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= 0 && l >= 0 && l <= n + k && i >= 0);
 	static auto cache = UintsCache<mpq_class>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	mpq_class ret = d_sin_pow_se2(n, k, l, i);
+	mpq_class ret = d_sin_pow_se4(n, k, l, i);  // ← LExpr/GMP pipeline (was: _se2)
 
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;

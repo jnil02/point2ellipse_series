@@ -31,5 +31,6 @@ mpq_class d_h_evo(int n, int k, int l);
 // FIXME(JO) Exposed for tests. Put in different header.
 mpq_class c_phi_pow_evo_se(int n, int k, int l, int i);
 mpq_class c_phi_pow_evo_se2(int n, int k, int l, int i);
+mpq_class c_phi_pow_evo_se4(int n, int k, int l, int i);
 
 }  // namespace point_to_ellipse_series

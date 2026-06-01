@@ -161,6 +161,29 @@ mpq_class c_phi_pow_evo_se2(int n, int k, int l, int i) {
 	return expr_to_mpq(coeff_of2(expand(poly).get_basic(), e2sym, l));
 }
 
+static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
+	static auto cache = UintsCache<E2Poly>();
+	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i)) return *ret;
+
+	static std::map<std::pair<int,int>, std::shared_ptr<TSeriesBase<LExpr>>> series_cache;
+	auto key = std::make_pair(n, i);
+	if (!series_cache.count(key))
+		series_cache[key] = double_series_power_coeff_lexpr(n, i);
+
+	LExpr lp = series_cache[key]->getItem(k);
+	E2Poly result = lexpr_eval_e2poly(lp, [](int j, int m) {
+		return a_nk_C_lexpr(j, m, c_phi_evo);
+	});
+
+	cache.insert(result, (uint) n, (uint) k, (uint) i);
+	return result;
+}
+
+mpq_class c_phi_pow_evo_se4(int n, int k, int l, int i) {
+	E2Poly ep = c_phi_pow_evo_e2poly_se4(n, k, i);
+	return (l < (int) ep.size()) ? ep[l] : mpq_class(0);
+}
+
 mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= n + i && l >= i && l <= k && i >= 0);
 
@@ -172,7 +195,7 @@ mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
-	mpq_class ret = c_phi_pow_evo_se2(n, k, l, i);
+	mpq_class ret = c_phi_pow_evo_se4(n, k, l, i);  // ← LExpr/GMP pipeline (was: _se2)
 
 	cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 	return ret;
