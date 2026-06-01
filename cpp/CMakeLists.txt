@@ -9,7 +9,6 @@ set(CMAKE_CXX_FLAGS -O2)
 
 add_executable(main
         main.cpp
-        series.cpp
         coefficients.cpp
         )
 
@@ -29,7 +28,6 @@ target_compile_definitions(main
 set(PTECOEF_SOURCE
         coefficients.cpp
         coefficients_evo.cpp
-        series.cpp
         )
 
 add_library(ptecoef_shared SHARED ${PTECOEF_SOURCE})
@@ -37,6 +35,9 @@ add_library(ptecoef_static STATIC ${PTECOEF_SOURCE})
 
 set_target_properties(ptecoef_shared PROPERTIES OUTPUT_NAME ptecoef)
 set_target_properties(ptecoef_static PROPERTIES OUTPUT_NAME ptecoef)
+
+target_link_libraries(ptecoef_shared PRIVATE gmpxx gmp)
+target_link_libraries(ptecoef_static PRIVATE gmpxx gmp)
 
 include(GNUInstallDirs)
 
@@ -60,7 +61,6 @@ add_executable(sweep_evo
         sweep_evo.cpp
         coefficients.cpp
         coefficients_evo.cpp
-        series.cpp
         )
 
 target_include_directories(sweep_evo
@@ -87,7 +87,6 @@ add_executable(bench_coefficients
         benchmarks/bench_coefficients.cpp
         coefficients.cpp
         coefficients_evo.cpp
-        series.cpp
         )
 
 target_include_directories(bench_coefficients
@@ -113,7 +112,6 @@ add_executable(bench_series_evo
         benchmarks/bench_series_evo.cpp
         coefficients.cpp
         coefficients_evo.cpp
-        series.cpp
         )
 
 target_include_directories(bench_series_evo

@@ -1,10 +1,7 @@
 
-#include <symengine/expression.h>
-#include <symengine/ntheory.h>
-#include <symengine/rational.h>
-#include <symengine/symbol.h>
+#include <cassert>
+#include <map>
 
-#include "series.hpp"
 #include "series_substitution.hpp"
 #include "cache.hpp"
 #include "util.hpp"
@@ -12,8 +9,6 @@
 #include "coefficients.hpp"
 
 namespace point_to_ellipse_series {
-
-using SymEngine::Expression;
 
 using uint = unsigned int;
 
@@ -153,49 +148,6 @@ mpq_class c_phi(int n, int k, int l) {
 	return ret;
 }
 
-Expression d_phi_pow_polynomial(int n, int k, int i) {
-	assert(n >= 0 && k >= 0 && i >= 0);
-	static auto cache = UintsCache<Expression>();
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
-		return *ret;
-
-	// Series for b_{n,i}, take the k-th coefficient.
-	Expression b_ni_k = double_series_power_coeff(n, i)->getItem(k);
-
-	// Substitute a_{n,k} using a_nk_ser with d_phi and n_offset=1.
-	auto d = a_nk_sub(b_ni_k, [](int n, int k) {
-		return a_nk_ser(n, k, 1, d_phi);
-	});
-
-	cache.insert(d, (uint) n, (uint) k, (uint) i);
-	return d;
-}
-
-mpq_class d_phi_pow_se(int n, int k, int l, int i) {
-	Expression poly = d_phi_pow_polynomial(n, k, i);
-	return expr_to_mpq(coeff_of(expand(poly).get_basic(), e2sym, l));
-}
-
-Expression d_sin_pow_polynomial2(int n, int k, int i) {
-	assert(n >= 0 && k >= 0 && i >= 0);
-	static auto cache = UintsCache<Expression>();
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
-		return *ret;
-
-	Expression b_ni_k = double_series_power_coeff2(n, i)->getItem(k);
-	Expression d(a_nk_sub2(b_ni_k, [](int n, int k) {
-		return a_nk_ser2(n, k, 0, d_sin);
-	}));
-
-	cache.insert(d, (uint) n, (uint) k, (uint) i);
-	return d;
-}
-
-mpq_class d_sin_pow_se2(int n, int k, int l, int i) {
-	Expression poly = d_sin_pow_polynomial2(n, k, i);
-	return expr_to_mpq(Expression(coeff_of2(expand(poly), e2sym, l)));
-}
-
 static E2Poly d_phi_pow_e2poly_se4(int n, int k, int i) {
 	static auto cache = UintsCache<E2Poly>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i)) return *ret;
@@ -259,50 +211,6 @@ mpq_class d_sin(int n, int k, int l) {
 	return ret;
 }
 
-/** Polynomial for the δ^k coefficient in b_{n,i}, using d_sin for inner coefficients. */
-Expression d_sin_pow_polynomial(int n, int k, int i) {
-	assert(n >= 0 && k >= 0 && i >= 0);
-	static auto cache = UintsCache<Expression>();
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
-		return *ret;
-
-	// Series for b_{n,i}, take the k-th coefficient.
-	Expression b_ni_k = double_series_power_coeff(n, i)->getItem(k);
-
-	// Substitute a_{n,k} using a_nk_ser with d_sin and n_offset=0.
-	Expression d(a_nk_sub(b_ni_k, [](int n, int k) {
-		return a_nk_ser(n, k, 0, d_sin);
-	}));
-
-	cache.insert(d, (uint) n, (uint) k, (uint) i);
-	return d;
-}
-
-mpq_class d_sin_pow_se(int n, int k, int l, int i) {
-	Expression poly = d_sin_pow_polynomial(n, k, i);
-	return expr_to_mpq(Expression(coeff_of(expand(poly), e2sym, l)));
-}
-
-Expression d_phi_pow_polynomial2(int n, int k, int i) {
-	assert(n >= 0 && k >= 0 && i >= 0);
-	static auto cache = UintsCache<Expression>();
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
-		return *ret;
-
-	Expression b_ni_k = double_series_power_coeff2(n, i)->getItem(k);
-	auto d = a_nk_sub2(b_ni_k, [](int n, int k) {
-		return a_nk_ser2(n, k, 1, d_phi);
-	});
-
-	cache.insert(d, (uint) n, (uint) k, (uint) i);
-	return d;
-}
-
-mpq_class d_phi_pow_se2(int n, int k, int l, int i) {
-	Expression poly = d_phi_pow_polynomial2(n, k, i);
-	return expr_to_mpq(coeff_of2(expand(poly).get_basic(), e2sym, l));
-}
-
 static E2Poly d_sin_pow_e2poly_se4(int n, int k, int i) {
 	static auto cache = UintsCache<E2Poly>();
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i)) return *ret;
@@ -344,9 +252,7 @@ mpq_class c_sin(int n, int k, int l) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
-	Expression d(sin_pow_to_cos_mul(n, k, l, 0, 0, d_sin));
-
-	mpq_class ret = expr_to_mpq(d);
+	mpq_class ret = sin_pow_to_cos_mul(n, k, l, 0, 0, d_sin);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l);
 	return ret;
 }
@@ -385,9 +291,7 @@ mpq_class c_cos(int n, int k, int l) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
-	Expression d(sin_pow_to_cos_mul(n, k, l, 0, -1, d_cos));
-
-	mpq_class ret = expr_to_mpq(d);
+	mpq_class ret = sin_pow_to_cos_mul(n, k, l, 0, -1, d_cos);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l);
 	return ret;
 }
@@ -460,9 +364,7 @@ mpq_class c_h(int n, int k, int l) {
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
-	Expression d(sin_pow_to_cos_mul(n, k, l, 1, 0, d_h));
-
-	mpq_class ret = expr_to_mpq(d);
+	mpq_class ret = sin_pow_to_cos_mul(n, k, l, 1, 0, d_h);
 	cache.insert(ret, (uint) n, (uint) k, (uint) l);
 	return ret;
 }

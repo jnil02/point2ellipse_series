@@ -3,7 +3,6 @@ add_executable(test_coefficients
         test_stirling.cpp
         ../coefficients.cpp
         ../coefficients_evo.cpp
-        ../series.cpp
         )
 
 target_include_directories(test_coefficients
@@ -15,8 +14,6 @@ target_include_directories(test_coefficients
 
 target_link_libraries(test_coefficients
         PRIVATE
-        symengine
-        mpfr
         gmpxx
         gmp
         )
@@ -33,7 +30,6 @@ add_executable(test_series
         test_series.cpp
         ../coefficients.cpp
         ../coefficients_evo.cpp
-        ../series.cpp
         )
 
 target_include_directories(test_series
@@ -60,7 +56,6 @@ add_executable(test_series_evo
         test_series_evo.cpp
         ../coefficients.cpp
         ../coefficients_evo.cpp
-        ../series.cpp
         )
 
 target_include_directories(test_series_evo

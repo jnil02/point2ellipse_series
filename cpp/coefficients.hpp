@@ -19,11 +19,7 @@ mpq_class c_h(int n, int k, int l);
 mpq_class d_h(int n, int k, int l);
 
 // FIXME(JO) Exposed for tests. Put in different header.
-mpq_class d_phi_pow_se(int n, int k, int l, int i);
-mpq_class d_phi_pow_se2(int n, int k, int l, int i);
 mpq_class d_phi_pow_se4(int n, int k, int l, int i);
-mpq_class d_sin_pow_se(int n, int k, int l, int i);
-mpq_class d_sin_pow_se2(int n, int k, int l, int i);
 mpq_class d_sin_pow_se4(int n, int k, int l, int i);
 
 }  // namespace point_to_ellipse_series

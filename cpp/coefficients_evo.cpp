@@ -1,8 +1,6 @@
 
-#include <symengine/expression.h>
-#include <symengine/ntheory.h>
-#include <symengine/rational.h>
-#include <symengine/symbol.h>
+#include <cassert>
+#include <map>
 
 #include "cache.hpp"
 #include "util.hpp"
@@ -12,8 +10,6 @@
 #include "stirling.hpp"
 
 namespace point_to_ellipse_series {
-
-using SymEngine::Expression;
 
 using uint = unsigned int;
 
@@ -116,49 +112,6 @@ mpq_class c_phi_evo(int n, int k, int l) {
 	mpq_class ret = c;
 	cache.insert(ret, (uint) n, (uint) k, (uint) l);
 	return ret;
-}
-
-Expression d_phi_pow_evo_polynomial(int n, int k, int i) {
-	assert(n >= 0 && k >= 0 && i >= 0);
-	static auto cache = UintsCache<Expression>();
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
-		return *ret;
-
-	// Series for b_{n,i}, take the k-th coefficient.
-	Expression b_ni_k = double_series_power_coeff(n, i)->getItem(k);
-
-	// Substitute a_{n,k} using a_nk_C with c_phi_evo.
-	Expression d = a_nk_sub(b_ni_k, [](int n, int k) {
-		return a_nk_C(n, k, c_phi_evo);
-	});
-
-	cache.insert(d, (uint) n, (uint) k, (uint) i);
-	return d;
-}
-
-mpq_class c_phi_pow_evo_se(int n, int k, int l, int i) {
-	Expression poly = d_phi_pow_evo_polynomial(n, k, i);
-	return expr_to_mpq(coeff_of(expand(poly).get_basic(), e2sym, l));
-}
-
-Expression d_phi_pow_evo_polynomial2(int n, int k, int i) {
-	assert(n >= 0 && k >= 0 && i >= 0);
-	static auto cache = UintsCache<Expression>();
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i))
-		return *ret;
-
-	Expression b_ni_k = double_series_power_coeff2(n, i)->getItem(k);
-	Expression d = a_nk_sub2(b_ni_k, [](int n, int k) {
-		return a_nk_C2(n, k, c_phi_evo);
-	});
-
-	cache.insert(d, (uint) n, (uint) k, (uint) i);
-	return d;
-}
-
-mpq_class c_phi_pow_evo_se2(int n, int k, int l, int i) {
-	Expression poly = d_phi_pow_evo_polynomial2(n, k, i);
-	return expr_to_mpq(coeff_of2(expand(poly).get_basic(), e2sym, l));
 }
 
 static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
@@ -319,7 +272,7 @@ mpq_class a_mr(int m, int r) {
 			b += mpq_class(mpz_class(powm1(k - t)) * b2k_kt * t_2m);
 		}
 
-		mpz_class s1 = se_integer_to_mpz(*stirling1_signed((uint) k, (uint) r));
+		mpz_class s1 = stirling1_signed((uint) k, (uint) r);
 		mpz_class fact_k, shift_kr;
 		mpz_fac_ui(fact_k.get_mpz_t(), (unsigned long) k);
 		mpz_ui_pow_ui(shift_kr.get_mpz_t(), 2, (unsigned long) (k - r));
@@ -346,7 +299,7 @@ mpq_class B_rt(int r, int t) {
 	mpq_class B(0);
 
 	for (int k = t; k <= r; ++k) {
-		mpz_class s2 = se_integer_to_mpz(*stirling2((uint) r, (uint) k));
+		mpz_class s2 = stirling2((uint) r, (uint) k);
 		mpz_class bk_t;
 		mpz_bin_uiui(bk_t.get_mpz_t(), (unsigned long) k, (unsigned long) t);
 		B += mpq_class(s2 * mpz_class(powm1(k - t)) * bk_t) * rf_half(1, k);

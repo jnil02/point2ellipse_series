@@ -3,12 +3,18 @@
 #include <symengine/expression.h>
 #include <symengine/functions.h>
 #include <symengine/pow.h>
+#include <symengine/rational.h>
 #include <mpreal.h>
 
 #include "coefficients.hpp"
 #include "util.hpp"
 
 namespace point_to_ellipse_series {
+
+inline SymEngine::Expression mpq_to_expr(const mpq_class& d) {
+	SymEngine::rational_class q(d.get_mpq_t());
+	return SymEngine::Expression(SymEngine::Rational::from_mpq(std::move(q)));
+}
 
 // Convert rational coefficient to type T.
 template<typename T>

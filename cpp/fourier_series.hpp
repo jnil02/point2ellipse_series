@@ -5,6 +5,7 @@
  */
 
 #include <symengine/expression.h>
+#include <symengine/ntheory.h>
 
 #include "coefficients.hpp"
 #include "polynomials.hpp"
@@ -26,13 +27,32 @@ using point_to_ellipse_series::c_cos;
 using point_to_ellipse_series::d_h;
 using point_to_ellipse_series::c_h;
 
-using point_to_ellipse_series::mpq_to_expr;
 using point_to_ellipse_series::series_coeff;
 using point_to_ellipse_series::series_pow;
 using point_to_ellipse_series::series_sin_mul;
 using point_to_ellipse_series::series_cos_mul;
-using point_to_ellipse_series::sigma;
-using point_to_ellipse_series::tau;
+
+inline Expression sigma(int J, const Expression& delta) {
+	Expression d(0);
+	for (int j = 0; j < J; j += 2) {
+		int j2 = j / 2;
+		d += Expression(SymEngine::div(SymEngine::integer(point_to_ellipse_series::powm1(j2)),
+									   SymEngine::factorial(j)))
+			 * pow(delta, Expression(j2));
+	}
+	return d;
+}
+
+inline Expression tau(int J, const Expression& omega, const Expression& delta) {
+	Expression d(0);
+	for (int j = 1; j < J; j += 2) {
+		int j2 = (j - 1) / 2;
+		d += Expression(SymEngine::div(SymEngine::integer(point_to_ellipse_series::powm1(j2)),
+									   SymEngine::factorial(j)))
+			 * pow(delta, Expression(j2));
+	}
+	return omega * d;
+}
 
 /** Series expansion of (phi - psi) / (sin(psi) * cos(psi)) in sin-powers.
  *
