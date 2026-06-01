@@ -16,7 +16,7 @@ using uint = unsigned int;
 mpq_class d_phi_evo(int n, int k, int l) {
 	assert(n >= 0 && k >= 0 && l >= 0 && l <= n / 2 + k);
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
@@ -71,7 +71,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 	if ((k - n - 1) % 2 != 0 || (l - k) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
@@ -113,7 +113,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 }
 
 static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
-	static auto cache = UintsCache<E2Poly>();
+	static UintsCache<E2Poly> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i)) return *ret;
 
 	static std::map<std::pair<int,int>, std::shared_ptr<TSeriesBase<LExpr>>> series_cache;
@@ -141,7 +141,7 @@ mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
 	if ((i + n - k) % 2 != 0 || (l - k) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
@@ -157,7 +157,7 @@ mpq_class c_sin_phi_evo(int n, int k, int l) {
 	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
@@ -188,7 +188,7 @@ mpq_class c_cos_phi_evo(int n, int k, int l) {
 	if ((n + 1 - k) % 2 != 0 || (l - k) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
@@ -219,7 +219,7 @@ mpq_class c_sin_phi_inv_evo(int n, int k, int l) {
 	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
@@ -249,7 +249,7 @@ mpq_class a_mr(int m, int r) {
 	if (m == 0 && r == 0)
 		return {1, 1};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) m, (uint) r))
 		return *ret;
 
@@ -284,7 +284,7 @@ mpq_class a_mr(int m, int r) {
 mpq_class B_rt(int r, int t) {
 	assert(r >= 0 && t >= 0 && r >= t);
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) r, (uint) t))
 		return *ret;
 
@@ -304,7 +304,7 @@ mpq_class B_rt(int r, int t) {
 mpq_class C_mt(int m, int t) {
 	assert(m >= 0 && t >= 0 && t <= m);
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) m, (uint) t))
 		return *ret;
 
@@ -319,7 +319,7 @@ mpq_class C_mt(int m, int t) {
 mpq_class R(int n, int k, int l, int i) {
 	assert(n >= 0 && k >= n && l >= 0 && l <= k && i >= 0 && i <= l / 2);
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
 		return *ret;
 
@@ -345,7 +345,7 @@ mpq_class B_p(int n, int k, int p) {
 	if ((n - k) % 2 != 0 || (n - p - 1) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) p))
 		return *ret;
 
@@ -370,7 +370,7 @@ mpq_class cp_evo_nkl(int n, int k, int l) {
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 
@@ -394,7 +394,7 @@ mpq_class c_h_evo(int n, int k, int l) {
 	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
 		return {0};
 
-	static auto cache = UintsCache<mpq_class>();
+	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
 		return *ret;
 

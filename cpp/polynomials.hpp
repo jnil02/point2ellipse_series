@@ -83,7 +83,7 @@ inline static APoly apoly_div_a0(const APoly &p) {
 // Returns a polynomial in indexed a_j variables with mpq_class coefficients.
 inline APoly ordinary_potential_polynomial2(int n, int i) {
 	assert(n >= 0 && i >= 0);
-	static auto cache = UintsCache<APoly>();
+	static UintsCache<APoly> cache;
 	if (auto *ret = cache.get((uint) n, (uint) i))
 		return *ret;
 
