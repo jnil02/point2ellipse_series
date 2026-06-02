@@ -33,16 +33,11 @@ inline T phi_evo_sin_pow_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = 0; l <= n / 2 + k; ++l)
-				d = d + series_coeff<T>(d_phi_evo(n, k, l))
-						* series_pow(sin_psi_v, n)
-						* series_pow(rho_ae2_v, n + 1 + 2 * k)
-						* series_pow(b_a_v, (n % 2) + 1 + 2 * l);
+				d = d + point_to_ellipse_series::series_coeff<T>(d_phi_evo(n, k, l))
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n)
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 1 + 2 * k)
+						* point_to_ellipse_series::series_pow<T>(b_a_v, (n % 2) + 1 + 2 * l);
 	return d;
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression phi_evo_sin_pow_dense(int N, int K) {
-	return phi_evo_sin_pow_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
 }
 
 template<typename T>
@@ -50,27 +45,21 @@ inline T phi_evo_sin_pow_dense_m(int M,
 								 const T& sin_psi_v, const T& rho_ae2_v, const T& b_a_v) {
 	T d(0);
 	for (int m = 1; m <= M; ++m) {
-		const T   rho_m  = series_pow(rho_ae2_v, m);
+		const T   rho_m  = point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 		const int L      = (m - 1) / 2;   // floor((m-1)/2): upper bound for k and l
 		const int parity = (m - 1) % 2;   // n%2 == (m-1)%2 for all valid n at this m
 		for (int k = 0; k <= L; ++k) {
 			const int n     = m - 1 - 2 * k;
-			const T   sin_n = series_pow(sin_psi_v, n);
+			const T   sin_n = point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 			for (int l = 0; l <= L; ++l)
-				d = d + series_coeff<T>(d_phi_evo(n, k, l))
+				d = d + point_to_ellipse_series::series_coeff<T>(d_phi_evo(n, k, l))
 						* sin_n
 						* rho_m
-						* series_pow(b_a_v, parity + 1 + 2 * l);
+						* point_to_ellipse_series::series_pow<T>(b_a_v, parity + 1 + 2 * l);
 		}
 	}
 	return d;
 }
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression phi_evo_sin_pow_dense_m(int K) {
-	return phi_evo_sin_pow_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
-}
-
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (sparse).
  *
@@ -91,17 +80,12 @@ inline T phi_evo_sin_pow(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = n + 1; k <= K; ++k)
 			for (int l = 1; l <= k; ++l)
-				d = d + series_coeff<T>(c_phi_evo(n, k, l))
+				d = d + point_to_ellipse_series::series_coeff<T>(c_phi_evo(n, k, l))
 						* cos_psi_v
-						* series_pow(sin_psi_v, n)
-						* series_pow(rho_ae2_v, k)
-						* series_pow(b_a_v, l);
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n)
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
+						* point_to_ellipse_series::series_pow<T>(b_a_v, l);
 	return d;
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression phi_evo_sin_pow(int N, int K) {
-	return phi_evo_sin_pow<Expression>(N, K, sin_psi, cos_psi, rho_ae2, b_a);
 }
 
 /** Inside-evolute series for sin(phi) in sin-powers (dense).
@@ -121,16 +105,11 @@ inline T sin_phi_evo_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; n + 2 * k <= K; ++k)
 			for (int l = 1; l <= n / 2 + k; ++l)
-				s = s + series_coeff<T>(d_sin_phi_evo(n, k, l))
-				        * series_pow(b_a_v, 2 * l + (n % 2))
-						* series_pow(rho_ae2_v, n + 2 * k)
-						* series_pow(sin_psi_v, n);
+				s = s + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(n, k, l))
+						* point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + (n % 2))
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 2 * k)
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 	return s;
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression sin_phi_evo_dense(int N, int K) {
-	return sin_phi_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
 }
 
 template<typename T>
@@ -145,21 +124,15 @@ inline T sin_phi_evo_dense_m(int M,
 		for (int k = 0; k <= m / 2; ++k) {
 			const int n = m - 2 * k;
 			for (int l = 1; l <= m / 2; ++l) {
-				cm = cm + series_coeff<T>(d_sin_phi_evo(n, k, l))
-						  * series_pow(b_a_v, 2 * l + (m % 2))
-						  * series_pow(sin_psi_v, n);
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(n, k, l))
+						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + (m % 2))
+						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 			}
 		}
-		s = s + cm * series_pow(rho_ae2_v, m);
+		s = s + cm * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 	}
 	return s;
 }
-
-
-inline Expression sin_phi_evo_dense_m(int K) {
-	return sin_phi_evo_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
-}
-
 
 /** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (dense).
  *
@@ -178,23 +151,18 @@ inline T cos_phi_evo_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; n + 1 + 2 * k <= K; ++k)
 			for (int l = n % 2; l <= (n + 1) / 2 + k; ++l)
-				s = s + series_coeff<T>(d_cos_phi_evo(n, k, l))
-						* series_pow(b_a_v, 2 * l + 1 - (n % 2))
-						* series_pow(rho_ae2_v, n + 1 + 2 * k)
-						* series_pow(sin_psi_v, n);
+				s = s + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(n, k, l))
+						* point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + 1 - (n % 2))
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 1 + 2 * k)
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 	return s;
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression cos_phi_evo_dense(int N, int K) {
-	return cos_phi_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
 }
 
 template<typename T>
 inline T cos_phi_evo_dense_m(int M,
-									  const T& sin_psi_v,
-									  const T& rho_ae2_v,
-									  const T& b_a_v) {
+							 const T& sin_psi_v,
+							 const T& rho_ae2_v,
+							 const T& b_a_v) {
 	T s(0);
 
 	for (int m = 1; m <= M; ++m) {
@@ -203,20 +171,15 @@ inline T cos_phi_evo_dense_m(int M,
 			const int n = m - 1 - 2 * k;
 			const int p = n % 2;  // same as (m - 1) % 2
 			for (int l = p; l <= m / 2; ++l) {
-				cm = cm + series_coeff<T>(d_cos_phi_evo(n, k, l))
-						  * series_pow(b_a_v, 2 * l + 1 - p)
-						  * series_pow(sin_psi_v, n);
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(n, k, l))
+						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + 1 - p)
+						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 			}
 		}
-		s = s + cm * series_pow(rho_ae2_v, m);
+		s = s + cm * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 	}
 	return s;
 }
-
-inline Expression cos_phi_evo_dense_m(int N) {
-	return cos_phi_evo_dense_m<Expression>(N, sin_psi, rho_ae2, b_a);
-}
-
 
 /** Inside-evolute series for h/a in sin-powers.
  *
@@ -235,16 +198,11 @@ inline T h_a_evo(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = n; k <= K; ++k)
 			for (int l = 0; l <= k + 1; ++l)
-				s = s + series_coeff<T>(c_h_evo(n, k, l))
-						* series_pow(b_a_v, l)
-						* series_pow(rho_ae2_v, k)
-						* series_pow(sin_psi_v, n);
+				s = s + point_to_ellipse_series::series_coeff<T>(c_h_evo(n, k, l))
+						* point_to_ellipse_series::series_pow<T>(b_a_v, l)
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 	return s;
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression h_a_evo(int N, int K) {
-	return h_a_evo<Expression>(N, K, sin_psi, rho_ae2, b_a);
 }
 
 /** Inside-evolute series for h/a in sin-powers (dense).
@@ -265,24 +223,19 @@ inline T h_a_evo_dense(int N, int K,
 		int sn = n % 2;
 		for (int k = 0; n + 2 * k <= K; ++k)
 			for (int l = 0; l <= k + (n + 1) / 2; ++l)
-				s = s + series_coeff<T>(d_h_evo(n, k, l))
-						* series_pow(b_a_v, 1 - sn + 2 * l)
-						* series_pow(rho_ae2_v, n + 2 * k)
-						* series_pow(sin_psi_v, n);
+				s = s + point_to_ellipse_series::series_coeff<T>(d_h_evo(n, k, l))
+						* point_to_ellipse_series::series_pow<T>(b_a_v, 1 - sn + 2 * l)
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 2 * k)
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 	}
 	return s;
 }
 
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression h_a_evo_dense(int N, int K) {
-	return h_a_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
-}
-
 template<typename T>
 inline T h_a_evo_dense_m(int M,
-								  const T& sin_psi_v,
-								  const T& rho_ae2_v,
-								  const T& b_a_v) {
+						 const T& sin_psi_v,
+						 const T& rho_ae2_v,
+						 const T& b_a_v) {
 	T s(0);
 
 	for (int m = 0; m <= M; ++m) {
@@ -292,16 +245,12 @@ inline T h_a_evo_dense_m(int M,
 			const int n = m - 2 * k;
 			const int sn = m % 2;  // same as n % 2
 			for (int l = 0; l <= (m + 1) / 2; ++l) {
-				cm = cm + series_coeff<T>(d_h_evo(n, k, l))
-						  * series_pow(b_a_v, 1 - sn + 2 * l)
-						  * series_pow(sin_psi_v, n);
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo(n, k, l))
+						  * point_to_ellipse_series::series_pow<T>(b_a_v, 1 - sn + 2 * l)
+						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 			}
 		}
-		s = s + cm * series_pow(rho_ae2_v, m);
+		s = s + cm * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 	}
 	return s;
-}
-
-inline Expression h_a_evo_dense_m(int K) {
-	return h_a_evo_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
 }

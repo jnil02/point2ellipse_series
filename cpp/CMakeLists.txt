@@ -70,7 +70,6 @@ target_include_directories(sweep_evo
 
 target_link_libraries(sweep_evo
         PRIVATE
-        symengine
         mpfr
         gmp
         )
