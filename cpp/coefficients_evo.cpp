@@ -66,7 +66,7 @@ mpq_class d_phi_evo(int n, int k, int l) {
 	// Outer factor: (-1)^(n/2 + l + n + 1) * binomial(m/2, n/2 + k - l) / m
 	mpq_class result =
 			binomial_rational(mpq_class(m, 2), (long) (n / 2 + k - l))
-			* mpq_class(mpz_class(powm1(n / 2 + l + n + 1)))
+			* mpq_class(powm1(n / 2 + l + n + 1))
 			/ mpq_class(mpz_class(m))
 			* mpq_class(c);
 	result.canonicalize();
@@ -158,7 +158,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 	// constant in j (n+l+1 is always even since n and l have opposite parities).
 	// C(a, h+j) is zero for h+j < 0 or h+j > a, giving tighter loop bounds.
 	// All factors are integers; accumulate as mpz_class, apply outer at the end.
-	const long sgn = powm1((long) (n + l + 1) / 2);
+	const mpz_class sgn = powm1((long) (n + l + 1) / 2);
 	const int j_min = std::max(0, -h);             // ensures h+j >= 0
 	const int j_max = std::min((l - 1) / 2, a - h); // a-h = (k-n-1)/2; ensures h+j <= a
 
@@ -179,7 +179,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 		acc += bj * s_sum;
 	}
 
-	mpq_class result = outer * mpq_class(mpz_class(sgn)) * mpq_class(acc);
+	mpq_class result = outer * mpq_class(sgn) * mpq_class(acc);
 	result.canonicalize();
 
 	mpq_class ret = result;
@@ -245,7 +245,7 @@ mpq_class c_sin_phi_evo(int n, int k, int l) {
 		for (int j = j_min; j <= j_max; ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
-			mpq_class coeff(mpz_class(powm1(i + j)) * binom, fact);
+			mpq_class coeff(powm1(i + j) * binom, fact);
 			coeff.canonicalize();
 			d += coeff * c_phi_pow_evo(n - 2 * j, k, l, 2 * i);
 		}
@@ -276,7 +276,7 @@ mpq_class c_cos_phi_evo(int n, int k, int l) {
 		for (int j = j_min; j <= j_max; ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
-			mpq_class coeff(mpz_class(powm1(i + 1 + j)) * binom, fact);
+			mpq_class coeff(powm1(i + 1 + j) * binom, fact);
 			coeff.canonicalize();
 			d += coeff * c_phi_pow_evo(n - 2 * j, k, l, 2 * i + 1);
 		}
@@ -307,7 +307,7 @@ mpq_class c_sin_phi_inv_evo(int n, int k, int l) {
 		for (int j = j_min; j <= j_max; ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
-			mpq_class coeff(E2(i) * mpz_class(powm1(j)) * binom, fact);
+			mpq_class coeff(E2(i) * powm1(j) * binom, fact);
 			coeff.canonicalize();
 			d += coeff * c_phi_pow_evo(n - 2 * j, k, l, 2 * i);
 		}
@@ -336,7 +336,7 @@ mpq_class a_mr(int m, int r) {
 			mpz_class b2k_kt, t_2m;
 			mpz_bin_uiui(b2k_kt.get_mpz_t(), (unsigned long) (2 * k), (unsigned long) (k - t));
 			mpz_ui_pow_ui(t_2m.get_mpz_t(), (unsigned long) t, (unsigned long) (2 * m));
-			b += mpq_class(mpz_class(powm1(k - t)) * b2k_kt * t_2m);
+			b += mpq_class(powm1(k - t) * b2k_kt * t_2m);
 		}
 
 		mpz_class s1 = stirling1_signed((uint) k, (uint) r);
@@ -348,7 +348,7 @@ mpq_class a_mr(int m, int r) {
 
 	mpz_class fact_2m;
 	mpz_fac_ui(fact_2m.get_mpz_t(), (unsigned long) (2 * m));
-	mpq_class result = mpq_class(mpz_class(2 * powm1(m))) * a / mpq_class(fact_2m);
+	mpq_class result = mpq_class(2 * powm1(m)) * a / mpq_class(fact_2m);
 	result.canonicalize();
 
 	mpq_class ret = result;
@@ -368,7 +368,7 @@ mpq_class B_rt(int r, int t) {
 		mpz_class s2 = stirling2((uint) r, (uint) k);
 		mpz_class bk_t;
 		mpz_bin_uiui(bk_t.get_mpz_t(), (unsigned long) k, (unsigned long) t);
-		B += mpq_class(s2 * mpz_class(powm1(k - t)) * bk_t) * rf_half(1, k);
+		B += mpq_class(s2 * powm1(k - t) * bk_t) * rf_half(1, k);
 	}
 
 	mpq_class ret = B;
@@ -405,7 +405,7 @@ mpq_class R(int n, int k, int l, int i) {
 	for (int j = j_min; j <= j_max; ++j) {
 		mpz_class binom;
 		mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
-		s += mpq_class(mpz_class(powm1(j)) * binom)
+		s += mpq_class(powm1(j) * binom)
 			 * c_phi_pow_evo(n - 2 * j, k, l, 2 * i);
 	}
 

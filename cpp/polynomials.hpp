@@ -38,7 +38,7 @@ sin_pow_to_cos_mul(int n, int k, int l, int n_min, int k_pp,
 		term.canonicalize();
 		c_nkl += term;
 	}
-	c_nkl *= mpq_class((1 + !!n) * powm1(n));
+	c_nkl *= mpq_class(mpz_class(1 + !!n) * powm1(n));
 	c_nkl.canonicalize();
 	return c_nkl;
 }

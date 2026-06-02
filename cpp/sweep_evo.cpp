@@ -65,7 +65,7 @@ int main() {
 
 	const int PSI_STEPS = 100;   // PSI_STEPS evenly spaced psi from 0 to 90.
 	const int RHO_STEPS = 100;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
-	const int MAX_ORDER = 21;   // N = K = 1 .. MAX_ORDER  20 tog 75s, 21 tog 271s, 22 tog 395s
+	const int MAX_ORDER = 10;   // N = K = 1 .. MAX_ORDER  20 tog 75s, 21 tog 271s, 22 tog 395s
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;

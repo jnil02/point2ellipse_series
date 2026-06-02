@@ -30,7 +30,7 @@ mpq_class d_phi(int n, int k, int l) {
 					mpz_bin_uiui(b_km1_mr.get_mpz_t(), (unsigned long) (k - 1), (unsigned long) (m + r));
 					mpz_bin_uiui(b_m1_2p1.get_mpz_t(), (unsigned long) (m + 1), (unsigned long) (2 * p + 1));
 					mpq_class outer = rf_half(k, r - q)
-									  * mpq_class(mpz_class(powm1(n - l - k)) * mpz_class(1L << (r - 2 * q)));
+									  * mpq_class(powm1(n - l - k) * pow2(r - 2 * q));
 					outer /= mpq_class(fact_q * fact_r2q * mpz_class(m + 1 + r));
 					outer *= mpq_class(b_km1_mr * b_m1_2p1);
 					outer.canonicalize();
@@ -67,7 +67,7 @@ mpq_class d_phi2(int n, int k, int l) {
 					mpz_bin_uiui(b_km1_mr.get_mpz_t(), (unsigned long) (k - 1), (unsigned long) (m + r));
 					mpz_bin_uiui(b_m1_2p1.get_mpz_t(), (unsigned long) (m + 1), (unsigned long) (2 * p + 1));
 					mpq_class outer = rf_half(k, r - q)
-									  * mpq_class(mpz_class(powm1(n - l - k)) * mpz_class(1L << (r - 2 * q)));
+									  * mpq_class(powm1(n - l - k) * pow2(r - 2 * q));
 					outer /= mpq_class(fact_q * fact_r2q * mpz_class(m + 1 + r));
 					outer *= mpq_class(b_km1_mr * b_m1_2p1);
 					outer.canonicalize();
@@ -105,7 +105,7 @@ mpq_class c_phi(int n, int k, int l) {
 					mpz_class b_km1_mr, b_m1_2p1;
 					mpz_bin_uiui(b_km1_mr.get_mpz_t(), (unsigned long) (k - 1), (unsigned long) (m + r));
 					mpz_bin_uiui(b_m1_2p1.get_mpz_t(), (unsigned long) (m + 1), (unsigned long) (2 * p + 1));
-					mpq_class rf = rf_half(k, r - q) * mpq_class(mpz_class(powm1(l - k)));
+					mpq_class rf = rf_half(k, r - q) * mpq_class(powm1(l - k));
 					rf /= mpq_class(fact_q * fact_r2q * mpz_class(m + 1 + r));
 					rf *= mpq_class(b_km1_mr * b_m1_2p1);
 					rf.canonicalize();
@@ -195,7 +195,7 @@ mpq_class d_sin(int n, int k, int l) {
 			 j <= std::min(ceil_i_2, std::min(n - floor_i_2, n+k-l-floor_i_2)); ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) ceil_i_2, (unsigned long) j);
-			mpq_class coeff(mpz_class(powm1(floor_i_2 + j)) * binom, fact);
+			mpq_class coeff(powm1(floor_i_2 + j) * binom, fact);
 			coeff.canonicalize();
 			d += coeff * d_phi_pow(n - floor_i_2 - j, k, l, i);
 		}
@@ -265,7 +265,7 @@ mpq_class d_cos(int n, int k, int l) {
 			 j <= std::min(floor_i_2, std::min(n - ceil_i_2, n+k-l-ceil_i_2)); ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) floor_i_2, (unsigned long) j);
-			mpq_class coeff(mpz_class(powm1(ceil_i_2 + j)) * binom, fact);
+			mpq_class coeff(powm1(ceil_i_2 + j) * binom, fact);
 			coeff.canonicalize();
 			d += coeff * d_phi_pow(n - ceil_i_2 - j, k, l, i);
 		}
@@ -294,7 +294,7 @@ mpq_class d_N_nkl(int n, int k, int l) {
 	mpq_class d(0);
 	for (int i = 1; i <= n; ++i) {
 		mpq_class binom_half_i = binomial_rational(mpq_class(1, 2), (long) i)
-								 * mpq_class(mpz_class(powm1(i)));
+								 * mpq_class(powm1(i));
 		for (int j = 0; j <= std::min(2 * i, k); ++j) {
 			mpz_class b2i_j;
 			mpz_bin_uiui(b2i_j.get_mpz_t(), (unsigned long) (2 * i), (unsigned long) j);
@@ -319,7 +319,7 @@ mpq_class bp_nkl(int n, int k, int l) {
 		for (int j = std::max(0, n-l+i); j <= std::min(i, std::min(n - i, n+k-l-i)); ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
-			mpq_class coeff(mpz_class(powm1(i + j)) * binom, fact);
+			mpq_class coeff(powm1(i + j) * binom, fact);
 			coeff.canonicalize();
 			d += coeff * d_phi_pow(n - i - j, k, l, 2 * i);
 		}

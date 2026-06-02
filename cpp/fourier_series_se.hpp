@@ -18,7 +18,7 @@ inline Expression sigma(int J, const Expression& delta) {
 	Expression d(0);
 	for (int j = 0; j < J; j += 2) {
 		int j2 = j / 2;
-		d += Expression(SymEngine::div(SymEngine::integer(point_to_ellipse_series::powm1(j2)),
+		d += Expression(SymEngine::div(SymEngine::integer(point_to_ellipse_series::powm1(j2).get_si()),
 									   SymEngine::factorial(j)))
 			 * pow(delta, Expression(j2));
 	}
@@ -29,7 +29,7 @@ inline Expression tau(int J, const Expression& omega, const Expression& delta) {
 	Expression d(0);
 	for (int j = 1; j < J; j += 2) {
 		int j2 = (j - 1) / 2;
-		d += Expression(SymEngine::div(SymEngine::integer(point_to_ellipse_series::powm1(j2)),
+		d += Expression(SymEngine::div(SymEngine::integer(point_to_ellipse_series::powm1(j2).get_si()),
 									   SymEngine::factorial(j)))
 			 * pow(delta, Expression(j2));
 	}

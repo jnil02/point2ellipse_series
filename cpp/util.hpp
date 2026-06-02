@@ -25,16 +25,24 @@ inline mpq_class rf_half(unsigned long k, unsigned long n) {
 	return result;
 }
 
-/** (-1)^n
- *
- * See
- * https://stackoverflow.com/questions/29110752/what-is-the-correct-way-to-obtain-1n
+/** (-1)^n as mpz_class.
  *
  * @param n
- * @return
+ * @return 1 or -1 as mpz_class.
  */
-inline long powm1(long n) {
-	return 1L - ((n & 1L) << 1);
+inline mpz_class powm1(long n) {
+	return mpz_class(1L - ((n & 1L) << 1));
+}
+
+/** 2^n as mpz_class (safe for n >= 64).
+ *
+ * @param n Non-negative integer.
+ * @return 2^n as mpz_class.
+ */
+inline mpz_class pow2(int n) {
+	mpz_class r;
+	mpz_ui_pow_ui(r.get_mpz_t(), 2UL, (unsigned long) n);
+	return r;
 }
 
 /** Generalised integer binomial C(n, k) for arbitrary integer n and any k.
@@ -56,7 +64,7 @@ inline mpq_class int_bin(long n, long k) {
 	// n < 0: C(n,k) = (-1)^k * C(k-n-1, k)
 	mpz_class result;
 	mpz_bin_uiui(result.get_mpz_t(), (unsigned long) (k - n - 1), (unsigned long) k);
-	return mpq_class(mpz_class(powm1(k)) * result);
+	return mpq_class(powm1(k) * result);
 }
 
 /** Compute the binomial coefficient for rational n and integer k.
@@ -98,13 +106,13 @@ inline mpz_class E2(int n) {
 		return it->second;
 
 	if (n == 0)
-		return mpz_class(1);
+		return {1};
 
 	mpz_class result(0);
 	for (int j = 0; j < n; ++j) {
 		mpz_class binom;
 		mpz_bin_uiui(binom.get_mpz_t(), (unsigned long)(2 * n), (unsigned long)(2 * j));
-		result += mpz_class(powm1(n - j + 1)) * binom * E2(j);
+		result += powm1(n - j + 1) * binom * E2(j);
 	}
 
 	cache[n] = result;
