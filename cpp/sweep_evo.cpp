@@ -28,7 +28,7 @@
 #include <mpreal.h>
 
 #include "ellipse.hpp"
-#include "fourier_series_evo.hpp"
+#include "fourier_series_accum.hpp"
 
 using mpfr::mpreal;
 using mpfr::const_pi;
@@ -65,7 +65,24 @@ int main() {
 
 	const int PSI_STEPS = 100;   // PSI_STEPS evenly spaced psi from 0 to 90.
 	const int RHO_STEPS = 100;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
-	const int MAX_ORDER = 10;   // N = K = 1 .. MAX_ORDER  20 tog 75s, 21 tog 271s, 22 tog 395s
+	// MAX_ORDER x PSI_STEP x RHO_STEP old time -> new time (accum).
+	// 15x100x100 tog 96s -> 16s
+	// 16x100x100 tog 119s -> 20s
+	// 17x100x100 tog 136s -> 20s
+	// 18x100x100 tog 190s -> 23s
+	// 19x100x100 tog 230s -> 27s
+	// 20x100x100 tog 272s -> 33s
+	// 21x100x100 tog ???s -> 44s
+	// 22x100x100 tog ???s -> 50s
+	// 23x100x100 tog ???s -> 63s
+	// 24x100x100 tog ???s -> 75s
+	// 25x100x100 tog ???s -> 95s
+	// 26x100x100 tog ???s -> 124s
+	// 27x100x100 tog ???s -> 173s
+	// 28x100x100 tog ???s -> 211s
+	// 29x100x100 tog ???s -> 268s
+	// 30x100x100 tog ???s -> 377s
+	const int MAX_ORDER = 30;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;
@@ -102,22 +119,32 @@ int main() {
 			// Shared series inputs.
 			const mpreal rho_ae2_v = rho / ae2;
 
+			EvoBasePowers<mpreal> pows(abs_sin_psi, rho_ae2_v, b_a_v, MAX_ORDER);
+			PhiEvoAccum<mpreal>   phi_acc(pows);
+			HAEvoAccum<mpreal>    h_acc(pows);
+
 			for (int N = 1; N <= MAX_ORDER; ++N) {
-				// phi via phi_evo_sin_pow_dense:
+				phi_acc.addOrder(N);
+				h_acc.addOrder(N);
+
+				// phi via phi_evo_sin_pow_dense_m (incremental):
 				//   series = (phi - sgn*pi/2) / (sgn*|cos(psi)|)
 				//   phi    = sgn*pi/2 + sgn*|cos(psi)| * series
-//				const mpreal phi_series = phi_evo_sin_pow_dense<mpreal>(
-//						N, N, abs_sin_psi, rho_ae2_v, b_a_v);
-				const mpreal phi_series = phi_evo_sin_pow_dense_m<mpreal>(
-						N, abs_sin_psi, rho_ae2_v, b_a_v);
-				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_series;
-				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
+				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_acc.value();
+//				const mpreal phi_series = phi_evo_sin_pow_dense_m<mpreal>(
+//						N, abs_sin_psi, rho_ae2_v, b_a_v);
+//				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_series;
 
-				// h via h_a_evo_dense:
+
+				// h via h_a_evo_dense_m (incremental):
 				//   series = h/a  →  h = series * a
-				const mpreal h_series = h_a_evo_dense_m<mpreal>(
-						N, abs_sin_psi, rho_ae2_v, b_a_v);
-				const mpreal h_approx = h_series * a;
+				const mpreal h_approx = h_acc.value() * a;
+//				const mpreal h_series = h_a_evo_dense_m<mpreal>(
+//						N, abs_sin_psi, rho_ae2_v, b_a_v);
+//				const mpreal h_approx = h_series * a;
+
+				// Compute series errors,
+				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
 				const mpreal h_err    = mpfr::abs(h_approx - true_h);
 
 				out << psi_deg.toString(10)  << ","
