@@ -115,8 +115,8 @@ int main() {
 
 				// h via h_a_evo_dense:
 				//   series = h/a  →  h = series * a
-				const mpreal h_series = h_a_evo_dense<mpreal>(
-						N, N, abs_sin_psi, rho_ae2_v, b_a_v);
+				const mpreal h_series = h_a_evo_dense_m<mpreal>(
+						N, abs_sin_psi, rho_ae2_v, b_a_v);
 				const mpreal h_approx = h_series * a;
 				const mpreal h_err    = mpfr::abs(h_approx - true_h);
 
