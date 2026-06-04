@@ -29,6 +29,7 @@ PSI_PLOT  = 80  # which psi angle (degrees) to inspect
 N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)
 RHO_COUNT = 5   # how many rho curves in the right plot (evenly spaced from data)
 TAIL      = 5   # high-N points used for slope estimate in the heat map
+ERR_FLOOR = 1e-300  # log-plot guard; set to match ~10^-(BITS*log10(2)) for chosen precision
 
 NON_ERR_COLS = {"psi_deg", "rho", "rho_evo", "N"}
 
@@ -114,7 +115,7 @@ for col in err_cols:
         if N not in psi_data:
             continue
         rhos = [t[0] for t in psi_data[N]]
-        errs = [max(t[2][col], 1e-50) for t in psi_data[N]]
+        errs = [max(t[2][col], ERR_FLOOR) for t in psi_data[N]]
         ax1.semilogy(rhos, errs, label=f"N={N}")
 
     ax1.axvline(rho_evo, color="k", linestyle="--", linewidth=1,
@@ -129,7 +130,7 @@ for col in err_cols:
         errs = []
         for N in Ns_all:
             row = min(psi_data[N], key=lambda t: abs(t[0] - rho_val))
-            errs.append(max(row[2][col], 1e-50))
+            errs.append(max(row[2][col], ERR_FLOOR))
         inside = "in" if rho_val < rho_evo else "out"
         ax2.semilogy(Ns_all, errs, marker="o", label=f"ρ={rho_val:.3f} ({inside})")
 
@@ -155,7 +156,7 @@ for col in err_cols:
             for N in Ns_psi:
                 row = min(data[psi][N], key=lambda t: abs(t[0] - rho_val))
                 e = row[2][col]
-                if e > 1e-50:
+                if e > ERR_FLOOR:
                     log_errs.append(math.log10(e))
                     ns_used.append(float(N))
             if len(log_errs) >= 2:

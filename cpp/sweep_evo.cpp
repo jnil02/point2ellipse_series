@@ -33,7 +33,8 @@
 using mpfr::mpreal;
 using mpfr::const_pi;
 
-static constexpr mpfr_prec_t BITS = 167;  // ~50 decimal digits
+static constexpr mpfr_prec_t BITS         = 512;// 167;  // ~50 decimal digits; raise together with CSV_SIG_FIGS
+static constexpr int         CSV_SIG_FIGS = 15;  // significant figures written to CSV; keep ≥ BITS*log10(2)
 
 /** Evolute radius at polar angle psi.
  *
@@ -63,26 +64,33 @@ int main() {
 	time_t tstart, tend;
 	tstart = time(nullptr);
 
-	const int PSI_STEPS = 100;   // PSI_STEPS evenly spaced psi from 0 to 90.
-	const int RHO_STEPS = 100;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
+	const int PSI_STEPS = 91;   // PSI_STEPS evenly spaced psi from 0 to 90.
+	const int RHO_STEPS = 50;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
 	// MAX_ORDER x PSI_STEP x RHO_STEP old time -> new time (accum).
-	// 15x100x100 tog 96s -> 16s
-	// 16x100x100 tog 119s -> 20s
-	// 17x100x100 tog 136s -> 20s
-	// 18x100x100 tog 190s -> 23s
-	// 19x100x100 tog 230s -> 27s
-	// 20x100x100 tog 272s -> 33s
-	// 21x100x100 tog ???s -> 44s
-	// 22x100x100 tog ???s -> 50s
-	// 23x100x100 tog ???s -> 63s
-	// 24x100x100 tog ???s -> 75s
-	// 25x100x100 tog ???s -> 95s
-	// 26x100x100 tog ???s -> 124s
-	// 27x100x100 tog ???s -> 173s
-	// 28x100x100 tog ???s -> 211s
-	// 29x100x100 tog ???s -> 268s
-	// 30x100x100 tog ???s -> 377s
-	const int MAX_ORDER = 30;   // N = K = 1 .. MAX_ORDER
+	// 15x100x100 took 96s -> 16s
+	// 16x100x100 took 119s -> 20s
+	// 17x100x100 took 136s -> 20s
+	// 18x100x100 took 190s -> 23s
+	// 19x100x100 took 230s -> 27s
+	// 20x100x100 took 272s -> 33s
+	// 21x100x100 took ???s -> 44s
+	// 22x100x100 took ???s -> 50s
+	// 23x100x100 took ???s -> 63s
+	// 24x100x100 took ???s -> 75s
+	// 25x100x100 took ???s -> 95s
+	// 26x100x100 took ???s -> 124s
+	// 27x100x100 took ???s -> 173s
+	// 28x100x100 took ???s -> 211s
+	// 29x100x100 took ???s -> 268s
+	// 30x100x100 took ???s -> 377s
+	// Only phi
+	// 30x90x50 took 22s
+	// 35x90x50 took 28s
+	// 40x90x50 took 38s
+	// 50x90x50 took 71s
+	// 70x90x50 took 140s (512 bits tog 342 sekunder)
+	// 80x90x50 took 343s
+	const int MAX_ORDER = 70;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;
@@ -95,7 +103,8 @@ int main() {
 	const std::string fname = std::string(TEST_DATA_DIR) + "/sweep_evo_m.csv";
 	std::ofstream out(fname);
 	out << "# a=" << a.toString(15) << " b=" << mp_b().toString(15) << "\n";
-	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
+//	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
+	out << "psi_deg,rho,rho_evo,N,phi_err\n";
 
 	for (int i = 0; i < PSI_STEPS; ++i) {
 		const mpreal psi_deg = mpreal(90) * mpreal(i) / mpreal(PSI_STEPS-1);
@@ -121,11 +130,11 @@ int main() {
 
 			EvoBasePowers<mpreal> pows(abs_sin_psi, rho_ae2_v, b_a_v, MAX_ORDER);
 			PhiEvoAccum<mpreal>   phi_acc(pows);
-			HAEvoAccum<mpreal>    h_acc(pows);
+//			HAEvoAccum<mpreal>    h_acc(pows);
 
 			for (int N = 1; N <= MAX_ORDER; ++N) {
 				phi_acc.addOrder(N);
-				h_acc.addOrder(N);
+//				h_acc.addOrder(N);
 
 				// phi via phi_evo_sin_pow_dense_m (incremental):
 				//   series = (phi - sgn*pi/2) / (sgn*|cos(psi)|)
@@ -138,21 +147,23 @@ int main() {
 
 				// h via h_a_evo_dense_m (incremental):
 				//   series = h/a  →  h = series * a
-				const mpreal h_approx = h_acc.value() * a;
+//				const mpreal h_approx = h_acc.value() * a;
 //				const mpreal h_series = h_a_evo_dense_m<mpreal>(
 //						N, abs_sin_psi, rho_ae2_v, b_a_v);
 //				const mpreal h_approx = h_series * a;
 
 				// Compute series errors,
 				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
-				const mpreal h_err    = mpfr::abs(h_approx - true_h);
+//				const mpreal h_err    = mpfr::abs(h_approx - true_h);
 
-				out << psi_deg.toString(10)  << ","
-					<< rho.toString(10)      << ","
-					<< rho_evo.toString(10)  << ","
-					<< N                     << ","
-					<< phi_err.toString(10)  << ","
-					<< h_err.toString(10)    << "\n";
+				out << psi_deg.toString(CSV_SIG_FIGS)  << ","
+					<< rho.toString(CSV_SIG_FIGS)      << ","
+					<< rho_evo.toString(CSV_SIG_FIGS)  << ","
+					<< N                               << ","
+					<< phi_err.toString(CSV_SIG_FIGS)
+//					<< ","
+//					<< h_err.toString(CSV_SIG_FIGS)
+					<< "\n";
 			}
 		}
 	}
