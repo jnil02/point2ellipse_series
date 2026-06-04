@@ -14,8 +14,8 @@
  *   PhiEvoAccum<mpreal>   phi_acc(pows);
  *   HAEvoAccum<mpreal>    h_acc(pows);
  *   for (int N = 1; N <= MAX_ORDER; ++N) {
- *       phi_acc.add_slab(N);
- *       h_acc.add_slab(N);
+ *       mpreal cm = phi_acc.addOrder(N);  // returns slab C_m; also updates value()
+ *       h_acc.addOrder(N);
  *       use(phi_acc.value(), h_acc.value());
  *   }
  *
@@ -68,7 +68,9 @@ public:
 			: pows_(pows), accum_(T(0)) {}
 
 	// Add the m=N slab (mirrors the inner loop of phi_evo_sin_pow_dense_m).
-	void addOrder(int N) {
+	// Returns the slab value so callers can inspect C_m without a separate class.
+	T addOrder(int N) {
+		T slab(0);
 		const int L      = (N - 1) / 2;
 		const int parity = (N - 1) % 2;
 		const T&  rho_m  = pows_.rho_[N];
@@ -76,10 +78,12 @@ public:
 			const int n     = N - 1 - 2 * k;
 			const T&  sin_n = pows_.sin_[n];
 			for (int l = 0; l <= L; ++l)
-				accum_ = accum_
-						 + point_to_ellipse_series::series_coeff<T>(d_phi_evo(n, k, l))
-						   * sin_n * rho_m * pows_.b_[parity + 1 + 2 * l];
+				slab = slab
+					   + point_to_ellipse_series::series_coeff<T>(d_phi_evo(n, k, l))
+						 * sin_n * rho_m * pows_.b_[parity + 1 + 2 * l];
 		}
+		accum_ = accum_ + slab;
+		return slab;
 	}
 
 	const T& value() const { return accum_; }
@@ -100,7 +104,9 @@ public:
 			: pows_(pows), accum_(T(0)) {}
 
 	// Add the m=N slab (mirrors the inner loop of h_a_evo_dense_m).
-	void addOrder(int N) {
+	// Returns the slab value.
+	T addOrder(int N) {
+		T slab(0);
 		const int sn    = N % 2;
 		const int lmax  = (N + 1) / 2;
 		const T&  rho_m = pows_.rho_[N];
@@ -108,10 +114,12 @@ public:
 			const int n     = N - 2 * k;
 			const T&  sin_n = pows_.sin_[n];
 			for (int l = 0; l <= lmax; ++l)
-				accum_ = accum_
-						 + point_to_ellipse_series::series_coeff<T>(d_h_evo(n, k, l))
-						   * pows_.b_[1 - sn + 2 * l] * rho_m * sin_n;
+				slab = slab
+					   + point_to_ellipse_series::series_coeff<T>(d_h_evo(n, k, l))
+						 * pows_.b_[1 - sn + 2 * l] * rho_m * sin_n;
 		}
+		accum_ = accum_ + slab;
+		return slab;
 	}
 
 	const T& value() const { return accum_; }

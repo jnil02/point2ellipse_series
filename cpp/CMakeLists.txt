@@ -58,7 +58,7 @@ add_subdirectory(tests)
 # Default ellipse: unit ellipse a=1, b=0.25 (ae bound becomes binding at ~62°, good for ROC studies).
 # Override by redefining ELLIPSE_A + ELLIPSE_B (or ELLIPSE_INV_F) below.
 add_executable(sweep_evo
-        sweep_evo.cpp
+        convergence/sweep_evo.cpp
         coefficients.cpp
         coefficients_evo.cpp
         )
@@ -66,6 +66,7 @@ add_executable(sweep_evo
 target_include_directories(sweep_evo
         PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/convergence
         )
 
 target_link_libraries(sweep_evo
@@ -75,6 +76,32 @@ target_link_libraries(sweep_evo
         )
 
 target_compile_definitions(sweep_evo
+        PRIVATE
+        ELLIPSE_A="1.0"
+        ELLIPSE_B="0.25"
+        TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
+        )
+
+# Coefficient ROC diagnostic for the inside-evolute series.
+add_executable(diag_coeff_evo
+        convergence/diag_coeff_evo.cpp
+        coefficients.cpp
+        coefficients_evo.cpp
+        )
+
+target_include_directories(diag_coeff_evo
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/convergence
+        )
+
+target_link_libraries(diag_coeff_evo
+        PRIVATE
+        mpfr
+        gmp
+        )
+
+target_compile_definitions(diag_coeff_evo
         PRIVATE
         ELLIPSE_A="1.0"
         ELLIPSE_B="0.25"
