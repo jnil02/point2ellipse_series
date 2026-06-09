@@ -9,7 +9,7 @@ import sympy as sp
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
     c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, c_cos_phi_evo, c_sin_phi_inv_evo, d_Na_evo2, B_p, cp_evo_nkl, \
-    ch_evo, dh_evo
+    ch_evo, dh_evo, d_phi_evo2
 
 
 def phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
@@ -259,6 +259,24 @@ def phi_evo_sin_pow_dense_m(M):
                       * d_phi_evo(n, k, l))
     return d
 
+def phi_evo_sin_pow_dense_m2(M):
+    """ Possibly the same as above. FIXME(JO)? But the coefficient formula is different.
+
+    :param M:
+    :return:
+    """
+    d = sp.S.Zero
+    for k in range(1, M + 1):
+        s = k % 2
+        m_k = (k - 1) // 2
+        for a in range(0, m_k + 1):
+            for b in range(0, m_k + 1):
+                d += (sin_psi ** (1 - s + 2*a)
+                      * rho_ae2 ** k
+                      * b_a ** (2 - s + 2 * b)
+                      * d_phi_evo2(a, k, b))
+    return d
+
 
 def phi_evo_sin_pow(N, K):
     """Series for phi - pi/2 in sin-powers for small rho with simple sums
@@ -273,6 +291,23 @@ def phi_evo_sin_pow(N, K):
     d = sp.S.Zero
     for n in range(0, N+1):
         for k in range(n+1,K+1):
+            for l in range(1,k+1):
+                d += cos_psi * sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_evo(n, k, l)
+    return d
+
+def phi_evo_sin_pow_m(K):
+    """Series for phi - pi/2 in sin-powers for small rho with simple sums
+
+    The simple sums and exponents come at the cost of half of the computed
+    coefficients being zero.
+
+    :param N: sin power limit.
+    :param K: rho powers limit.
+    :return: Symbolic series.
+    """
+    d = sp.S.Zero
+    for k in range(1,K+1):
+        for n in range(0, k):
             for l in range(1,k+1):
                 d += cos_psi * sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_evo(n, k, l)
     return d

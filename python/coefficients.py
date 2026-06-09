@@ -127,6 +127,20 @@ def d_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return (-1) ** (n // 2 + l + n + 1) * sp.binomial(sp.Rational(m, 2), n // 2 + k - l) / m * c
 
 @cache.ints_cache
+def d_phi_evo2(a: int, k: int, b: int) -> sp.core.numbers.Rational:
+    """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
+    This version if for the single series version, series in sigma.
+    """
+    s = k % 2
+    m_k = (k-1) // 2
+    d = sp.S.Zero
+    for j in range(b+1):
+        for q in range(2*j, k-2*m_k+2*b):
+            # d += 2 ** (q - 2*j) * sp.binomial(q-j, j) * sp.binomial(k-2-q, k - 2*m_k + 2*b - 1 - q) * sp.binomial(m_k-b, a-b+j)
+            d += 2 ** (q - 2*j) * sp.binomial(q-j, j) * sp.binomial(k-2-q, 1-s + 2*b - q) * sp.binomial(m_k-b, a-b+j)
+    return sp.Rational(d  * (-1) ** (a+b+k), k) * sp.binomial(sp.Rational(k,2), m_k - b)
+
+@cache.ints_cache
 def c_phi_evo(n, k, l):
     """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
 
@@ -146,16 +160,13 @@ def c_phi_evo(n, k, l):
     if (l - k) % 2 != 0:
         return c
     for j in range(floor((l - 1) / 2) + 1):
-        b = sp.S.Zero
-        for i in range(0, min(j, (n + 1 - l + 2 * j) // 2) + 1):
-            ka = (n - l + 1 + 2 * j - 2 * i) // 2
-            b += ((-1) ** ka) * sp.binomial(j, i) * sp.binomial(j - i + (k - l) // 2, ka)
+        b = sp.binomial((k-l) // 2, (n - l + 1) // 2 + j)
         s = sp.S.Zero
         for q in range(2 * j, l - 1 + 1):
             # Note, the first binomial can become (-1,0) which should be 1.
             s += 2 ** (q - 2 * j) * sp.binomial(k - 2 - q, l - 1 - q) * sp.binomial(q - j, j)
-        c += sp.binomial(sp.Rational(k, 2), (k - l) // 2) / k * (-1) ** (l - j) * s * b
-    return c
+        c += sp.binomial(sp.Rational(k, 2), (k - l) // 2) * s * b
+    return c * (-1) ** ((n+l+1)//2) / k
 
 @cache.ints_cache
 def d_phi_pow_evo_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
