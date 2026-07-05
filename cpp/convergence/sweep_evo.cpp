@@ -90,7 +90,7 @@ int main() {
 	// 50x90x50 took 71s
 	// 70x90x50 took 140s (512 bits tog 342 sekunder)
 	// 80x90x50 took 343s
-	const int MAX_ORDER = 70;   // N = K = 1 .. MAX_ORDER
+	const int MAX_ORDER = 20;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;
@@ -103,8 +103,8 @@ int main() {
 	const std::string fname = std::string(TEST_DATA_DIR) + "/sweep_evo_m.csv";
 	std::ofstream out(fname);
 	out << "# a=" << a.toString(15) << " b=" << mp_b().toString(15) << "\n";
-//	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
-	out << "psi_deg,rho,rho_evo,N,phi_err\n";
+	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
+//	out << "psi_deg,rho,rho_evo,N,phi_err\n";
 
 	for (int i = 0; i < PSI_STEPS; ++i) {
 		const mpreal psi_deg = mpreal(90) * mpreal(i) / mpreal(PSI_STEPS-1);
@@ -130,11 +130,11 @@ int main() {
 
 			EvoBasePowers<mpreal> pows(abs_sin_psi, rho_ae2_v, b_a_v, MAX_ORDER);
 			PhiEvoAccum<mpreal>   phi_acc(pows);
-//			HAEvoAccum<mpreal>    h_acc(pows);
+			HAEvoAccum<mpreal>    h_acc(pows);
 
 			for (int N = 1; N <= MAX_ORDER; ++N) {
 				phi_acc.addOrder(N);
-//				h_acc.addOrder(N);
+				h_acc.addOrder(N);
 
 				// phi via phi_evo_sin_pow_dense_m (incremental):
 				//   series = (phi - sgn*pi/2) / (sgn*|cos(psi)|)
@@ -147,22 +147,22 @@ int main() {
 
 				// h via h_a_evo_dense_m (incremental):
 				//   series = h/a  →  h = series * a
-//				const mpreal h_approx = h_acc.value() * a;
+				const mpreal h_approx = h_acc.value() * a;
 //				const mpreal h_series = h_a_evo_dense_m<mpreal>(
 //						N, abs_sin_psi, rho_ae2_v, b_a_v);
 //				const mpreal h_approx = h_series * a;
 
 				// Compute series errors,
 				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
-//				const mpreal h_err    = mpfr::abs(h_approx - true_h);
+				const mpreal h_err    = mpfr::abs(h_approx - true_h);
 
 				out << psi_deg.toString(CSV_SIG_FIGS)  << ","
 					<< rho.toString(CSV_SIG_FIGS)      << ","
 					<< rho_evo.toString(CSV_SIG_FIGS)  << ","
 					<< N                               << ","
 					<< phi_err.toString(CSV_SIG_FIGS)
-//					<< ","
-//					<< h_err.toString(CSV_SIG_FIGS)
+					<< ","
+					<< h_err.toString(CSV_SIG_FIGS)
 					<< "\n";
 			}
 		}

@@ -78,7 +78,7 @@ target_link_libraries(sweep_evo
 target_compile_definitions(sweep_evo
         PRIVATE
         ELLIPSE_A="1.0"
-        ELLIPSE_B="0.25"
+        ELLIPSE_B="0.5"
         TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
         )
 

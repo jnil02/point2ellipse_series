@@ -260,7 +260,9 @@ def phi_evo_sin_pow_dense_m(M):
     return d
 
 def phi_evo_sin_pow_dense_m2(M):
-    """ Possibly the same as above. FIXME(JO)? But the coefficient formula is different.
+    """ Possibly the same as above.
+    FIXME(JO)? But the coefficient formula is different.
+      But numerically gives exactly the same result.
 
     :param M:
     :return:
@@ -269,12 +271,12 @@ def phi_evo_sin_pow_dense_m2(M):
     for k in range(1, M + 1):
         s = k % 2
         m_k = (k - 1) // 2
-        for a in range(0, m_k + 1):
-            for b in range(0, m_k + 1):
-                d += (sin_psi ** (1 - s + 2*a)
+        for n in range(0, m_k + 1):
+            for l in range(0, m_k + 1):
+                d += (sin_psi ** (1 - s + 2*n)
                       * rho_ae2 ** k
-                      * b_a ** (2 - s + 2 * b)
-                      * d_phi_evo2(a, k, b))
+                      * b_a ** (2 - s + 2 * l)
+                      * d_phi_evo2(n, k, l))
     return d
 
 

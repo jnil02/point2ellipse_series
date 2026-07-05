@@ -25,7 +25,7 @@ import matplotlib.pyplot as plt
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo_m.csv")
 OUT_DIR  = os.path.join(os.path.dirname(__file__), "..", "test_data")
 
-PSI_PLOT  = 80  # which psi angle (degrees) to inspect
+PSI_PLOT  = 85  # which psi angle (degrees) to inspect
 N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)
 RHO_COUNT = 5   # how many rho curves in the right plot (evenly spaced from data)
 TAIL      = 5   # high-N points used for slope estimate in the heat map
