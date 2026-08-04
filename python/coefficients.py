@@ -127,45 +127,51 @@ def d_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return (-1) ** (n // 2 + l + n + 1) * sp.binomial(sp.Rational(m, 2), n // 2 + k - l) / m * c
 
 @cache.ints_cache
-def d_phi_evo2(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+def d_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
+
     This version if for the single series version, series in sigma.
+
+    :param l: Fourier sin-multiple.
+    :param k: rho power of inner power series.
+    :param n: e² power of innermost power series.
+    :return: Coefficient as a sympy rational number.
     """
     s = k % 2
-    m_k = (k-1) // 2
+    m_k = (k - 1) // 2
     d = sp.S.Zero
-    for j in range(l + 1):
-        for q in range(2*j, 1 - s + 2 * l + 1):
-            d += 2 ** (q - 2*j) * sp.binomial(q-j, j) * sp.binomial(k - 2 - q, 1 - s + 2 * l - q) * sp.binomial(m_k - l, n - l + j)
-    return sp.Rational(d * (-1) ** (n + l + k), k) * sp.binomial(sp.Rational(k, 2), m_k - l)
+    for j in range(n + 1):
+        for q in range(2 * j, 1 - s + 2 * n + 1):
+            d += 2 ** (q - 2*j) * sp.binomial(q-j, j) * sp.binomial(k - 2 - q, 1 - s + 2 * n - q) * sp.binomial(m_k - n, l - n + j)
+    return sp.Rational(d * (-1) ** (l + n + k), k) * sp.binomial(sp.Rational(k, 2), m_k - n)
 
 @cache.ints_cache
-def c_phi_evo(n, k, l):
+def c_phi_evo(l, k, n):
     """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
 
     Coefficients with clean sums but with half the coefficients being zero.
 
-    :param n: Fourier sin-multiple.
+    :param l: Fourier sin-multiple.
     :param k: rho power of inner power series.
-    :param l: e² power of innermost power series.
+    :param n: e² power of innermost power series.
     :return: Coefficient as a sympy rational number.
     """
-    assert n >= 0 and k >= n+1 and l >= 1 and l <= k, f"c_phi_evo indices out of range. n: {n} k: {k} l: {l}"
+    assert l >= 0 and k >= l + 1 and n >= 1 and n <= k, f"c_phi_evo indices out of range. n: {l} k: {k} l: {n}"
     c = sp.S.Zero
     if k < 1:
         return c
-    if (k - n - 1) % 2 != 0:
+    if (k - l - 1) % 2 != 0:
         return c
-    if (l - k) % 2 != 0:
+    if (n - k) % 2 != 0:
         return c
-    for j in range(floor((l - 1) / 2) + 1):
-        b = sp.binomial((k-l) // 2, (n - l + 1) // 2 + j)
+    for j in range(floor((n - 1) / 2) + 1):
+        b = sp.binomial((k - n) // 2, (l - n + 1) // 2 + j)
         s = sp.S.Zero
-        for q in range(2 * j, l - 1 + 1):
+        for q in range(2 * j, n - 1 + 1):
             # Note, the first binomial can become (-1,0) which should be 1.
-            s += 2 ** (q - 2 * j) * sp.binomial(k - 2 - q, l - 1 - q) * sp.binomial(q - j, j)
-        c += sp.binomial(sp.Rational(k, 2), (k - l) // 2) * s * b
-    return c * (-1) ** ((n+l+1)//2) / k
+            s += 2 ** (q - 2 * j) * sp.binomial(k - 2 - q, n - 1 - q) * sp.binomial(q - j, j)
+        c += sp.binomial(sp.Rational(k, 2), (k - n) // 2) * s * b
+    return c * (-1) ** ((l + n + 1) // 2) / k
 
 @cache.ints_cache
 def d_phi_pow_evo_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
@@ -177,72 +183,74 @@ def d_phi_pow_evo_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
 
 
 @cache.ints_cache
-def c_phi_pow_evo(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
+def c_phi_pow_evo(k: int, l: int, n: int, i: int) -> sp.core.numbers.Rational:
     """Compute (phi-pi/2)^i sin-power series expansion coefficients within evolute.
 
-    :param n: sin-power.
+    :param l: sin-power.
     :param k: rho power of inner power series.
-    :param l: e² power of innermost power series.
+    :param n: e² power of innermost power series.
     :param i: The power exponent.
     :return: Coefficient as a sympy rational number.
     """
-    assert n >= 0 and k >= n+i and l >= i and l <= k, f"c_phi_pow_evo indices out of range. n: {n} k: {k} l: {l} i: {i}"
-    if (i+n-k) % 2 != 0 or (l-k) % 2 != 0:  # Parity constraint from the underlying coefficients.
+    assert l >= 0 and k >= l + i and n >= i and n <= k, f"c_phi_pow_evo indices out of range. n: {l} k: {k} l: {n} i: {i}"
+    if (i + l - k) % 2 != 0 or (n - k) % 2 != 0:  # Parity constraint from the underlying coefficients.
         return sp.S.Zero
-    tmp = d_phi_pow_evo_polynomial(n, k, i)
-    return sp.expand(tmp).coeff(symbols.e2, l)  # Extract the l:th power of the series.
+    tmp = d_phi_pow_evo_polynomial(l, k, i)
+    return sp.expand(tmp).coeff(symbols.e2, n)  # Extract the l:th power of the series.
 
 @cache.ints_cache
-def c_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    assert n >= 0 and k >= n and l >= 0 and l <= k, f"c_sin_phi_evo indices out of range. n: {n} k: {k} l: {l}"
-    if (n-k) % 2 != 0 or (n-l) % 2 != 0:
+def c_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+    assert l >= 0 and k >= l and n >= 0 and n <= k, f"c_sin_phi_evo indices out of range. n: {l} k: {k} l: {n}"
+    if (l - k) % 2 != 0 or (l - n) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
-    for i in range(l // 2 + 1):
-        for j in range(max(0,ceil((n + 2*i-k)/2.)), n // 2 + 1):
-            d += sp.Rational((-1) ** (i+j), sp.factorial(2*i)) * sp.binomial(i,j) * c_phi_pow_evo(n - 2 * j, k, l, 2 * i)
+    for i in range(n // 2 + 1):
+        for j in range(max(0, ceil((l + 2 * i - k) / 2.)), l // 2 + 1):
+            d += sp.Rational((-1) ** (i+j), sp.factorial(2*i)) * sp.binomial(i,j) * c_phi_pow_evo(k, l - 2 * j, n,
+                                                                                                  2 * i)
     return d
 
 @cache.ints_cache
-def d_sin_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+def d_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Dense sin(phi) series coefficients — all non-zero by construction.
 
     d_sin_phi_evo(n, k, l) = c_sin_phi_evo(n, n + 2*k, 2*l + (n % 2))
     """
-    assert n >= 0 and k >= 0 and l >= 1 and l <= n // 2 + k, \
-        f"d_sin_phi_evo indices out of range. n: {n} k: {k} l: {l}"
-    return c_sin_phi_evo(n, n + 2 * k, 2 * l + (n % 2))
+    assert l >= 0 and k >= 0 and n >= 1 and n <= l // 2 + k, \
+        f"d_sin_phi_evo indices out of range. n: {l} k: {k} l: {n}"
+    return c_sin_phi_evo(l + 2 * k, l, 2 * n + (l % 2))
 
 @cache.ints_cache
-def c_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    assert n >= 0 and k >= n and l >= 1 and l <= k, f"c_cos_phi_evo indices out of range. n: {n} k: {k} l: {l}"
-    if (n+1-k) % 2 != 0 or (l-k) % 2 != 0:
+def c_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+    assert l >= 0 and k >= l and n >= 1 and n <= k, f"c_cos_phi_evo indices out of range. n: {l} k: {k} l: {n}"
+    if (l + 1 - k) % 2 != 0 or (n - k) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
-    for i in range((l-1) // 2 + 1):
-        for j in range(max(0,ceil((n + 2*i+1-k)/2.)), min(i,n // 2) + 1):
-            d += sp.Rational((-1) ** (i+1+j), sp.factorial(2*i+1)) * sp.binomial(i,j) * c_phi_pow_evo(n - 2 * j, k, l, 2 * i + 1)
+    for i in range((n - 1) // 2 + 1):
+        for j in range(max(0, ceil((l + 2 * i + 1 - k) / 2.)), min(i, l // 2) + 1):
+            d += sp.Rational((-1) ** (i+1+j), sp.factorial(2*i+1)) * sp.binomial(i,j) * c_phi_pow_evo(k, l - 2 * j, n,
+                                                                                                      2 * i + 1)
     return d
 
 @cache.ints_cache
-def d_cos_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+def d_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Dense cos(phi)/|cos(psi)| series coefficients — all non-zero by construction.
 
     d_cos_phi_evo(n, k, l) = c_cos_phi_evo(n, n + 1 + 2*k, 2*l + 1 - (n % 2))
     """
-    assert n >= 0 and k >= 0 and l >= n % 2 and l <= (n + 1) // 2 + k, \
-        f"d_cos_phi_evo indices out of range. n: {n} k: {k} l: {l}"
-    return c_cos_phi_evo(n, n + 1 + 2 * k, 2 * l + 1 - (n % 2))
+    assert l >= 0 and k >= 0 and n >= l % 2 and n <= (l + 1) // 2 + k, \
+        f"d_cos_phi_evo indices out of range. n: {l} k: {k} l: {n}"
+    return c_cos_phi_evo(l + 1 + 2 * k, l, 2 * n + 1 - (l % 2))
 
 @cache.ints_cache
-def c_sin_phi_inv_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    assert n >= 0 and k >= n and l >= 0 and l <= k, f"c_sin_phi_inv_evo indices out of range. n: {n} k: {k} l: {l}"
-    if (n-k) % 2 != 0 or (n-l) % 2 != 0:
+def c_sin_phi_inv_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+    assert l >= 0 and k >= l and n >= 0 and n <= k, f"c_sin_phi_inv_evo indices out of range. n: {l} k: {k} l: {n}"
+    if (l - k) % 2 != 0 or (l - n) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
-    for i in range(l // 2 + 1):
-        for j in range(max(0, ceil((n + 2*i-k)/2.)), n // 2 + 1):
-            d += sp.Rational(E2(i)*(-1) ** (j), sp.factorial(2*i)) * sp.binomial(i,j) * c_phi_pow_evo(n - 2 * j, k, l, 2 * i)
+    for i in range(n // 2 + 1):
+        for j in range(max(0, ceil((l + 2 * i - k) / 2.)), l // 2 + 1):
+            d += sp.Rational(E2(i)*(-1) ** (j), sp.factorial(2*i)) * sp.binomial(i,j) * c_phi_pow_evo(k, l - 2 * j, n, 2 * i)
     return d
 
 
@@ -413,7 +421,7 @@ def R(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
     assert n >= 0 and k >= n and l >= 0 and l <= k and i>=0 and i <= l//2, f"R indices out of range. n: {n} k: {k} l: {l} i: {i}"
     s = sp.S.Zero
     for j in range(max(0,ceil((n + 2 * i - k) / 2.)), n // 2 + 1):
-        s += (-1) ** (j) * sp.binomial(i, j) * c_phi_pow_evo(n - 2 * j, k, l, 2 * i)
+        s += (-1) ** (j) * sp.binomial(i, j) * c_phi_pow_evo(k, n - 2 * j, l, 2 * i)
     return s
 
 @cache.ints_cache
@@ -444,11 +452,11 @@ def cp_evo_nkl(n: int, k: int, l: int) -> sp.core.Rational:
     if (n-k) % 2 != 0 or (n-l-1) % 2 != 0:
         return sp.S.Zero
     if l <= 1:
-        return c_sin_phi_inv_evo(n - 1, k - 1, l)
+        return c_sin_phi_inv_evo(k - 1, n - 1, l)
     if 2 <= l and l <= k-1:
-        return c_sin_phi_inv_evo(n - 1, k - 1, l) - c_sin_phi_inv_evo(n - 1, k - 1, l - 2)
+        return c_sin_phi_inv_evo(k - 1, n - 1, l) - c_sin_phi_inv_evo(k - 1, n - 1, l - 2)
     if k <= l:
-        return -c_sin_phi_inv_evo(n - 1, k - 1, l - 2)
+        return -c_sin_phi_inv_evo(k - 1, n - 1, l - 2)
     # This should never happen.
     return sp.S.Zero
 

@@ -27,5 +27,6 @@ mpq_class B_p(int n, int k, int p);
 mpq_class cp_evo_nkl(int n, int k, int l);
 mpq_class c_h_evo(int n, int k, int l);
 mpq_class d_h_evo(int n, int k, int l);
+mpq_class d_h_evo2(int n, int k, int l);
 
 }  // namespace point_to_ellipse_series

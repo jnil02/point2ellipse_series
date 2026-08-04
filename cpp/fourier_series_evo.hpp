@@ -15,6 +15,7 @@ using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
 using point_to_ellipse_series::c_h_evo;
 using point_to_ellipse_series::d_h_evo;
+using point_to_ellipse_series::d_h_evo2;
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
  *
@@ -134,6 +135,35 @@ inline T sin_phi_evo_dense_m(int M,
 	return s;
 }
 
+template<typename T>
+inline T sin_phi_evo_dense_m2(int M,
+							  const T& sin_psi_v,
+							  const T& rho_ae2_v,
+							  const T& b_a_v) {
+	T s(0);
+
+	for (int m = 2; m <= M; ++m) {
+		T cm(0);
+		const int prtm = m % 2;
+		const int kmax = m / 2;
+		for (int j = 0; j <= kmax; ++j) {
+			const int k = kmax - j;
+
+			for (int l = 1; l <= m / 2; ++l) {
+				cm = cm
+					 + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(prtm + 2 * j, k, l))
+					   * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l)
+					   * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * j);
+			}
+		}
+		s = s + cm
+			  * point_to_ellipse_series::series_pow<T>(b_a_v, prtm)
+			  * point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm)
+			  * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
+	}
+	return s;
+}
+
 /** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (dense).
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
@@ -178,6 +208,37 @@ inline T cos_phi_evo_dense_m(int M,
 		}
 		s = s + cm * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 	}
+	return s;
+}
+
+template<typename T>
+inline T cos_phi_evo_dense_m2(int M,
+							  const T& sin_psi_v,
+							  const T& rho_ae2_v,
+							  const T& b_a_v) {
+	T s(0);
+
+	for (int m = 1; m <= M; ++m) {
+		T cm(0);
+
+		const int prtm1 = (m - 1) % 2;
+		const int kmax  = (m - 1) / 2;
+
+		for (int j = 0; j <= kmax; ++j) {
+			const int k = kmax - j;
+
+			for (int l = prtm1; l <= m / 2; ++l) {
+				cm = cm
+					 + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(prtm1 + 2 * j, k, l))
+					   * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l)
+					   * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * j);
+			}
+		}
+		s = s + cm * point_to_ellipse_series::series_pow<T>(b_a_v, 1 - prtm1)
+			  * point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm1)
+			  * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
+	}
+
 	return s;
 }
 
@@ -240,17 +301,43 @@ inline T h_a_evo_dense_m(int M,
 
 	for (int m = 0; m <= M; ++m) {
 		T cm(0);
+		const int prtm = m % 2;
 
 		for (int k = 0; k <= m / 2; ++k) {
-			const int n = m - 2 * k;
-			const int sn = m % 2;  // same as n % 2
 			for (int l = 0; l <= (m + 1) / 2; ++l) {
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo(n, k, l))
-						  * point_to_ellipse_series::series_pow<T>(b_a_v, 1 - sn + 2 * l)
-						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo(m - 2 * k, k, l))
+						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l)
+						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, m - 2 * k);
 			}
 		}
-		s = s + cm * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
+		s = s + cm * point_to_ellipse_series::series_pow<T>(b_a_v, 1 - prtm)
+				* point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
+	}
+	return s;
+}
+
+template<typename T>
+inline T h_a_evo_dense_m2(int M,
+						 const T& sin_psi_v,
+						 const T& rho_ae2_v,
+						 const T& b_a_v) {
+	T s(0);
+
+	for (int m = 0; m <= M; ++m) {
+		T cm(0);
+		const int prtm = m % 2;
+
+		for (int j = 0; j <= m / 2; ++j) {
+			for (int l = 0; l <= (m + 1) / 2; ++l) {
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo2(m, j, l))
+//				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo(prtm + 2 * j, m / 2 - j, l))
+						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l)
+						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * j);
+			}
+		}
+		s = s + cm * point_to_ellipse_series::series_pow<T>(b_a_v, 1-prtm)
+		        * point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm)
+		        * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 	}
 	return s;
 }

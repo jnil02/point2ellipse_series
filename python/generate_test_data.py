@@ -137,7 +137,7 @@ def generate_d_phi_pow_evo():
         for n in range(MAX_INDEX + 1):
             for k in range(n+i,MAX_INDEX + 1):
                 for l in range(i, k + 1):
-                    c = c_phi_pow_evo(n, k, l, i)
+                    c = c_phi_pow_evo(k, n, l, i)
                     rows.append((n, k, l, i, c.p, c.q))
     write_csv('c_phi_pow_evo.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
 
@@ -148,7 +148,7 @@ def generate_c_sin_phi_evo():
     for n in range(MAX_INDEX + 1):
         for k in range(n, MAX_INDEX + 1):
             for l in range(k + 1):
-                c = c_sin_phi_evo(n, k, l)
+                c = c_sin_phi_evo(k, n, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('c_sin_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
@@ -162,7 +162,7 @@ def generate_d_sin_phi_evo():
     for n in range(MAX_INDEX + 1):
         for k in range(MAX_INDEX + 1):
             for l in range(1, n // 2 + k + 1):
-                c = d_sin_phi_evo(n, k, l)
+                c = d_sin_phi_evo(k, n, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('d_sin_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
@@ -173,7 +173,7 @@ def generate_c_cos_phi_evo():
     for n in range(MAX_INDEX + 1):
         for k in range(n, MAX_INDEX + 1):
             for l in range(1, k + 1):
-                c = c_cos_phi_evo(n, k, l)
+                c = c_cos_phi_evo(k, n, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('c_cos_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
@@ -187,7 +187,7 @@ def generate_d_cos_phi_evo():
     for n in range(MAX_INDEX + 1):
         for k in range(MAX_INDEX + 1):
             for l in range(n % 2, (n + 1) // 2 + k + 1):
-                c = d_cos_phi_evo(n, k, l)
+                c = d_cos_phi_evo(k, n, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('d_cos_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
@@ -202,7 +202,7 @@ def generate_d_sin_phi_inv_evo():
     for n in range(MAX_INDEX + 1):
         for k in range(n, MAX_INDEX + 1):
             for l in range(k + 1):
-                c = c_sin_phi_inv_evo(n, k, l)
+                c = c_sin_phi_inv_evo(k, n, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('c_sin_phi_inv_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 

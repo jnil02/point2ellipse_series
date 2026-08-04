@@ -124,6 +124,11 @@ TEST_CASE_METHOD(RefEvo, "(sin(phi)-sgn)/sgn evo_dense_m", "[series_evo]") {
 	assert_close("(sin(phi)-sgn)/sgn  evo_dense_m", expected, result, TOL);
 }
 
+TEST_CASE_METHOD(RefEvo, "(sin(phi)-sgn)/sgn evo_dense_m2", "[series_evo]") {
+	const mpreal expected = (mpfr::sin(phi) - sgn) / sgn;
+	const mpreal result   = ev(sin_phi_evo_dense_m2(MAX_ORD), subs);
+	assert_close("(sin(phi)-sgn)/sgn  evo_dense_m2", expected, result, TOL);
+}
 
 // ---------------------------------------------------------------------------
 // cos(phi) / |cos(psi)|
@@ -139,6 +144,12 @@ TEST_CASE_METHOD(RefEvo, "cos(phi)/|cos(psi)| evo_dense_m", "[series_evo]") {
 	const mpreal expected = mpfr::cos(phi) / abs_cos_psi;
 	const mpreal result   = ev(cos_phi_evo_dense_m(MAX_ORD), subs);
 	assert_close("cos(phi)/|cos(psi)|  evo_dense_m", expected, result, TOL);
+}
+
+TEST_CASE_METHOD(RefEvo, "cos(phi)/|cos(psi)| evo_dense_m2", "[series_evo]") {
+	const mpreal expected = mpfr::cos(phi) / abs_cos_psi;
+	const mpreal result   = ev(cos_phi_evo_dense_m2(MAX_ORD), subs);
+	assert_close("cos(phi)/|cos(psi)|  evo_dense_m2", expected, result, TOL);
 }
 
 
@@ -159,4 +170,14 @@ TEST_CASE_METHOD(RefEvo, "h metres evo_dense", "[series_evo]") {
 TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m", "[series_evo]") {
 	const mpreal result = ev(h_a_evo_dense_m(MAX_ORD), subs) * mp_a();
 	assert_close("h [m]  evo_dense", h, result, TOL * mp_a());
+}
+
+TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m2", "[series_evo]") {
+	const mpreal result = ev(h_a_evo_dense_m2(MAX_ORD), subs) * mp_a();
+	assert_close("h [m]  evo_dense", h, result, TOL * mp_a());
+}
+
+TEST_CASE_METHOD(RefEvo, "slask", "[series_evo]") {
+	std::cout << h_a_evo_dense_m2(4) << std::endl;
+	std::cout << point_to_ellipse_series::series_coeff<Expression>(d_h_evo2(0, 0, 0)) << std::endl;
 }

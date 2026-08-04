@@ -90,7 +90,9 @@ int main() {
 	// 50x90x50 took 71s
 	// 70x90x50 took 140s (512 bits tog 342 sekunder)
 	// 80x90x50 took 343s
-	const int MAX_ORDER = 20;   // N = K = 1 .. MAX_ORDER
+	// Phi + h
+	// 30x91x50 took 374s
+	const int MAX_ORDER = 30;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;
@@ -132,6 +134,7 @@ int main() {
 			PhiEvoAccum<mpreal>   phi_acc(pows);
 			HAEvoAccum<mpreal>    h_acc(pows);
 
+			h_acc.addOrder(0);                       // h has a constant term; phi does not
 			for (int N = 1; N <= MAX_ORDER; ++N) {
 				phi_acc.addOrder(N);
 				h_acc.addOrder(N);
