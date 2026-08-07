@@ -205,7 +205,7 @@ def c_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
         return sp.S.Zero
     d = sp.S.Zero
     for i in range(n // 2 + 1):
-        for j in range(max(0, ceil((l + 2 * i - k) / 2.)), l // 2 + 1):
+        for j in range(max(0, ceil((l + 2 * i - k) / 2.)), min(i, l // 2) + 1):
             d += sp.Rational((-1) ** (i+j), sp.factorial(2*i)) * sp.binomial(i,j) * c_phi_pow_evo(k, l - 2 * j, n,
                                                                                                   2 * i)
     return d
@@ -462,37 +462,50 @@ def cp_evo_nkl(n: int, k: int, l: int) -> sp.core.Rational:
 
 
 @cache.ints_cache
-def ch_evo(n: int, k: int, l: int) -> sp.core.Rational:
+def ch_evo(k: int, l: int, n: int) -> sp.core.Rational:
     """Series coefficients for h/a in sin powers for small rho.
 
     Sparse coefficients with every other coefficient being zero.
 
-    :param n: sin power index.
+    :param l: sin power index.
     :param k: sigma power index.
-    :param l: epsilon power index.
+    :param n: epsilon power index.
     :return: Rational coefficient.
     """
-    assert n >= 0 and k >= n and l >= 0 and l <= k+1, f"ch_evo indices out of range. n: {n} k: {k} l: {l}"
-    if (n-k) % 2 != 0 or (n-l-1) % 2 != 0:
+    assert l >= 0 and k >= l and n >= 0 and n <= k + 1, f"ch_evo indices out of range. n: {l} k: {k} l: {n}"
+    if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
-    if n==0:
-        return -B_p(n, k, l)
     if l==0:
-        return cp_evo_nkl(n, k, l)
-    return cp_evo_nkl(n, k, l) - B_p(n, k, l)
+        return -B_p(l, k, n)
+    if n==0:
+        return cp_evo_nkl(l, k, n)
+    return cp_evo_nkl(l, k, n) - B_p(l, k, n)
 
 @cache.ints_cache
-def dh_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+def dh_evo(l: int, k: int, n: int) -> sp.core.numbers.Rational:
     """Series coefficients for h/a in sin powers for small rho.
 
-    :param n: sin power index.
+    :param l: sin power index.
     :param k: sigma power index.
-    :param l: epsilon power index.
+    :param n: epsilon power index.
     :return: Rational coefficient.
     """
-    assert n >= 0 and k >= 0 and l >= 0 and l <= k+ceil(n/2.), f"dh_evo indices out of range. n: {n} k: {k} l: {l}"
-    sn = n % 2
-    return ch_evo(n, 2 * k + n, 2 * l + 1 - sn)
+    assert l >= 0 and k >= 0 and n >= 0 and n <= k + ceil(l / 2.), f"dh_evo indices out of range. n: {l} k: {k} l: {n}"
+    sn = l % 2
+    return ch_evo(2 * k + l, l, 2 * n + 1 - sn)
+
+@cache.ints_cache
+def dh_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+    """Series coefficients for h/a in sin powers for small rho.
+
+    :param l: sin power index.
+    :param k: sigma power index.
+    :param n: epsilon power index.
+    :return: Rational coefficient.
+    """
+    assert l >= 0 and k >= 0 and n >= 0 and n <= ceil(k / 2.) and l <= k // 2, f"dh_evo_m indices out of range. n: {l} k: {k} l: {n}"
+    sn = k % 2
+    return ch_evo(k,2 * l + sn, 2 * n + 1 - sn)
 
 @cache.ints_cache
 def a_mr(m: int, r: int) -> sp.core.numbers.Rational:

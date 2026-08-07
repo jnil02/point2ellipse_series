@@ -270,7 +270,7 @@ def generate_c_h_evo():
     for n in range(1, MAX_INDEX + 1):
         for k in range(n, MAX_INDEX + 1):
             for l in range(k + 2):
-                c = ch_evo(n, k, l)
+                c = ch_evo(k, n, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('c_h_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 

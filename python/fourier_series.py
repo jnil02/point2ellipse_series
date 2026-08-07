@@ -9,7 +9,7 @@ import sympy as sp
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
     c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo, c_cos_phi_evo, d_cos_phi_evo, c_sin_phi_inv_evo, d_Na_evo2, B_p, cp_evo_nkl, \
-    ch_evo, dh_evo, d_phi_evo2
+    ch_evo, dh_evo, dh_evo_m, d_phi_evo2
 
 
 def phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
@@ -500,7 +500,7 @@ def h_a_evo(N, K):
     for n in range(N+1):
         for k in range(n, K+1):
             for l in range(k+2):
-                s += ch_evo(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
+                s += ch_evo(k, n, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
 def h_a_evo_dense(N, K):
@@ -518,4 +518,21 @@ def h_a_evo_dense(N, K):
         for k in range(0, (K-n) // 2+1):
             for l in range(0, k+math.ceil(n/2.)+1):
                 s += dh_evo(n, k, l) * b_a ** (1 - sn + 2 * l) * rho_ae2 ** (n + 2 * k) * sin_psi ** n
+    return s
+
+def h_a_evo_dense_m(K):
+    """Series for h/a in sin powers for small rho.
+
+    Using dense (all non-zero) coefficients.
+
+    :param N: sin power limit.
+    :param K: rho power limit.
+    :return: Symbolic series.
+    """
+    s = sp.S.Zero
+    for k in range(K+1):
+        sn = k % 2
+        for l in range(0, (k // 2) + 1):
+            for n in range(0, math.ceil(k/2.) + 1):
+                s += dh_evo_m(k, l, n) * b_a ** (1 - sn + 2 * n) * rho_ae2 ** (k) * sin_psi ** (2*l + sn)
     return s
