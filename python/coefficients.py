@@ -434,8 +434,8 @@ def d_Na_evo2(n: int, k: int, l: int, b_a) -> sp.core.Expr:
     return d
 
 @cache.ints_cache
-def B_p(n: int, k: int, p: int) -> sp.core.Rational:
-    assert n >= 0 and k >= n and p >= 0 and p <= k+1, f"B_p indices out of range. n: {n} k: {k} l: {p}"
+def c_N_evo(n: int, k: int, p: int) -> sp.core.Rational:
+    assert n >= 0 and k >= n and p >= 0 and p <= k+1, f"c_N_evo indices out of range. n: {n} k: {k} l: {p}"
     if (n-k) % 2 != 0 or (n-p-1) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
@@ -462,7 +462,7 @@ def cp_evo_nkl(n: int, k: int, l: int) -> sp.core.Rational:
 
 
 @cache.ints_cache
-def ch_evo(k: int, l: int, n: int) -> sp.core.Rational:
+def c_h_evo(k: int, l: int, n: int) -> sp.core.Rational:
     """Series coefficients for h/a in sin powers for small rho.
 
     Sparse coefficients with every other coefficient being zero.
@@ -476,10 +476,10 @@ def ch_evo(k: int, l: int, n: int) -> sp.core.Rational:
     if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
     if l==0:
-        return -B_p(l, k, n)
+        return -c_N_evo(l, k, n)
     if n==0:
         return cp_evo_nkl(l, k, n)
-    return cp_evo_nkl(l, k, n) - B_p(l, k, n)
+    return cp_evo_nkl(l, k, n) - c_N_evo(l, k, n)
 
 @cache.ints_cache
 def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
@@ -492,7 +492,7 @@ def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """
     assert l >= 0 and k >= 0 and n >= 0 and n <= k + ceil(l / 2.), f"d_h_evo indices out of range. k: {k} l: {l} n: {n}"
     sn = l % 2
-    return ch_evo(2 * k + l, l, 2 * n + 1 - sn)
+    return c_h_evo(2 * k + l, l, 2 * n + 1 - sn)
 
 @cache.ints_cache
 def dh_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
@@ -505,7 +505,7 @@ def dh_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """
     assert l >= 0 and k >= 0 and n >= 0 and n <= ceil(k / 2.) and l <= k // 2, f"dh_evo_m indices out of range. n: {l} k: {k} l: {n}"
     sn = k % 2
-    return ch_evo(k,2 * l + sn, 2 * n + 1 - sn)
+    return c_h_evo(k, 2 * l + sn, 2 * n + 1 - sn)
 
 @cache.ints_cache
 def a_mr(m: int, r: int) -> sp.core.numbers.Rational:

@@ -14,8 +14,8 @@ import csv
 from coefficients import (d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo,
                           c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo,
                           c_cos_phi_evo, d_cos_phi_evo,
-                          c_sin_phi_inv_evo, a_mr, B_rt, C_mt, R, B_p, cp_evo_nkl,
-                          ch_evo)
+                          c_sin_phi_inv_evo, a_mr, B_rt, C_mt, R, c_N_evo, cp_evo_nkl,
+                          c_h_evo)
 
 # Generate all indices up to and including this value.
 MAX_INDEX = 5
@@ -245,14 +245,14 @@ def generate_R():
     write_csv('R.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
 
 
-def generate_B_p():
+def generate_c_N_evo():
     rows = []
     for n in range(MAX_INDEX + 1):
         for k in range(n, MAX_INDEX + 1):
             for l in range(1, k+2):
-                c = B_p(n, k, l)
+                c = c_N_evo(n, k, l)
                 rows.append((n, k, l, c.p, c.q))
-    write_csv('B_p.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('c_N_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_cp_evo_nkl():
@@ -270,7 +270,7 @@ def generate_c_h_evo():
     for n in range(1, MAX_INDEX + 1):
         for k in range(n, MAX_INDEX + 1):
             for l in range(k + 2):
-                c = ch_evo(k, n, l)
+                c = c_h_evo(k, n, l)
                 rows.append((n, k, l, c.p, c.q))
     write_csv('c_h_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
@@ -292,6 +292,6 @@ if __name__ == '__main__':
     generate_B_rt()
     generate_C_mt()
     generate_R()
-    generate_B_p()
+    generate_c_N_evo()
     generate_cp_evo_nkl()
     generate_c_h_evo()

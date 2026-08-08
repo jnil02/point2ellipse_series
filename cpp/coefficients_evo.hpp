@@ -23,7 +23,7 @@ mpq_class a_mr(int m, int r);
 mpq_class B_rt(int r, int t);
 mpq_class C_mt(int m, int t);
 mpq_class R(int n, int k, int l, int i);
-mpq_class B_p(int n, int k, int p);
+mpq_class c_N_evo(int n, int k, int p);
 mpq_class cp_evo_nkl(int n, int k, int l);
 mpq_class c_h_evo(int n, int k, int l);
 mpq_class d_h_evo(int n, int k, int l);

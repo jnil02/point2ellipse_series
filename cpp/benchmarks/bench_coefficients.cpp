@@ -105,10 +105,10 @@ int main(int argc, char* argv[]) {
 		volatile auto r = C_mt(iarg(0), iarg(1));
 		(void)r; print(elapsed_ms(t0));
 
-	} else if (fn == "B_p") {
+	} else if (fn == "c_N_evo") {
 		require_args(3);
 		auto t0 = Clock::now();
-		volatile auto r = B_p(iarg(0), iarg(1), iarg(2));
+		volatile auto r = c_N_evo(iarg(0), iarg(1), iarg(2));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "R") {
@@ -119,7 +119,7 @@ int main(int argc, char* argv[]) {
 
 	} else {
 		std::cerr << "Unknown function: " << fn << "\n";
-		std::cerr << "Known: d_phi_evo, d_h_evo, cp_evo, a_mr, B_rt, C_mt, B_p, R\n";
+		std::cerr << "Known: d_phi_evo, d_h_evo, cp_evo, a_mr, B_rt, C_mt, c_N_evo, R\n";
 		return 1;
 	}
 

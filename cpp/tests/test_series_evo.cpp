@@ -169,12 +169,12 @@ TEST_CASE_METHOD(RefEvo, "h metres evo_dense", "[series_evo]") {
 
 TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m", "[series_evo]") {
 	const mpreal result = ev(h_a_evo_dense_m(MAX_ORD), subs) * mp_a();
-	assert_close("h [m]  evo_dense", h, result, TOL * mp_a());
+	assert_close("h [m]  evo_dense_m", h, result, TOL * mp_a());
 }
 
 TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m2", "[series_evo]") {
 	const mpreal result = ev(h_a_evo_dense_m2(MAX_ORD), subs) * mp_a();
-	assert_close("h [m]  evo_dense", h, result, TOL * mp_a());
+	assert_close("h [m]  evo_dense_m2", h, result, TOL * mp_a());
 }
 
 TEST_CASE_METHOD(RefEvo, "slask", "[series_evo]") {
