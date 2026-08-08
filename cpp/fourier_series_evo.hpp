@@ -34,7 +34,7 @@ inline T phi_evo_sin_pow_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = 0; l <= n / 2 + k; ++l)
-				d = d + point_to_ellipse_series::series_coeff<T>(d_phi_evo(n, k, l))
+				d = d + point_to_ellipse_series::series_coeff<T>(d_phi_evo(k, n, l))
 						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 1 + 2 * k)
 						* point_to_ellipse_series::series_pow<T>(b_a_v, (n % 2) + 1 + 2 * l);
@@ -53,7 +53,7 @@ inline T phi_evo_sin_pow_dense_m(int M,
 			const int n     = m - 1 - 2 * k;
 			const T   sin_n = point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 			for (int l = 0; l <= L; ++l)
-				d = d + point_to_ellipse_series::series_coeff<T>(d_phi_evo(n, k, l))
+				d = d + point_to_ellipse_series::series_coeff<T>(d_phi_evo(k, n, l))
 						* sin_n
 						* rho_m
 						* point_to_ellipse_series::series_pow<T>(b_a_v, parity + 1 + 2 * l);
@@ -106,7 +106,7 @@ inline T sin_phi_evo_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; n + 2 * k <= K; ++k)
 			for (int l = 1; l <= n / 2 + k; ++l)
-				s = s + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(n, k, l))
+				s = s + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(k, n, l))
 						* point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + (n % 2))
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 2 * k)
 						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
@@ -123,11 +123,11 @@ inline T sin_phi_evo_dense_m(int M,
 	for (int m = 0; m <= M; ++m) {
 		T cm(0);
 		for (int k = 0; k <= m / 2; ++k) {
-			const int n = m - 2 * k;
-			for (int l = 1; l <= m / 2; ++l) {
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(n, k, l))
-						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + (m % 2))
-						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
+			const int l = m - 2 * k;
+			for (int n = 1; n <= m / 2; ++n) {
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(k, l, n))
+						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * n + (m % 2))
+						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, l);
 			}
 		}
 		s = s + cm * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
@@ -151,15 +151,15 @@ inline T sin_phi_evo_dense_m2(int M,
 
 			for (int l = 1; l <= m / 2; ++l) {
 				cm = cm
-					 + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(prtm + 2 * j, k, l))
+					 + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(k, prtm + 2 * j, l))
 					   * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l)
 					   * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * j);
 			}
 		}
 		s = s + cm
-			  * point_to_ellipse_series::series_pow<T>(b_a_v, prtm)
-			  * point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm)
-			  * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
+				* point_to_ellipse_series::series_pow<T>(b_a_v, prtm)
+				* point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm)
+				* point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 	}
 	return s;
 }
@@ -181,7 +181,7 @@ inline T cos_phi_evo_dense(int N, int K,
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; n + 1 + 2 * k <= K; ++k)
 			for (int l = n % 2; l <= (n + 1) / 2 + k; ++l)
-				s = s + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(n, k, l))
+				s = s + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(k, n, l))
 						* point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + 1 - (n % 2))
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 1 + 2 * k)
 						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
@@ -201,7 +201,7 @@ inline T cos_phi_evo_dense_m(int M,
 			const int n = m - 1 - 2 * k;
 			const int p = n % 2;  // same as (m - 1) % 2
 			for (int l = p; l <= m / 2; ++l) {
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(n, k, l))
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(k, n, l))
 						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l + 1 - p)
 						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
 			}
@@ -229,14 +229,14 @@ inline T cos_phi_evo_dense_m2(int M,
 
 			for (int l = prtm1; l <= m / 2; ++l) {
 				cm = cm
-					 + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(prtm1 + 2 * j, k, l))
+					 + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(k, prtm1 + 2 * j, l))
 					   * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l)
 					   * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * j);
 			}
 		}
 		s = s + cm * point_to_ellipse_series::series_pow<T>(b_a_v, 1 - prtm1)
-			  * point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm1)
-			  * point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
+				* point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm1)
+				* point_to_ellipse_series::series_pow<T>(rho_ae2_v, m);
 	}
 
 	return s;
@@ -284,7 +284,7 @@ inline T h_a_evo_dense(int N, int K,
 		int sn = n % 2;
 		for (int k = 0; n + 2 * k <= K; ++k)
 			for (int l = 0; l <= k + (n + 1) / 2; ++l)
-				s = s + point_to_ellipse_series::series_coeff<T>(d_h_evo(n, k, l))
+				s = s + point_to_ellipse_series::series_coeff<T>(d_h_evo(k, n, l))
 						* point_to_ellipse_series::series_pow<T>(b_a_v, 1 - sn + 2 * l)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 2 * k)
 						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
@@ -305,7 +305,7 @@ inline T h_a_evo_dense_m(int M,
 
 		for (int k = 0; k <= m / 2; ++k) {
 			for (int l = 0; l <= (m + 1) / 2; ++l) {
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo(m - 2 * k, k, l))
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo(k, m - 2 * k, l))
 						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * l)
 						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, m - 2 * k);
 			}
@@ -318,9 +318,9 @@ inline T h_a_evo_dense_m(int M,
 
 template<typename T>
 inline T h_a_evo_dense_m2(int M,
-						 const T& sin_psi_v,
-						 const T& rho_ae2_v,
-						 const T& b_a_v) {
+						  const T& sin_psi_v,
+						  const T& rho_ae2_v,
+						  const T& b_a_v) {
 	T s(0);
 
 	for (int k = 0; k <= M; ++k) {
@@ -330,14 +330,13 @@ inline T h_a_evo_dense_m2(int M,
 		for (int l = 0; l <= k / 2; ++l) {
 			for (int n = 0; n <= (k + 1) / 2; ++n) {
 				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo2(k, l, n))
-//				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo(prtm + 2 * j, m / 2 - j, l))
 						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * n)
 						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * l);
 			}
 		}
 		s = s + cm * point_to_ellipse_series::series_pow<T>(b_a_v, 1-prtm)
-		        * point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm)
-		        * point_to_ellipse_series::series_pow<T>(rho_ae2_v, k);
+				* point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm)
+				* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k);
 	}
 	return s;
 }

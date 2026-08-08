@@ -13,21 +13,21 @@ namespace point_to_ellipse_series {
 
 using uint = unsigned int;
 
-mpq_class d_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= 0 && l >= 0 && l <= n / 2 + k);
+mpq_class d_phi_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= 0 && n >= 0 && n <= l / 2 + k);
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+	if (auto *ret = cache.get((uint) k, (uint) l, (uint) n))
 		return *ret;
 
-	const int s = n % 2;
-	const int m = n + 1 + 2 * k;
-	const int Q = s + 2 * l;  // Maximum value of q.
+	const int s = l % 2;
+	const int m = l + 1 + 2 * k;
+	const int Q = s + 2 * n;  // Maximum value of q.
 
 	// Every factor of the double sum is a non-negative integer, so the whole
 	// accumulator c is an integer: rational arithmetic is deferred to the final
-	// outer factor. Precompute the q-only factor T[q] = C(n-1+2k-q, Q-q), which
-	// is independent of j (turns O(l^2) binomial calls into O(l)). The second
+	// outer factor. Precompute the q-only factor T[q] = C(l-1+2k-q, Q-q), which
+	// is independent of j (turns O(n^2) binomial calls into O(n)). The second
 	// argument Q-q is always >= 0; the first is >= 0 except when Q-q == 0, where
 	// C(top, 0) = 1, so a plain integer binomial covers every case.
 	std::vector<mpz_class> T(Q + 1);
@@ -35,17 +35,17 @@ mpq_class d_phi_evo(int n, int k, int l) {
 		if (Q - q == 0)
 			T[q] = 1;
 		else
-			mpz_bin_uiui(T[q].get_mpz_t(), (unsigned long) (n - 1 + 2 * k - q),
+			mpz_bin_uiui(T[q].get_mpz_t(), (unsigned long) (l - 1 + 2 * k - q),
 						 (unsigned long) (Q - q));
 	}
 
 	mpz_class c(0);
-	// The inner b-sum reduces in closed form to b(j) = C(n/2+k-l, k-j) via the
+	// The inner b-sum reduces in closed form to b(j) = C(l/2+k-n, k-j) via the
 	// alternating binomial identity sum_i (-1)^i C(j,i) C(x-i,k) = C(x-j,k-j).
-	// It is nonzero only for max(0, l-n/2) <= j <= k, which bounds the loop.
-	for (int j = std::max(0, l - n / 2); j <= std::min(l, k); ++j) {
+	// It is nonzero only for max(0, n-l/2) <= j <= k, which bounds the loop.
+	for (int j = std::max(0, n - l / 2); j <= std::min(n, k); ++j) {
 		mpz_class b;
-		mpz_bin_uiui(b.get_mpz_t(), (unsigned long) (n / 2 + k - l),
+		mpz_bin_uiui(b.get_mpz_t(), (unsigned long) (l / 2 + k - n),
 					 (unsigned long) (k - j));
 
 		// Inner sum: sum_{q=2j}^{Q} 2^(q-2j) * C(q-j, j) * T[q]. Both 2^(q-2j)
@@ -63,16 +63,16 @@ mpq_class d_phi_evo(int n, int k, int l) {
 		c += sum_ * b;
 	}
 
-	// Outer factor: (-1)^(n/2 + l + n + 1) * binomial(m/2, n/2 + k - l) / m
+	// Outer factor: (-1)^(l/2 + n + l + 1) * binomial(m/2, l/2 + k - n) / m
 	mpq_class result =
-			binomial_rational(mpq_class(m, 2), (long) (n / 2 + k - l))
-			* mpq_class(powm1(n / 2 + l + n + 1))
+			binomial_rational(mpq_class(m, 2), (long) (l / 2 + k - n))
+			* mpq_class(powm1(l / 2 + n + l + 1))
 			/ mpq_class(mpz_class(m))
 			* mpq_class(c);
 	result.canonicalize();
 
 	mpq_class ret = result;
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return cache.insert(ret, (uint) k, (uint) l, (uint) n);
 }
 
 // Old implementation
@@ -485,20 +485,20 @@ mpq_class c_h_evo(int n, int k, int l) {
 	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 }
 
-mpq_class d_h_evo(int n, int k, int l) {
-	return c_h_evo(n, 2 * k + n, 2 * l + 1 - (n % 2));
+mpq_class d_h_evo(int k, int l, int n) {
+	return c_h_evo(l, 2 * k + l, 2 * n + 1 - (l % 2));
 }
 
 mpq_class d_h_evo2(int k, int l, int n) {
 	return c_h_evo(2 * l + (k % 2), k, 2 * n + 1 - (k % 2));
 }
 
-mpq_class d_sin_phi_evo(int n, int k, int l) {
-	return c_sin_phi_evo(n, n + 2 * k, 2 * l + (n % 2));
+mpq_class d_sin_phi_evo(int k, int l, int n) {
+	return c_sin_phi_evo(l, l + 2 * k, 2 * n + (l % 2));
 }
 
-mpq_class d_cos_phi_evo(int n, int k, int l) {
-	return c_cos_phi_evo(n, n + 1 + 2 * k, 2 * l + 1 - (n % 2));
+mpq_class d_cos_phi_evo(int k, int l, int n) {
+	return c_cos_phi_evo(l, l + 1 + 2 * k, 2 * n + 1 - (l % 2));
 }
 
 }  // namespace point_to_ellipse_series

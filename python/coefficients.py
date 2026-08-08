@@ -101,30 +101,30 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return h
 
 @cache.ints_cache
-def d_phi_evo(n: int, k: int, l: int) -> sp.core.numbers.Rational:
+def d_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
 
     Dense coefficients. All the coefficients are non-zero.
 
-    :param n: Fourier sin-multiple.
-    :param k: rho power of inner power series.
-    :param l: e² power of innermost power series.
+    :param k: rho power of inner power series (sigma).
+    :param l: sin-multiple.
+    :param n: e² power of innermost power series (epsilon).
     :return: Coefficient as a sympy rational number.
     """
-    assert n >= 0 and k >= 0 and l >= 0 and l <= n//2+k, f"d_phi_evo indices out of range. n: {n} k: {k} l: {l}"
+    assert l >= 0 and k >= 0 and n >= 0 and n <= l // 2+k, f"d_phi_evo indices out of range. k: {k} l: {l} n: {n}"
     c = sp.S.Zero
-    s = n % 2
-    m = n + 1 + 2 * k
-    for j in range(l + 1):
+    s = l % 2
+    m = l + 1 + 2 * k
+    for j in range(n + 1):
         b = sp.S.Zero
-        ka = n // 2 - l + j
+        ka = l // 2 - n + j
         for i in range(0, min(j, ka) + 1):
             b += (-1) ** i * sp.binomial(j, i) * sp.binomial(ka - i + k, ka - i)
         sum = sp.S.Zero
-        for q in range(2 * j, s + 2 * l + 1):
-            sum += 2 ** (q - 2 * j) * sp.binomial(q - j, j) * sp.binomial(n - 1 + 2 * k - q, s + 2 * l - q)
+        for q in range(2 * j, s + 2 * n + 1):
+            sum += 2 ** (q - 2 * j) * sp.binomial(q - j, j) * sp.binomial(l - 1 + 2 * k - q, s + 2 * n - q)
         c += sum * b
-    return (-1) ** (n // 2 + l + n + 1) * sp.binomial(sp.Rational(m, 2), n // 2 + k - l) / m * c
+    return (-1) ** (l // 2 + n + l + 1) * sp.binomial(sp.Rational(m, 2), l // 2 + k - n) / m * c
 
 @cache.ints_cache
 def d_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
@@ -482,15 +482,15 @@ def ch_evo(k: int, l: int, n: int) -> sp.core.Rational:
     return cp_evo_nkl(l, k, n) - B_p(l, k, n)
 
 @cache.ints_cache
-def dh_evo(l: int, k: int, n: int) -> sp.core.numbers.Rational:
+def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Series coefficients for h/a in sin powers for small rho.
 
-    :param l: sin power index.
     :param k: sigma power index.
+    :param l: sin power index.
     :param n: epsilon power index.
     :return: Rational coefficient.
     """
-    assert l >= 0 and k >= 0 and n >= 0 and n <= k + ceil(l / 2.), f"dh_evo indices out of range. n: {l} k: {k} l: {n}"
+    assert l >= 0 and k >= 0 and n >= 0 and n <= k + ceil(l / 2.), f"d_h_evo indices out of range. k: {k} l: {l} n: {n}"
     sn = l % 2
     return ch_evo(2 * k + l, l, 2 * n + 1 - sn)
 

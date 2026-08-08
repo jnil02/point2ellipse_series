@@ -9,7 +9,7 @@ import sympy as sp
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
     c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo, c_cos_phi_evo, d_cos_phi_evo, c_sin_phi_inv_evo, d_Na_evo2, B_p, cp_evo_nkl, \
-    ch_evo, dh_evo, dh_evo_m, d_phi_evo2
+    ch_evo, d_h_evo, dh_evo_m, d_phi_evo2
 
 
 def phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
@@ -230,10 +230,10 @@ def phi_evo_sin_pow_dense(N, K):
     :return: symbolic series.
     """
     d = sp.S.Zero
-    for n in range(0, N+1):
+    for l in range(0, N+1):
         for k in range(0, K+1):
-            for l in range(0, n//2+k+1):
-                d += sin_psi ** n * rho_ae2 ** (n + 1 + 2*k) * b_a ** ((n % 2) + 1 + 2*l) * d_phi_evo(n, k, l)
+            for n in range(0, l//2+k+1):
+                d += sin_psi ** l * rho_ae2 ** (l + 1 + 2*k) * b_a ** ((l % 2) + 1 + 2*n) * d_phi_evo(k, l, n)
     return d
 
 
@@ -251,12 +251,12 @@ def phi_evo_sin_pow_dense_m(M):
     for m in range(1, M + 1):
         K = (m - 1) // 2
         for k in range(0, K + 1):
-            n = m - 1 - 2 * k
-            for l in range(0, K + 1):
-                d += (sin_psi ** n
+            l = m - 1 - 2 * k
+            for n in range(0, K + 1):
+                d += (sin_psi ** l
                       * rho_ae2 ** m
-                      * b_a ** (n % 2 + 1 + 2 * l)
-                      * d_phi_evo(n, k, l))
+                      * b_a ** (l % 2 + 1 + 2 * n)
+                      * d_phi_evo(k, l, n))
     return d
 
 def phi_evo_sin_pow_dense_m2(M):
@@ -513,11 +513,11 @@ def h_a_evo_dense(N, K):
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for n in range(N+1):
-        sn = n % 2
-        for k in range(0, (K-n) // 2+1):
-            for l in range(0, k+math.ceil(n/2.)+1):
-                s += dh_evo(n, k, l) * b_a ** (1 - sn + 2 * l) * rho_ae2 ** (n + 2 * k) * sin_psi ** n
+    for l in range(N+1):
+        sn = l % 2
+        for k in range(0, (K-l) // 2+1):
+            for n in range(0, k+math.ceil(l/2.)+1):
+                s += d_h_evo(k, l, n) * b_a ** (1 - sn + 2 * n) * rho_ae2 ** (l + 2 * k) * sin_psi ** l
     return s
 
 def h_a_evo_dense_m(K):
