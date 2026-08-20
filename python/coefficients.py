@@ -242,6 +242,16 @@ def d_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
         f"d_cos_phi_evo indices out of range. n: {l} k: {k} l: {n}"
     return c_cos_phi_evo(l + 1 + 2 * k, l, 2 * n + 1 - (l % 2))
 
+def d_cos_phi_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+    """Dense cos(phi)/|cos(psi)| series coefficients — all non-zero by construction.
+
+    d_cos_phi_evo(n, k, l) = c_cos_phi_evo(n, n + 1 + 2*k, 2*l + 1 - (n % 2))
+    """
+    assert k >= 1 and l >= 0 and n >= (k+1) % 2 and l <= (k - 1) // 2 and n <= ceil((k - 1) / 2.) , \
+        f"d_cos_phi_evo indices out of range. k: {k} l: {l} n: {n}"
+    p = (k - 1) % 2
+    return c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p)
+
 @cache.ints_cache
 def c_sin_phi_inv_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     assert l >= 0 and k >= l and n >= 0 and n <= k, f"c_sin_phi_inv_evo indices out of range. n: {l} k: {k} l: {n}"
@@ -434,16 +444,16 @@ def d_Na_evo2(n: int, k: int, l: int, b_a) -> sp.core.Expr:
     return d
 
 @cache.ints_cache
-def c_N_evo(n: int, k: int, p: int) -> sp.core.Rational:
-    assert n >= 0 and k >= n and p >= 0 and p <= k+1, f"c_N_evo indices out of range. n: {n} k: {k} l: {p}"
-    if (n-k) % 2 != 0 or (n-p-1) % 2 != 0:
+def c_N_evo(l: int, k: int, n: int) -> sp.core.Rational:
+    assert l >= 0 and k >= l and n >= 0 and n <= k + 1, f"c_N_evo indices out of range. n: {l} k: {k} l: {n}"
+    if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
     d = sp.S.Zero
-    for l in range(k+1):
-        for i in range(l // 2+1):
-            t = l + 1 - p
+    for p in range(k+1):
+        for i in range(p // 2+1):
+            t = p + 1 - n
             if (t % 2 == 0 and t >= 0 and t <= 2*i):
-                d += C_mt(i,t // 2) * R(n,k,l,i)
+                d += C_mt(i,t // 2) * R(l, k, p, i)
     return d
 
 @cache.ints_cache
@@ -458,6 +468,29 @@ def cp_evo_nkl(n: int, k: int, l: int) -> sp.core.Rational:
     if k <= l:
         return -c_sin_phi_inv_evo(k - 1, n - 1, l - 2)
     # This should never happen.
+    return sp.S.Zero
+
+@cache.ints_cache
+def cp_evo_nkl2(l: int, k: int, n: int) -> sp.core.Rational:
+    """
+    Adjusted for the new summation ranges for which rho*sin(psi)/a has been pulled out.
+
+    :param l:
+    :param k:
+    :param n:
+    :return:
+    """
+    assert l >= 1 and k >= l and n >= 1 and n <= k+1, f"cp_evo_nkl indices out of range. n: {n} k: {k} l: {l}"
+    if (l-k) % 2 != 0 or (k+1-n) % 2 != 0:
+        return sp.S.Zero
+    if n <= 2 and n <= k-1:
+        # k = 0, l=0, n = 2
+        return c_sin_phi_inv_evo(k - 1, l - 1, n)
+    if 3 <= n and n <= k-1:
+        return c_sin_phi_inv_evo(k - 1, l - 1, n) - c_sin_phi_inv_evo(k - 1, l - 1, n - 2)
+    if 3 <= n and n <= k+1:
+        return -c_sin_phi_inv_evo(k - 1, l - 1, n - 2)
+    # This will happen for e.g. 1,1,2.
     return sp.S.Zero
 
 
@@ -480,6 +513,24 @@ def c_h_evo(k: int, l: int, n: int) -> sp.core.Rational:
     if n==0:
         return cp_evo_nkl(l, k, n)
     return cp_evo_nkl(l, k, n) - c_N_evo(l, k, n)
+
+@cache.ints_cache
+def c_h_evo2(l: int, k: int, n: int) -> sp.core.Rational:
+    """Series coefficients for h/a - rho/a*sin(psi)/sin(phi) in sin powers for small rho.
+
+    Sparse coefficients with every other coefficient being zero.
+
+    :param l: sin power index.
+    :param k: sigma power index.
+    :param n: epsilon power index.
+    :return: Rational coefficient.
+    """
+    assert l >= 0 and k >= l and n >= 0 and n <= k + 1, f"ch_evo indices out of range. n: {l} k: {k} l: {n}"
+    if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
+        return sp.S.Zero
+    if l==0:
+        return -c_N_evo(l, k, n)
+    return cp_evo_nkl2(l, k, n) - c_N_evo(l, k, n)
 
 @cache.ints_cache
 def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
@@ -506,6 +557,19 @@ def dh_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     assert l >= 0 and k >= 0 and n >= 0 and n <= ceil(k / 2.) and l <= k // 2, f"dh_evo_m indices out of range. n: {l} k: {k} l: {n}"
     sn = k % 2
     return c_h_evo(k, 2 * l + sn, 2 * n + 1 - sn)
+
+@cache.ints_cache
+def dh_evo_m2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+    """Series coefficients for h/a - rho/a*sin(psi) in sin powers for small rho.
+
+    :param l: sin power index.
+    :param k: sigma power index.
+    :param n: epsilon power index.
+    :return: Rational coefficient.
+    """
+    assert l >= 0 and k >= 0 and n >= 0 and n <= k // 2 and l <= k // 2, f"dh_evo_m indices out of range. n: {l} k: {k} l: {n}"
+    sn = k % 2
+    return c_h_evo2(2 * l + sn,k, 2 * n + 1 + sn)
 
 @cache.ints_cache
 def a_mr(m: int, r: int) -> sp.core.numbers.Rational:

@@ -9,7 +9,8 @@ import sympy as sp
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
     c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo, c_cos_phi_evo, d_cos_phi_evo, c_sin_phi_inv_evo, d_Na_evo2, c_N_evo, cp_evo_nkl, \
-    c_h_evo, d_h_evo, dh_evo_m, d_phi_evo2
+    c_h_evo, c_h_evo2, d_h_evo, dh_evo_m, d_phi_evo2, d_cos_phi_evo_m, cp_evo_nkl2, \
+    dh_evo_m2
 
 
 def phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
@@ -426,7 +427,8 @@ def cos_phi_evo_dense_m(K):
             # for n in range((k-1) % 2, (k-1) % 2 + (k - 1) // 2 + 1):
             for n in range(p, math.ceil((k - 1)/2) + 1):
                 # s += d_cos_phi_evo(p + 2*l, q - l, n) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2*l + (k-1) % 2)
-                s += c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2 * l + (k - 1) % 2)
+                # s += c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2 * l + (k - 1) % 2)
+                s += d_cos_phi_evo_m(k, l, n) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2 * l + (k - 1) % 2)
     return s
 
 
@@ -443,6 +445,48 @@ def sin_phi_inv_evo(N, K):
             for n in range(k+1):
                 s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
+
+def sin_phi_inv_evo2(N, K):
+    """Series for 1/sin(phi)-1 in sin powers for small rho.
+
+    Note, series for 1/sin(phi) __-1__.
+
+    :param N: sin power limit.
+    :param K: rho power limit.
+    :return: Symbolic series.
+    """
+    s = sp.S.Zero
+    for l in range(N+1):
+        for k in range(l, K+1):
+            for n in range(1,k+1):
+                s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+    return s
+
+def sin_phi_inv_evo3(N, K):
+    """Series for rho/a * (1/sin(phi)-1) in sin powers for small rho.
+
+    Note, series for 1/sin(phi) __-1__.
+
+    :param N: sin power limit.
+    :param K: rho power limit.
+    :return: Symbolic series.
+    """
+    s = sp.S.Zero
+    # for l in range(1,N+1):
+    #     for k in range(l, K+1):
+    #         for n in range(1,k-1+1):
+    #             s += c_sin_phi_inv_evo(k-1, l-1, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+    # for l in range(1,N+1):
+    #     for k in range(l, K+1):
+    #         for n in range(3,k+1+1):
+    #             s -= c_sin_phi_inv_evo(k-1, l-1, n-2) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+    for l in range(1,N+1):
+        for k in range(l, K+1):
+            for n in range(1,k+1+1):
+                # k = 1, l=3, n = 0
+                s += cp_evo_nkl2(l, k, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+    return s
+
 
 def sin_psi_sin_phi_inv_evo(N, K):
     """Series for rho/a * sin(psi)/sin(phi) in sin powers for small rho.
@@ -503,6 +547,21 @@ def h_a_evo(N, K):
                 s += c_h_evo(k, n, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
+def h_a_evo2(N, K):
+    """Series for h/a - rho/a*sin(psi)/sin(phi) in sin powers for small rho.
+
+    :param N: sin power limit.
+    :param K: rho power limit.
+    :return: Symbolic series.
+    """
+    s = sp.S.Zero
+    for l in range(0, N+1):
+        for k in range(l, K+1):
+            for n in range(1, k+1+1):
+                s += c_h_evo2(l, k, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+    return s
+
+
 def h_a_evo_dense(N, K):
     """Series for h/a in sin powers for small rho.
 
@@ -535,4 +594,23 @@ def h_a_evo_dense_m(K):
         for l in range(0, (k // 2) + 1):
             for n in range(0, math.ceil(k/2.) + 1):
                 s += dh_evo_m(k, l, n) * b_a ** (1 - sn + 2 * n) * rho_ae2 ** (k) * sin_psi ** (2*l + sn)
+    return s
+
+def h_a_evo_dense_m2(K):
+    """Series for h/a - rho/a*sin(psi) in sin powers for small rho.
+
+    Using dense (all non-zero) coefficients.
+
+    :param N: sin power limit.
+    :param K: rho power limit.
+    :return: Symbolic series.
+    """
+    s = sp.S.Zero
+    for k in range(2, K+1):
+        sn = k % 2
+        for l in range(0, (k // 2) + 1):
+            for n in range(0, (k // 2) + 1):
+                s += dh_evo_m2(k, l, n) * b_a ** (1 + sn + 2 * n) * rho_ae2 ** (k) * sin_psi ** (2*l + sn)
+                # if k==0:
+                #     print(s)
     return s
