@@ -7,7 +7,7 @@ import sympy as sp
 
 # varrho = a / rho, where 'a' is the ellipse semi-major axis and rho is the radial distance.
 # rho_ae2 = rho / (ae²)
-varrho, rho_ae2 = sp.symbols('varrho, rho_ae2', Real=True, Positive=True)
+rho, varrho, rho_ae2 = sp.symbols('rho, varrho, rho_ae2', Real=True, Positive=True)
 # psi = atan(y,x), i.e. the polar angle.
 psi = sp.symbols('psi', Real=True)
 # sin(psi) and cos(psi).

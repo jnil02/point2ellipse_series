@@ -12,7 +12,7 @@ import pytest
 
 from pytest_util import assert_close
 from ellipse import mp_polar_to_cartesian, mp_cartesian_to_ellipse, mp_e2, mp_a
-from symbols import sin_psi, rho_ae2, b_a
+from symbols import sin_psi, rho_ae2, b_a, rho
 import fourier_series
 
 # Order of the tested series.
@@ -53,7 +53,9 @@ def ev_evo(expr, ref):
     result = (expr
               .subs(sin_psi, ref["abs_sin_psi"])
               .subs(rho_ae2, ref["rho_ae2_val"])
-              .subs(b_a,     ref["b_a_val"]))
+              .subs(b_a,     ref["b_a_val"])
+              .subs(rho,     ref["rho"])
+              )
     return mp.mpf(result._mpf_)
 
 
@@ -99,10 +101,10 @@ def test_cos_phi_evo_dense(ref_evo):
 # ---------------------------------------------------------------------------
 
 def test_h_evo(ref_evo):
-    result = ev_evo(fourier_series.h_a_evo(MAX_ORDER_EVO, MAX_ORDER_EVO), ref_evo) * mp_a
+    result = ev_evo(fourier_series.h_a_evo2(MAX_ORDER_EVO, MAX_ORDER_EVO) + rho*sin_psi/ mp_a, ref_evo) * mp_a
     assert_close("h [m]  evo", ref_evo["h"], result, TOL_EVO * mp_a)
 
 
 def test_h_evo_dense(ref_evo):
-    result = ev_evo(fourier_series.h_a_evo_dense(MAX_ORDER_EVO, MAX_ORDER_EVO), ref_evo) * mp_a
+    result = ev_evo(fourier_series.h_a_evo_dense_m2(MAX_ORDER_EVO) - b_a + rho * sin_psi / mp_a, ref_evo) * mp_a
     assert_close("h [m]  evo_dense", ref_evo["h"], result, TOL_EVO * mp_a)

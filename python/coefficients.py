@@ -546,19 +546,6 @@ def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     return c_h_evo(2 * k + l, l, 2 * n + 1 - sn)
 
 @cache.ints_cache
-def dh_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
-    """Series coefficients for h/a in sin powers for small rho.
-
-    :param l: sin power index.
-    :param k: sigma power index.
-    :param n: epsilon power index.
-    :return: Rational coefficient.
-    """
-    assert l >= 0 and k >= 0 and n >= 0 and n <= ceil(k / 2.) and l <= k // 2, f"dh_evo_m indices out of range. n: {l} k: {k} l: {n}"
-    sn = k % 2
-    return c_h_evo(k, 2 * l + sn, 2 * n + 1 - sn)
-
-@cache.ints_cache
 def dh_evo_m2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Series coefficients for h/a - rho/a*sin(psi) in sin powers for small rho.
 
