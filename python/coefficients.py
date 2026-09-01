@@ -206,8 +206,8 @@ def c_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     d = sp.S.Zero
     for i in range(n // 2 + 1):
         for j in range(max(0, ceil((l + 2 * i - k) / 2.)), min(i, l // 2) + 1):
-            d += sp.Rational((-1) ** (i+j), sp.factorial(2*i)) * sp.binomial(i,j) * c_phi_pow_evo(k, l - 2 * j, n,
-                                                                                                  2 * i)
+            d += (sp.Rational((-1) ** (i+j), sp.factorial(2*i)) * sp.binomial(i,j)
+                  * c_phi_pow_evo(k, l - 2 * j, n, 2 * i))
     return d
 
 @cache.ints_cache
@@ -219,6 +219,12 @@ def d_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     assert l >= 0 and k >= 0 and n >= 1 and n <= l // 2 + k, \
         f"d_sin_phi_evo indices out of range. n: {l} k: {k} l: {n}"
     return c_sin_phi_evo(l + 2 * k, l, 2 * n + (l % 2))
+
+@cache.ints_cache
+def d_sin_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+    assert l >= 0 and k >= 2 and n >= 1 and l <= k // 2 and n <= k // 2, \
+        f"d_sin_phi_evo indices out of range. n: {l} k: {k} l: {n}"
+    return c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2))
 
 @cache.ints_cache
 def c_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
