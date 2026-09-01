@@ -432,36 +432,6 @@ def cos_phi_evo_dense_m(K):
     return s
 
 
-def sin_phi_inv_evo(N, K):
-    """Series for 1/sin(phi) in sin powers for small rho.
-
-    :param N: sin power limit.
-    :param K: rho power limit.
-    :return: Symbolic series.
-    """
-    s = sp.S.Zero
-    for l in range(N+1):
-        for k in range(l, K+1):
-            for n in range(k+1):
-                s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
-    return s
-
-def sin_phi_inv_evo2(N, K):
-    """Series for 1/sin(phi)-1 in sin powers for small rho.
-
-    Note, series for 1/sin(phi) __-1__.
-
-    :param N: sin power limit.
-    :param K: rho power limit.
-    :return: Symbolic series.
-    """
-    s = sp.S.Zero
-    for l in range(N+1):
-        for k in range(l, K+1):
-            for n in range(1,k+1):
-                s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
-    return s
-
 def sin_phi_inv_evo3(N, K):
     """Series for rho/a * (1/sin(phi)-1) in sin powers for small rho.
 
@@ -472,34 +442,11 @@ def sin_phi_inv_evo3(N, K):
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    # for l in range(1,N+1):
-    #     for k in range(l, K+1):
-    #         for n in range(1,k-1+1):
-    #             s += c_sin_phi_inv_evo(k-1, l-1, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
-    # for l in range(1,N+1):
-    #     for k in range(l, K+1):
-    #         for n in range(3,k+1+1):
-    #             s -= c_sin_phi_inv_evo(k-1, l-1, n-2) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     for l in range(1,N+1):
         for k in range(l, K+1):
             for n in range(1,k+1+1):
                 # k = 1, l=3, n = 0
                 s += cp_evo_nkl2(l, k, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
-    return s
-
-
-def sin_psi_sin_phi_inv_evo(N, K):
-    """Series for rho/a * sin(psi)/sin(phi) in sin powers for small rho.
-
-    :param N: sin power limit.
-    :param K: rho power limit.
-    :return: Symbolic series.
-    """
-    s = sp.S.Zero
-    for n in range(1,N+1):
-        for k in range(n, K+1):
-            for l in range(k+2):
-                s += cp_evo_nkl(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
     return s
 
 

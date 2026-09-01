@@ -92,7 +92,7 @@ def test_sin_phi_evo_dense(ref_evo):
 
 def test_cos_phi_evo_dense(ref_evo):
     expected = mp.cos(ref_evo["phi"]) / ref_evo["abs_cos_psi"]
-    result = ev_evo(fourier_series.cos_phi_evo_dense(MAX_ORDER_EVO, MAX_ORDER_EVO), ref_evo)
+    result = ev_evo(fourier_series.cos_phi_evo_dense_m(MAX_ORDER_EVO), ref_evo)
     assert_close("cos(phi)/|cos(psi)|  evo_dense", expected, result, TOL_EVO)
 
 
