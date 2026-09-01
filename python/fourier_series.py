@@ -346,22 +346,6 @@ def sin_phi_evo_sin_pow(N,K):
     return s
 
 
-def sin_phi_evo_dense(L, K):
-    """Series for sin(phi) in sin powers for small rho.
-
-    Using dense (all non-zero) coefficients.
-
-    :param N: sin power limit.
-    :param K: rho power limit.
-    :return: Symbolic series.
-    """
-    s = sp.S.Zero
-    for l in range(L+1):
-        for k in range(0, (K-l) // 2+1):  # Limit fix to get the same result as for the non-dense.
-            for n in range(1, l // 2 + k+1):
-                s += d_sin_phi_evo(k, l, n) * b_a ** (2 * n + (l % 2)) * rho_ae2 ** (l + 2 * k) * sin_psi ** l
-    return s
-
 def sin_phi_evo_dense_m(K):
     """Series for sin(phi) in rho powers for small rho.
 
@@ -376,6 +360,8 @@ def sin_phi_evo_dense_m(K):
         for l in range(0, k // 2 + 1):
             for n in range(1, k // 2 + 1):
                 # s += d_sin_phi_evo(2*l + (k % 2), (k // 2) - l, n) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2*l + (k % 2))
+                # FIXME(JO) d_sin_phi_evo does not seems to work. Below gives the right answer in main_inverse2.
+                # s += d_sin_phi_evo(k, l, n) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2 * l + (k % 2))
                 s += c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2)) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2 * l + (k % 2))
     return s
 
@@ -392,22 +378,6 @@ def cos_phi_evo(N, K):
         for k in range(n, K+1):
             for l in range(1, k+1):
                 s += c_cos_phi_evo(k, n, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
-    return s
-
-def cos_phi_evo_dense(N, K):
-    """Series for cos(phi) in sin powers for small rho.
-
-    Using dense (all non-zero) coefficients.
-
-    :param N: sin power limit.
-    :param K: rho power limit.
-    :return: Symbolic series.
-    """
-    s = sp.S.Zero
-    for l in range(N+1):
-        for k in range(0, (K-l-1)//2+1):  # Limit fix to get the same result as for the non-dense.
-            for n in range(l % 2, math.ceil(l/2.)+k + 1):
-                s += d_cos_phi_evo(k, l, n) * b_a ** (2 * n + 1 - (l % 2)) * rho_ae2 ** (l + 1 + 2 * k) * sin_psi ** l
     return s
 
 def cos_phi_evo_dense_m(K):
