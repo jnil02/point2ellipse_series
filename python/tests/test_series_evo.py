@@ -63,16 +63,10 @@ def ev_evo(expr, ref):
 # (phi - sgn*pi/2) / (sgn * |cos(psi)|)
 # ---------------------------------------------------------------------------
 
-def test_phi_evo_dense(ref_evo):
-    expected = ((ref_evo["phi"] - ref_evo["sgn"] * mp.pi / 2)
-                / (ref_evo["sgn"] * ref_evo["abs_cos_psi"]))
-    result = ev_evo(fourier_series.phi_evo_sin_pow_dense(MAX_ORDER_EVO, MAX_ORDER_EVO), ref_evo)
-    assert_close("(phi - sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense", expected, result, TOL_EVO)
-
 def test_phi_evo_dense_m(ref_evo):
     expected = ((ref_evo["phi"] - ref_evo["sgn"] * mp.pi / 2)
                 / (ref_evo["sgn"] * ref_evo["abs_cos_psi"]))
-    result = ev_evo(fourier_series.phi_evo_sin_pow_dense_m(MAX_ORDER_EVO), ref_evo)
+    result = ev_evo(fourier_series.phi_evo_sin_pow_dense_m2(MAX_ORDER_EVO), ref_evo)
     assert_close("(phi - sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense", expected, result, TOL_EVO)
 
 

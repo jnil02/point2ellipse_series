@@ -220,69 +220,30 @@ def cos_phi_in_sin_pow2(N: int, K: int, J: int):
     t = tau(J, o, d)
     return s - sin_psi2 * t
 
-def phi_evo_sin_pow_dense(N, K):
-    """Series for phi - pi/2 in sin powers for small rho with dense coefficients
 
-    Dense in the meaning that there are no zero coefficients but instead the
-    expressions for thw powers are more complicated.
+def phi_evo_sin_pow_dense_m2(K):
+    """Series for (phi - pi/2)/cos(psi) in sin-powers for small rho with simple sums
 
-    :param N: sin power limit.
-    :param K: rho power limit.
+    organised by total rho_ae2 power m.
+
+    :param K: maximum rho_ae2 power (the single truncation parameter).
     :return: symbolic series.
     """
     d = sp.S.Zero
-    for l in range(0, N+1):
-        for k in range(0, K+1):
-            for n in range(0, l//2+k+1):
-                d += sin_psi ** l * rho_ae2 ** (l + 1 + 2*k) * b_a ** ((l % 2) + 1 + 2*n) * d_phi_evo(k, l, n)
-    return d
-
-
-def phi_evo_sin_pow_dense_m(M):
-    """Series for (phi - pi/2) / cos(psi), organised by total rho_ae2 power m.
-
-    All terms with rho_ae2^m for m = 1 … M are included exactly.
-    For each m, both k and l run from 0 to floor((m-1)/2) — the same
-    finite upper bound — and n = m-1-2k is derived, not a free index.
-
-    :param M: maximum rho_ae2 power (the single truncation parameter).
-    :return: symbolic series.
-    """
-    d = sp.S.Zero
-    for m in range(1, M + 1):
-        K = (m - 1) // 2
-        for k in range(0, K + 1):
-            l = m - 1 - 2 * k
-            for n in range(0, K + 1):
-                d += (sin_psi ** l
-                      * rho_ae2 ** m
-                      * b_a ** (l % 2 + 1 + 2 * n)
-                      * d_phi_evo(k, l, n))
-    return d
-
-def phi_evo_sin_pow_dense_m2(M):
-    """ Possibly the same as above.
-    FIXME(JO)? But the coefficient formula is different.
-      But numerically gives exactly the same result.
-
-    :param M:
-    :return:
-    """
-    d = sp.S.Zero
-    for k in range(1, M + 1):
-        s = k % 2
+    for k in range(1, K + 1):
+        s = (k+1) % 2
         r = (k - 1) // 2
         for l in range(0, r + 1):
             for n in range(0, r + 1):
-                d += (sin_psi ** (1 - s + 2*l)
+                d += (sin_psi ** (s + 2*l)
                       * rho_ae2 ** k
-                      * b_a ** (2 - s + 2 * n)
+                      * b_a ** (1 + s + 2 * n)
                       * d_phi_evo2(k, l, n))
     return d
 
 
 def phi_evo_sin_pow(N, K):
-    """Series for phi - pi/2 in sin-powers for small rho with simple sums
+    """Series for (phi - pi/2)/cos(phi) in sin-powers for small rho with simple sums
 
     The simple sums and exponents come at the cost of half of the computed
     coefficients being zero.
@@ -295,24 +256,7 @@ def phi_evo_sin_pow(N, K):
     for n in range(0, N+1):
         for k in range(n+1,K+1):
             for l in range(1,k+1):
-                d += cos_psi * sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_evo(n, k, l)
-    return d
-
-def phi_evo_sin_pow_m(K):
-    """Series for phi - pi/2 in sin-powers for small rho with simple sums
-
-    The simple sums and exponents come at the cost of half of the computed
-    coefficients being zero.
-
-    :param N: sin power limit.
-    :param K: rho powers limit.
-    :return: Symbolic series.
-    """
-    d = sp.S.Zero
-    for k in range(1,K+1):
-        for n in range(0, k):
-            for l in range(1,k+1):
-                d += cos_psi * sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_evo(n, k, l)
+                d += sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_evo(n, k, l)
     return d
 
 
