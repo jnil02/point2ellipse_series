@@ -450,7 +450,7 @@ def d_Na_evo2(n: int, k: int, l: int, b_a) -> sp.core.Expr:
     return d
 
 @cache.ints_cache
-def c_N_evo(l: int, k: int, n: int) -> sp.core.Rational:
+def c_N_evo(k: int, l: int, n: int) -> sp.core.Rational:
     assert l >= 0 and k >= l and n >= 0 and n <= k + 1, f"c_N_evo indices out of range. n: {l} k: {k} l: {n}"
     if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
@@ -463,16 +463,16 @@ def c_N_evo(l: int, k: int, n: int) -> sp.core.Rational:
     return d
 
 @cache.ints_cache
-def cp_evo_nkl(n: int, k: int, l: int) -> sp.core.Rational:
-    assert n >= 1 and k >= n and l >= 0 and l <= k+1, f"cp_evo_nkl indices out of range. n: {n} k: {k} l: {l}"
-    if (n-k) % 2 != 0 or (n-l-1) % 2 != 0:
+def cp_evo_nkl(k: int, l: int, n: int) -> sp.core.Rational:
+    assert l >= 1 and k >= l and n >= 0 and n <= k + 1, f"cp_evo_nkl indices out of range. l: {l} k: {k} n: {n}"
+    if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
-    if l <= 1:
-        return c_sin_phi_inv_evo(k - 1, n - 1, l)
-    if 2 <= l and l <= k-1:
-        return c_sin_phi_inv_evo(k - 1, n - 1, l) - c_sin_phi_inv_evo(k - 1, n - 1, l - 2)
-    if k <= l:
-        return -c_sin_phi_inv_evo(k - 1, n - 1, l - 2)
+    if n <= 1:
+        return c_sin_phi_inv_evo(k - 1, l - 1, n)
+    if 2 <= n and n <= k-1:
+        return c_sin_phi_inv_evo(k - 1, l - 1, n) - c_sin_phi_inv_evo(k - 1, l - 1, n - 2)
+    if k <= n:
+        return -c_sin_phi_inv_evo(k - 1, l - 1, n - 2)
     # This should never happen.
     return sp.S.Zero
 
@@ -515,10 +515,10 @@ def c_h_evo(k: int, l: int, n: int) -> sp.core.Rational:
     if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
     if l==0:
-        return -c_N_evo(l, k, n)
+        return -c_N_evo(k, l, n)
     if n==0:
-        return cp_evo_nkl(l, k, n)
-    return cp_evo_nkl(l, k, n) - c_N_evo(l, k, n)
+        return cp_evo_nkl(k, l, n)
+    return cp_evo_nkl(k, l, n) - c_N_evo(k, l, n)
 
 @cache.ints_cache
 def c_h_evo2(l: int, k: int, n: int) -> sp.core.Rational:
@@ -535,8 +535,8 @@ def c_h_evo2(l: int, k: int, n: int) -> sp.core.Rational:
     if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
     if l==0:
-        return -c_N_evo(l, k, n)
-    return cp_evo_nkl2(l, k, n) - c_N_evo(l, k, n)
+        return -c_N_evo(k, l, n)
+    return cp_evo_nkl2(l, k, n) - c_N_evo(k, l, n)
 
 @cache.ints_cache
 def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:

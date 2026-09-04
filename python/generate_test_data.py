@@ -118,15 +118,15 @@ def generate_c_phi_evo():
     Full range tested to verify zeros outside valid indices.
     """
     rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n+1, MAX_INDEX + 1):
-            for l in range(1, k + 1):
-                c = c_phi_evo(n, k, l)
-                rows.append((n, k, l, c.p, c.q))
+    for l in range(MAX_INDEX + 1):
+        for k in range(l+1, MAX_INDEX + 1):
+            for n in range(1, k + 1):
+                c = c_phi_evo(l, k, n)
+                rows.append((l, k, n, c.p, c.q))
     write_csv('c_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
-def generate_d_phi_pow_evo():
+def generate_c_phi_pow_evo():
     """Generate test data for d_phi_pow_evo.
 
     Non-zero for (i+n-k)%2==0 and (l-k)%2==0.
@@ -134,22 +134,22 @@ def generate_d_phi_pow_evo():
     """
     rows = []
     for i in range(MAX_INDEX_POW + 1):
-        for n in range(MAX_INDEX + 1):
-            for k in range(n+i,MAX_INDEX + 1):
-                for l in range(i, k + 1):
-                    c = c_phi_pow_evo(k, n, l, i)
-                    rows.append((n, k, l, i, c.p, c.q))
+        for l in range(MAX_INDEX + 1):
+            for k in range(l+i,MAX_INDEX + 1):
+                for n in range(i, k + 1):
+                    c = c_phi_pow_evo(k, l, n, i)
+                    rows.append((l, k, n, i, c.p, c.q))
     write_csv('c_phi_pow_evo.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
 
 
 def generate_c_sin_phi_evo():
     """Generate test data for c_sin_phi_evo (sparse, raw indices)."""
     rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n, MAX_INDEX + 1):
-            for l in range(k + 1):
-                c = c_sin_phi_evo(k, n, l)
-                rows.append((n, k, l, c.p, c.q))
+    for l in range(MAX_INDEX + 1):
+        for k in range(l, MAX_INDEX + 1):
+            for n in range(k + 1):
+                c = c_sin_phi_evo(k, l, n)
+                rows.append((l, k, n, c.p, c.q))
     write_csv('c_sin_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -170,11 +170,11 @@ def generate_d_sin_phi_evo():
 def generate_c_cos_phi_evo():
     """Generate test data for c_cos_phi_evo (sparse, raw indices)."""
     rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n, MAX_INDEX + 1):
-            for l in range(1, k + 1):
-                c = c_cos_phi_evo(k, n, l)
-                rows.append((n, k, l, c.p, c.q))
+    for l in range(MAX_INDEX + 1):
+        for k in range(l, MAX_INDEX + 1):
+            for n in range(1, k + 1):
+                c = c_cos_phi_evo(k, l, n)
+                rows.append((l, k, n, c.p, c.q))
     write_csv('c_cos_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -192,18 +192,18 @@ def generate_d_cos_phi_evo():
     write_csv('d_cos_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
-def generate_d_sin_phi_inv_evo():
+def generate_c_sin_phi_inv_evo():
     """Generate test data for d_sin_phi_inv_evo.
 
     Non-zero for (n-k)%2==0 and (n-l)%2==0.
     Full range tested to verify zeros outside valid indices.
     """
     rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n, MAX_INDEX + 1):
-            for l in range(k + 1):
-                c = c_sin_phi_inv_evo(k, n, l)
-                rows.append((n, k, l, c.p, c.q))
+    for l in range(MAX_INDEX + 1):
+        for k in range(l, MAX_INDEX + 1):
+            for n in range(k + 1):
+                c = c_sin_phi_inv_evo(k, l, n)
+                rows.append((l, k, n, c.p, c.q))
     write_csv('c_sin_phi_inv_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -213,7 +213,7 @@ def generate_a_mr():
         for k in range(n + 1):
             c = a_mr(n,k)
             rows.append((n, k, c.p, c.q))
-    write_csv('a_mr.csv', rows, ['n', 'k'])
+    write_csv('a_mr.csv', rows, ['n', 'k', 'num', 'den'])
 
 
 def generate_B_rt():
@@ -222,7 +222,7 @@ def generate_B_rt():
         for k in range(n + 1):
             c = B_rt(n,k)
             rows.append((n, k, c.p, c.q))
-    write_csv('B_rt.csv', rows, ['n', 'k'])
+    write_csv('B_rt.csv', rows, ['n', 'k', 'num', 'den'])
 
 
 def generate_C_mt():
@@ -231,7 +231,7 @@ def generate_C_mt():
         for k in range(n + 1):
             c = C_mt(n,k)
             rows.append((n, k, c.p, c.q))
-    write_csv('C_mt.csv', rows, ['n', 'k'])
+    write_csv('C_mt.csv', rows, ['n', 'k', 'num', 'den'])
 
 
 def generate_R():
@@ -247,31 +247,31 @@ def generate_R():
 
 def generate_c_N_evo():
     rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n, MAX_INDEX + 1):
-            for l in range(1, k+2):
-                c = c_N_evo(n, k, l)
-                rows.append((n, k, l, c.p, c.q))
+    for l in range(MAX_INDEX + 1):
+        for k in range(l, MAX_INDEX + 1):
+            for n in range(1, k+2):
+                c = c_N_evo(k, l, n)
+                rows.append((l, k, n, c.p, c.q))
     write_csv('c_N_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_cp_evo_nkl():
     rows = []
-    for n in range(1, MAX_INDEX + 1):
-        for k in range(n, MAX_INDEX + 1):
-            for l in range(k + 2):
-                c = cp_evo_nkl(n, k, l)
-                rows.append((n, k, l, c.p, c.q))
+    for l in range(1, MAX_INDEX + 1):
+        for k in range(l, MAX_INDEX + 1):
+            for n in range(k + 2):
+                c = cp_evo_nkl(k, l, n)
+                rows.append((l, k, n, c.p, c.q))
     write_csv('cp_evo_nkl.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
 def generate_c_h_evo():
     rows = []
-    for n in range(1, MAX_INDEX + 1):
-        for k in range(n, MAX_INDEX + 1):
-            for l in range(k + 2):
-                c = c_h_evo(k, n, l)
-                rows.append((n, k, l, c.p, c.q))
+    for l in range(1, MAX_INDEX + 1):
+        for k in range(l, MAX_INDEX + 1):
+            for n in range(k + 2):
+                c = c_h_evo(k, l, n)
+                rows.append((l, k, n, c.p, c.q))
     write_csv('c_h_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -282,12 +282,12 @@ if __name__ == '__main__':
     generate_d_h()
     generate_d_phi_evo()
     generate_c_phi_evo()
-    generate_d_phi_pow_evo()
+    generate_c_phi_pow_evo()
     generate_c_sin_phi_evo()
     generate_d_sin_phi_evo()
     generate_c_cos_phi_evo()
     generate_d_cos_phi_evo()
-    generate_d_sin_phi_inv_evo()
+    generate_c_sin_phi_inv_evo()
     generate_a_mr()
     generate_B_rt()
     generate_C_mt()

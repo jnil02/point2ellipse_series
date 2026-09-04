@@ -399,10 +399,10 @@ def Na_evo2(N, K):
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for n in range(N+1):
-        for k in range(n, K+1):
-            for l in range(1, k+2):
-                s += c_N_evo(n, k, l) * b_a ** l * rho_ae2 ** k * sin_psi ** n
+    for l in range(N+1):
+        for k in range(l, K+1):
+            for n in range(1, k+2):
+                s += c_N_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
 
