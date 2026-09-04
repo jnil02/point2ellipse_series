@@ -146,7 +146,7 @@ def d_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     return sp.Rational(d * (-1) ** (l + n + k), k) * sp.binomial(sp.Rational(k, 2), m_k - n)
 
 @cache.ints_cache
-def c_phi_evo(l, k, n):
+def c_phi_evo(k, l, n):
     """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
 
     Coefficients with clean sums but with half the coefficients being zero.
@@ -178,7 +178,7 @@ def d_phi_pow_evo_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
     # Polynomial for A_{n,i} in terms of {a_0,...,a_n}.
     tmp = series_substitutions.double_series_power_coeff(n, i)[k]
     # Polynomial for the rho^k coefficients in A_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
-    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_C(n, k, lambda n,k,l: c_phi_evo(n, k, l), symbols.e2))
+    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_C(n, k, lambda n,k,l: c_phi_evo(k, n, l), symbols.e2))
     return tmp
 
 

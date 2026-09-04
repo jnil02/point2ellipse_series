@@ -232,10 +232,10 @@ def phi_evo_sin_pow(N, K):
     :return: Symbolic series.
     """
     d = sp.S.Zero
-    for n in range(0, N+1):
-        for k in range(n+1,K+1):
-            for l in range(1,k+1):
-                d += sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_evo(n, k, l)
+    for l in range(0, N+1):
+        for k in range(l+1,K+1):
+            for n in range(1,k+1):
+                d += sin_psi ** l * rho_ae2 ** k * b_a ** n * c_phi_evo(k, l, n)
     return d
 
 

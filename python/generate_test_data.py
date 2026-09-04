@@ -121,7 +121,7 @@ def generate_c_phi_evo():
     for l in range(MAX_INDEX + 1):
         for k in range(l+1, MAX_INDEX + 1):
             for n in range(1, k + 1):
-                c = c_phi_evo(l, k, n)
+                c = c_phi_evo(k, l, n)
                 rows.append((l, k, n, c.p, c.q))
     write_csv('c_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
