@@ -123,7 +123,7 @@ def generate_c_phi_evo():
             for n in range(1, k + 1):
                 c = c_phi_evo(k, l, n)
                 rows.append((k, l, n, c.p, c.q))
-    write_csv('c_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('c_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
 def generate_c_phi_pow_evo():
@@ -139,7 +139,7 @@ def generate_c_phi_pow_evo():
                 for n in range(i, k + 1):
                     c = c_phi_pow_evo(k, l, n, i)
                     rows.append((k, l, n, i, c.p, c.q))
-    write_csv('c_phi_pow_evo.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
+    write_csv('c_phi_pow_evo.csv', rows, ['k', 'l', 'n', 'i', 'num', 'den'])
 
 
 def generate_c_sin_phi_evo():
@@ -150,7 +150,7 @@ def generate_c_sin_phi_evo():
             for n in range(k + 1):
                 c = c_sin_phi_evo(k, l, n)
                 rows.append((k, l, n, c.p, c.q))
-    write_csv('c_sin_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('c_sin_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
 def generate_d_sin_phi_evo():
@@ -175,7 +175,7 @@ def generate_c_cos_phi_evo():
             for n in range(1, k + 1):
                 c = c_cos_phi_evo(k, l, n)
                 rows.append((k, l, n, c.p, c.q))
-    write_csv('c_cos_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('c_cos_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
 def generate_d_cos_phi_evo():
@@ -204,7 +204,7 @@ def generate_c_sin_phi_inv_evo():
             for n in range(k + 1):
                 c = c_sin_phi_inv_evo(k, l, n)
                 rows.append((k, l, n, c.p, c.q))
-    write_csv('c_sin_phi_inv_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('c_sin_phi_inv_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
 def generate_c_N_evo():
@@ -214,7 +214,7 @@ def generate_c_N_evo():
             for n in range(1, k+2):
                 c = c_N_evo(k, l, n)
                 rows.append((k, l, n, c.p, c.q))
-    write_csv('c_N_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('c_N_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
 def generate_cp_evo_nkl():
@@ -224,7 +224,7 @@ def generate_cp_evo_nkl():
             for n in range(k + 2):
                 c = cp_evo_nkl(k, l, n)
                 rows.append((k, l, n, c.p, c.q))
-    write_csv('cp_evo_nkl.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('cp_evo_nkl.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
 def generate_c_h_evo():
@@ -234,7 +234,7 @@ def generate_c_h_evo():
             for n in range(k + 2):
                 c = c_h_evo(k, l, n)
                 rows.append((k, l, n, c.p, c.q))
-    write_csv('c_h_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    write_csv('c_h_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
 
 
 if __name__ == '__main__':
