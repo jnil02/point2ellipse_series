@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 	} else if (fn == "cp_evo") {
 		require_args(3);
 		auto t0 = Clock::now();
-		volatile auto r = cp_evo_nkl(iarg(0), iarg(1), iarg(2));
+		volatile auto r = cp_evo_nkl(iarg(1), iarg(0), iarg(2));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "a_mr") {
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 	} else if (fn == "c_N_evo") {
 		require_args(3);
 		auto t0 = Clock::now();
-		volatile auto r = c_N_evo(iarg(0), iarg(1), iarg(2));
+		volatile auto r = c_N_evo(iarg(1), iarg(0), iarg(2));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "R") {

@@ -124,32 +124,32 @@ mpq_class d_phi_evo(int k, int l, int n) {
 //	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
 //}
 
-mpq_class c_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= n + 1 && l >= 1 && l <= k);
+mpq_class c_phi_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= l + 1 && n >= 1 && n <= k);
 
 	// Parity constraints — coefficient is zero unless both hold.
-	if ((k - n - 1) % 2 != 0 || (l - k) % 2 != 0)
+	if ((k - l - 1) % 2 != 0 || (n - k) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
 		return *ret;
 
 	// Let a = (k-l)/2 and h = (n-l+1)/2 (both integers by parity).
 	// Outer rational factor: binomial(k/2, a) / k.
-	const int a = (k - l) / 2;
-	const int h = (n - l + 1) / 2;
+	const int a = (k - n) / 2;
+	const int h = (l - n + 1) / 2;
 	mpq_class outer = binomial_rational(mpq_class(k, 2), (long) a)
 					  / mpq_class(mpz_class(k));
 
 	// Precompute q-only factor U[q] = C(k-2-q, l-1-q), independent of j.
 	// l-1-q is always >= 0 for q in [0,l-1]. When q == l-1 the first arg may
 	// be -1 (only when k == l); C(-1,0) = 1, handled explicitly.
-	std::vector<mpz_class> U(l);
-	for (int q = 0; q < l; ++q) {
-		if (l - 1 - q == 0) U[q] = 1;
+	std::vector<mpz_class> U(n);
+	for (int q = 0; q < n; ++q) {
+		if (n - 1 - q == 0) U[q] = 1;
 		else mpz_bin_uiui(U[q].get_mpz_t(), (unsigned long) (k - 2 - q),
-						  (unsigned long) (l - 1 - q));
+						  (unsigned long) (n - 1 - q));
 	}
 
 	// b(j) collapses to (-1)^{h+j} * C(a, h+j) via the alternating binomial
@@ -158,9 +158,9 @@ mpq_class c_phi_evo(int n, int k, int l) {
 	// constant in j (n+l+1 is always even since n and l have opposite parities).
 	// C(a, h+j) is zero for h+j < 0 or h+j > a, giving tighter loop bounds.
 	// All factors are integers; accumulate as mpz_class, apply outer at the end.
-	const mpz_class sgn = powm1((long) (n + l + 1) / 2);
+	const mpz_class sgn = powm1((long) (l + n + 1) / 2);
 	const int j_min = std::max(0, -h);             // ensures h+j >= 0
-	const int j_max = std::min((l - 1) / 2, a - h); // a-h = (k-n-1)/2; ensures h+j <= a
+	const int j_max = std::min((n - 1) / 2, a - h); // a-h = (k-n-1)/2; ensures h+j <= a
 
 	mpz_class acc(0);
 	for (int j = j_min; j <= j_max; ++j) {
@@ -169,7 +169,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 
 		// s(j) = sum_{q=2j}^{l-1} 2^(q-2j) * C(q-j, j) * U[q], incremental.
 		mpz_class s_sum(0), shift(1), bqj(1);
-		for (int q = 2 * j, p = j; q < l; ++q, ++p) {
+		for (int q = 2 * j, p = j; q < n; ++q, ++p) {
 			s_sum += shift * bqj * U[q];
 			shift *= 2;
 			bqj *= (p + 1);        // C(p+1, j) = C(p, j) * (p+1) / (p+1-j).
@@ -183,7 +183,7 @@ mpq_class c_phi_evo(int n, int k, int l) {
 	result.canonicalize();
 
 	mpq_class ret = result;
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
 static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
@@ -208,113 +208,113 @@ mpq_class c_phi_pow_evo_se4(int n, int k, int l, int i) {
 	return (l < (int) ep.size()) ? ep[l] : mpq_class(0);
 }
 
-mpq_class c_phi_pow_evo(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= n + i && l >= i && l <= k && i >= 0);
+mpq_class c_phi_pow_evo(int k, int l, int n, int i) {
+	assert(l >= 0 && k >= l + i && n >= i && n <= k && i >= 0);
 
 	// Parity constraints from underlying c_phi_evo coefficients.
-	if ((i + n - k) % 2 != 0 || (l - k) % 2 != 0)
+	if ((i + l - k) % 2 != 0 || (n - k) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n, (uint) i))
 		return *ret;
 
-	mpq_class ret = c_phi_pow_evo_se4(n, k, l, i);  // ← LExpr/GMP pipeline (was: _se2)
+	mpq_class ret = c_phi_pow_evo_se4(l, k, n, i);  // ← LExpr/GMP pipeline (was: _se2)
 
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n, (uint) i);
 }
 
-mpq_class c_sin_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= n && l >= 0 && l <= k);
+mpq_class c_sin_phi_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= l && n >= 0 && n <= k);
 
 	// Parity constraints.
-	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
+	if ((l - k) % 2 != 0 || (l - n) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
 		return *ret;
 
 	mpq_class d(0);
-	for (int i = 0; i <= l / 2; ++i) {
+	for (int i = 0; i <= n / 2; ++i) {
 		mpz_class fact;
 		mpz_fac_ui(fact.get_mpz_t(), (unsigned long)(2 * i));
 		// j lower bound: ceil((n + 2*i - k) / 2) = (n + 2*i - k + 1) / 2
-		const int j_min = std::max(0, (n + 2 * i - k + 1) / 2);
-		const int j_max = n / 2;
+		const int j_min = std::max(0, (l + 2 * i - k + 1) / 2);
+		const int j_max = l / 2;
 		for (int j = j_min; j <= j_max; ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
 			mpq_class coeff(powm1(i + j) * binom, fact);
 			coeff.canonicalize();
-			d += coeff * c_phi_pow_evo(n - 2 * j, k, l, 2 * i);
+			d += coeff * c_phi_pow_evo(k, l - 2 * j, n, 2 * i);
 		}
 	}
 
 	mpq_class ret = d;
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
-mpq_class c_cos_phi_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= n && l >= 1 && l <= k);
+mpq_class c_cos_phi_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= l && n >= 1 && n <= k);
 
 	// Parity constraints.
-	if ((n + 1 - k) % 2 != 0 || (l - k) % 2 != 0)
+	if ((l + 1 - k) % 2 != 0 || (n - k) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
 		return *ret;
 
 	mpq_class d(0);
-	for (int i = 0; i <= (l - 1) / 2; ++i) {
+	for (int i = 0; i <= (n - 1) / 2; ++i) {
 		mpz_class fact;
 		mpz_fac_ui(fact.get_mpz_t(), (unsigned long)(2 * i + 1));
 		// j lower bound: ceil((n + 2*i + 1 - k) / 2) = (n + 2*i + 1 - k + 1) / 2
-		const int j_min = std::max(0, (n + 2 * i + 2 - k) / 2);
-		const int j_max = std::min(i, n / 2);
+		const int j_min = std::max(0, (l + 2 * i + 2 - k) / 2);
+		const int j_max = std::min(i, l / 2);
 		for (int j = j_min; j <= j_max; ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
 			mpq_class coeff(powm1(i + 1 + j) * binom, fact);
 			coeff.canonicalize();
-			d += coeff * c_phi_pow_evo(n - 2 * j, k, l, 2 * i + 1);
+			d += coeff * c_phi_pow_evo(k, l - 2 * j, n, 2 * i + 1);
 		}
 	}
 
 	mpq_class ret = d;
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
-mpq_class c_sin_phi_inv_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= n && l >= 0 && l <= k);
+mpq_class c_sin_phi_inv_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= l && n >= 0 && n <= k);
 
 	// Parity constraints — same as d_sin_phi_evo.
-	if ((n - k) % 2 != 0 || (n - l) % 2 != 0)
+	if ((l - k) % 2 != 0 || (l - n) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
 		return *ret;
 
 	mpq_class d(0);
-	for (int i = 0; i <= l / 2; ++i) {
+	for (int i = 0; i <= n / 2; ++i) {
 		mpz_class fact;
 		mpz_fac_ui(fact.get_mpz_t(), (unsigned long)(2 * i));
 		// j lower bound: ceil((n + 2*i - k) / 2) = (n + 2*i - k + 1) / 2
-		const int j_min = std::max(0, (n + 2 * i - k + 1) / 2);
-		const int j_max = n / 2;
+		const int j_min = std::max(0, (l + 2 * i - k + 1) / 2);
+		const int j_max = l / 2;
 		for (int j = j_min; j <= j_max; ++j) {
 			mpz_class binom;
 			mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
 			mpq_class coeff(E2(i) * powm1(j) * binom, fact);
 			coeff.canonicalize();
-			d += coeff * c_phi_pow_evo(n - 2 * j, k, l, 2 * i);
+			d += coeff * c_phi_pow_evo(k, l - 2 * j, n, 2 * i);
 		}
 	}
 
 	mpq_class ret = d;
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
 mpq_class a_mr(int m, int r) {
@@ -406,99 +406,99 @@ mpq_class R(int n, int k, int l, int i) {
 		mpz_class binom;
 		mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
 		s += mpq_class(powm1(j) * binom)
-			 * c_phi_pow_evo(n - 2 * j, k, l, 2 * i);
+			 * c_phi_pow_evo(k, n - 2 * j, l, 2 * i);
 	}
 
 	mpq_class ret = s;
 	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 }
 
-mpq_class c_N_evo(int n, int k, int p) {
-	assert(n >= 0 && k >= n && p >= 0 && p <= k + 1);
+mpq_class c_N_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= l && n >= 0 && n <= k + 1);
 
-	if ((n - k) % 2 != 0 || (n - p - 1) % 2 != 0)
+	if ((l - k) % 2 != 0 || (l - n - 1) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) p))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
 		return *ret;
 
 	mpq_class d(0);
 
-	for (int l = 0; l <= k; ++l) {
-		for (int i = 0; i <= l / 2; ++i) {
-			const int t = l + 1 - p;
+	for (int p = 0; p <= k; ++p) {
+		for (int i = 0; i <= p / 2; ++i) {
+			const int t = p + 1 - n;
 
 			if (t % 2 == 0 && t >= 0 && t <= 2 * i)
-				d += C_mt(i, t / 2) * R(n, k, l, i);
+				d += C_mt(i, t / 2) * R(l, k, p, i);
 		}
 	}
 
 	mpq_class ret = d;
-	return cache.insert(ret, (uint) n, (uint) k, (uint) p);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
-mpq_class cp_evo_nkl(int n, int k, int l) {
-	assert(n >= 1 && k >= n && l >= 0 && l <= k + 1);
+mpq_class cp_evo_nkl(int k, int l, int n) {
+	assert(l >= 1 && k >= l && n >= 0 && n <= k + 1);
 
-	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
+	if ((l - k) % 2 != 0 || (l - n - 1) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
 		return *ret;
 
 	mpq_class ret(0);
 
-	if (l <= 1) {
-		ret = c_sin_phi_inv_evo(n - 1, k - 1, l);
-	} else if (2 <= l && l <= k - 1) {
-		ret = c_sin_phi_inv_evo(n - 1, k - 1, l)
-			  - c_sin_phi_inv_evo(n - 1, k - 1, l - 2);
-	} else if (k <= l) {
-		ret = -c_sin_phi_inv_evo(n - 1, k - 1, l - 2);
+	if (n <= 1) {
+		ret = c_sin_phi_inv_evo(k - 1, l - 1, n);
+	} else if (2 <= n && n <= k - 1) {
+		ret = c_sin_phi_inv_evo(k - 1, l - 1, n)
+			  - c_sin_phi_inv_evo(k - 1, l - 1, n - 2);
+	} else if (k <= n) {
+		ret = -c_sin_phi_inv_evo(k - 1, l - 1, n - 2);
 	}
 
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
-mpq_class c_h_evo(int n, int k, int l) {
-	assert(n >= 0 && k >= n && l >= 0 && l <= k + 1);
+mpq_class c_h_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= l && n >= 0 && n <= k + 1);
 
-	if ((n - k) % 2 != 0 || (n - l - 1) % 2 != 0)
+	if ((l - k) % 2 != 0 || (l - n - 1) % 2 != 0)
 		return {0};
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
 		return *ret;
 
 	mpq_class ret(0);
 
-	if (n == 0) {
-		ret = -c_N_evo(n, k, l);
-	} else if (l == 0) {
-		ret = cp_evo_nkl(n, k, l);
+	if (l == 0) {
+		ret = -c_N_evo(k, l, n);
+	} else if (n == 0) {
+		ret = cp_evo_nkl(k, l, n);
 	} else {
-		ret = cp_evo_nkl(n, k, l) - c_N_evo(n, k, l);
+		ret = cp_evo_nkl(k, l, n) - c_N_evo(k, l, n);
 	}
 
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
 mpq_class d_h_evo(int k, int l, int n) {
-	return c_h_evo(l, 2 * k + l, 2 * n + 1 - (l % 2));
+	return c_h_evo(2 * k + l, l, 2 * n + 1 - (l % 2));
 }
 
 mpq_class d_h_evo2(int k, int l, int n) {
-	return c_h_evo(2 * l + (k % 2), k, 2 * n + 1 - (k % 2));
+	return c_h_evo(k, 2 * l + (k % 2), 2 * n + 1 - (k % 2));
 }
 
 mpq_class d_sin_phi_evo(int k, int l, int n) {
-	return c_sin_phi_evo(l, l + 2 * k, 2 * n + (l % 2));
+	return c_sin_phi_evo(l + 2 * k, l, 2 * n + (l % 2));
 }
 
 mpq_class d_cos_phi_evo(int k, int l, int n) {
-	return c_cos_phi_evo(l, l + 1 + 2 * k, 2 * n + 1 - (l % 2));
+	return c_cos_phi_evo(l + 1 + 2 * k, l, 2 * n + 1 - (l % 2));
 }
 
 }  // namespace point_to_ellipse_series

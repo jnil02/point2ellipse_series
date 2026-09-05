@@ -78,14 +78,14 @@ inline T phi_evo_sin_pow(int N, int K,
 						 const T& sin_psi_v, const T& cos_psi_v,
 						 const T& rho_ae2_v, const T& b_a_v) {
 	T d(0);
-	for (int n = 0; n <= N; ++n)
-		for (int k = n + 1; k <= K; ++k)
-			for (int l = 1; l <= k; ++l)
-				d = d + point_to_ellipse_series::series_coeff<T>(c_phi_evo(n, k, l))
+	for (int l = 0; l <= N; ++l)
+		for (int k = l + 1; k <= K; ++k)
+			for (int n = 1; n <= k; ++n)
+				d = d + point_to_ellipse_series::series_coeff<T>(c_phi_evo(k, l, n))
 						* cos_psi_v
-						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n)
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, l)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
-						* point_to_ellipse_series::series_pow<T>(b_a_v, l);
+						* point_to_ellipse_series::series_pow<T>(b_a_v, n);
 	return d;
 }
 
@@ -256,13 +256,13 @@ template<typename T>
 inline T h_a_evo(int N, int K,
 				 const T& sin_psi_v, const T& rho_ae2_v, const T& b_a_v) {
 	T s(0);
-	for (int n = 0; n <= N; ++n)
-		for (int k = n; k <= K; ++k)
-			for (int l = 0; l <= k + 1; ++l)
-				s = s + point_to_ellipse_series::series_coeff<T>(c_h_evo(n, k, l))
-						* point_to_ellipse_series::series_pow<T>(b_a_v, l)
+	for (int l = 0; l <= N; ++l)
+		for (int k = l; k <= K; ++k)
+			for (int n = 0; n <= k + 1; ++n)
+				s = s + point_to_ellipse_series::series_coeff<T>(c_h_evo(k, l, n))
+						* point_to_ellipse_series::series_pow<T>(b_a_v, n)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
-						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n);
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, l);
 	return s;
 }
 

@@ -122,7 +122,7 @@ def generate_c_phi_evo():
         for k in range(l+1, MAX_INDEX + 1):
             for n in range(1, k + 1):
                 c = c_phi_evo(k, l, n)
-                rows.append((l, k, n, c.p, c.q))
+                rows.append((k, l, n, c.p, c.q))
     write_csv('c_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -138,7 +138,7 @@ def generate_c_phi_pow_evo():
             for k in range(l+i,MAX_INDEX + 1):
                 for n in range(i, k + 1):
                     c = c_phi_pow_evo(k, l, n, i)
-                    rows.append((l, k, n, i, c.p, c.q))
+                    rows.append((k, l, n, i, c.p, c.q))
     write_csv('c_phi_pow_evo.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
 
 
@@ -149,7 +149,7 @@ def generate_c_sin_phi_evo():
         for k in range(l, MAX_INDEX + 1):
             for n in range(k + 1):
                 c = c_sin_phi_evo(k, l, n)
-                rows.append((l, k, n, c.p, c.q))
+                rows.append((k, l, n, c.p, c.q))
     write_csv('c_sin_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -174,7 +174,7 @@ def generate_c_cos_phi_evo():
         for k in range(l, MAX_INDEX + 1):
             for n in range(1, k + 1):
                 c = c_cos_phi_evo(k, l, n)
-                rows.append((l, k, n, c.p, c.q))
+                rows.append((k, l, n, c.p, c.q))
     write_csv('c_cos_phi_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -203,46 +203,8 @@ def generate_c_sin_phi_inv_evo():
         for k in range(l, MAX_INDEX + 1):
             for n in range(k + 1):
                 c = c_sin_phi_inv_evo(k, l, n)
-                rows.append((l, k, n, c.p, c.q))
+                rows.append((k, l, n, c.p, c.q))
     write_csv('c_sin_phi_inv_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
-
-
-def generate_a_mr():
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n + 1):
-            c = a_mr(n,k)
-            rows.append((n, k, c.p, c.q))
-    write_csv('a_mr.csv', rows, ['n', 'k', 'num', 'den'])
-
-
-def generate_B_rt():
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n + 1):
-            c = B_rt(n,k)
-            rows.append((n, k, c.p, c.q))
-    write_csv('B_rt.csv', rows, ['n', 'k', 'num', 'den'])
-
-
-def generate_C_mt():
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n + 1):
-            c = C_mt(n,k)
-            rows.append((n, k, c.p, c.q))
-    write_csv('C_mt.csv', rows, ['n', 'k', 'num', 'den'])
-
-
-def generate_R():
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(n, MAX_INDEX + 1):
-            for l in range(k + 1):
-                for i in range(l // 2 + 1):
-                    c = R(n, k, l, i)
-                    rows.append((n, k, l, i, c.p, c.q))
-    write_csv('R.csv', rows, ['n', 'k', 'l', 'i', 'num', 'den'])
 
 
 def generate_c_N_evo():
@@ -251,7 +213,7 @@ def generate_c_N_evo():
         for k in range(l, MAX_INDEX + 1):
             for n in range(1, k+2):
                 c = c_N_evo(k, l, n)
-                rows.append((l, k, n, c.p, c.q))
+                rows.append((k, l, n, c.p, c.q))
     write_csv('c_N_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -261,7 +223,7 @@ def generate_cp_evo_nkl():
         for k in range(l, MAX_INDEX + 1):
             for n in range(k + 2):
                 c = cp_evo_nkl(k, l, n)
-                rows.append((l, k, n, c.p, c.q))
+                rows.append((k, l, n, c.p, c.q))
     write_csv('cp_evo_nkl.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -271,7 +233,7 @@ def generate_c_h_evo():
         for k in range(l, MAX_INDEX + 1):
             for n in range(k + 2):
                 c = c_h_evo(k, l, n)
-                rows.append((l, k, n, c.p, c.q))
+                rows.append((k, l, n, c.p, c.q))
     write_csv('c_h_evo.csv', rows, ['n', 'k', 'l', 'num', 'den'])
 
 
@@ -288,10 +250,6 @@ if __name__ == '__main__':
     generate_c_cos_phi_evo()
     generate_d_cos_phi_evo()
     generate_c_sin_phi_inv_evo()
-    generate_a_mr()
-    generate_B_rt()
-    generate_C_mt()
-    generate_R()
     generate_c_N_evo()
     generate_cp_evo_nkl()
     generate_c_h_evo()

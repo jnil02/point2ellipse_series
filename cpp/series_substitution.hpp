@@ -61,7 +61,7 @@ static E2Poly a_nk_C_lexpr(int n, int k,
 	if (k < n + 1) return {};
 	E2Poly result(k + 1, mpq_class(0));
 	for (int l = 1; l <= k; ++l)
-		result[l] = c_nkl(n, k, l);
+		result[l] = c_nkl(k, n, l);
 	return result;
 }
 
