@@ -42,6 +42,7 @@ class ints_cache:
     def __init__(self, f):
         self.f = f
         self.cache = {}
+        self.__name__ = f.__name__  # So that we can use __name__ as expected.
 
     def __call__(self, *args):
         ints, others = split_args(*args)

@@ -1,25 +1,22 @@
 """Generate test data for C++ consistency checks.
 
 Outputs CSV files to test_data/ with columns: n,k,l,num,den
-
-All generators iterate over the full index range [0, MAX_INDEX] for all
-indices. This means out-of-range indices are included, and Python's implicit
-zeros for invalid indices are captured in the CSV. The C++ tests then verify
-both the non-zero coefficients and the zeros.
 """
 
 import os
 import csv
 
+from dataclasses import dataclass
+from typing import Callable, Optional, Sequence, Tuple
+
 from coefficients import (d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo,
                           c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo,
-                          c_cos_phi_evo, d_cos_phi_evo,
-                          c_sin_phi_inv_evo, a_mr, B_rt, C_mt, R, c_N_evo, cp_evo_nkl,
-                          c_h_evo)
+                          c_cos_phi_evo, d_cos_phi_evo, c_sin_phi_inv_evo,
+                          c_N_evo, cp_evo_nkl, c_h_evo)
 
 # Generate all indices up to and including this value.
-MAX_INDEX = 5
-MAX_INDEX_POW = 3
+M  = 5  # Max index
+MP = 3  # Max index for power index. Lowever due to computational cost.
 
 # Where to place the test data.
 TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'test_data')
@@ -36,220 +33,128 @@ def write_csv(filename, rows, header):
     print(f"Written {len(rows)} rows to {path}")
 
 
-def generate_d_phi():
-    """Generate test data for d_phi.
-
-    Non-zero for k >= 1 and max(n+1, k) <= l <= n+k.
-    Full range tested to verify zeros outside valid indices.
-    """
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(1, MAX_INDEX + 1):
-            for l in range(max(n+1,k), n+k + 1):
-                c = d_phi(n, k, l)
-                rows.append((n, k, l, c.p, c.q))
-    write_csv('d_phi.csv', rows, ['n', 'k', 'l', 'num', 'den'])
-
-
-def generate_d_sin():
-    """Generate test data for d_sin.
-
-    Non-zero for k >= 1 and max(n, k) <= l <= n+k.
-    Full range tested to verify zeros outside valid indices.
-    """
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(1, MAX_INDEX + 1):
-            for l in range(max(n,k),n+k + 1):
-                c = d_sin(n, k, l)
-                rows.append((n, k, l, c.p, c.q))
-    write_csv('d_sin.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+# (Coefficient) spec of the nested series.
+@dataclass
+class Spec:
+    # Coefficient dependent on loop index variables.
+    coef:  Callable
+    # The nested for loops of the nested series.
+    # Each loop is specified as (<name>, lo, hi) where lo, hi is a function
+    # taking the proceeding loop variables as arguments, e.g. lambda k: k + 1.
+    # The bounds of the first loop are just lambdas with no arguments returning
+    # constants.
+    loops: Sequence[Tuple]
+    # Order in which the coefficient take the index variables, specified with a
+    # list of the loop variable names. This cannot just be deferred to the
+    # coefficient callable, e.g. rearranged via a lambda, since the order is
+    # the same on the C-side and there we cannot rearrange them. None is
+    # converted to the natural loop order.
+    order: Optional[Tuple[str, ...]] = None   # call-arg & row order; default = loop order
 
 
-def generate_d_cos():
-    """Generate test data for d_cos.
+def generate_csv(spec: Spec):
+    names = [n for n, _, _ in spec.loops]
+    order = spec.order or tuple(names)  # None means loop order.
 
-    Non-zero for k >= 1 and max(n, k) <= l <= n+k-1.
-    Full range tested to verify zeros outside valid indices.
-    """
-    rows = []
-    for n in range(MAX_INDEX + 1):
-        for k in range(1, MAX_INDEX + 1):
-            for l in range(max(n,k), n+k):
-                c = d_cos(n, k, l)
-                rows.append((n, k, l, c.p, c.q))
-    write_csv('d_cos.csv', rows, ['n', 'k', 'l', 'num', 'den'])
+    # Build all combinations of the nested for loops like:
+    # for k in range(<constant>, <constant>):
+    #   for l in range(lo(k), hi(k)):
+    #       for n in range(lo(k,l), hi(k,l)):
+    #           <coefficient>(k,l,n)
+    # Each loop below corresponds to one for loop level.
+    # Each loop below builds the combination of that level given the combination of the proceeding (outer) levels.
+    # Example for loops (n, k, l):
+    #   ()  ->  (n,)  ->  (n, k)  ->  (n, k, l)
+    combos = [()]
+    for _name, lo, hi in spec.loops:
+        combos = [outer + (value,)
+                  for outer in combos
+                  for value in range(lo(*outer), hi(*outer))]
 
+    # Rearrange loop variables contained in each combo to that of Spec.order.
+    # Compute the corresponding coefficient and append to a list of
+    # coefficients and indices.
+    pos = {name: i for i, name in enumerate(names)}
+    coefs = []
+    for combo in combos:
+        args = [combo[pos[n]] for n in order]
+        c = spec.coef(*args)
+        coefs.append(tuple(args) + (c.p, c.q))
 
-def generate_d_h():
-    """Generate test data for d_h.
-
-    Non-zero for max(n, k+1) <= l <= n+k.
-    Full range tested to verify zeros outside valid indices.
-    """
-    rows = []
-    for n in range(1, MAX_INDEX + 1):
-        for k in range(MAX_INDEX + 1):
-            for l in range(max(n,k+1), n+k + 1):
-                c = d_h(n, k, l)
-                rows.append((n, k, l, c.p, c.q))
-    write_csv('d_h.csv', rows, ['n', 'k', 'l', 'num', 'den'])
-
-
-def generate_d_phi_evo():
-    """Generate test data for d_phi_evo.
-
-    Non-zero for n <= l//2 + k.
-    Full range tested to verify zeros outside valid indices.
-    """
-    rows = []
-    for k in range(MAX_INDEX + 1):
-        for l in range(MAX_INDEX + 1):
-            for n in range(l//2+k + 1):
-                c = d_phi_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('d_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
+    # Export to csv for C-side test consumption.
+    write_csv(spec.coef.__name__ + '.csv', coefs, list(order) + ['num', 'den'])
 
 
-def generate_c_phi_evo():
-    """Generate test data for c_phi_evo.
+SPECS = [
+    Spec(d_phi, [('n', lambda: 0, lambda: M + 1),
+                 ('k', lambda n: 1, lambda n: M + 1),
+                 ('l', lambda n, k: max(n + 1, k), lambda n, k: n + k + 1)]),
+    Spec(d_cos, [('n', lambda: 0, lambda: M + 1),
+                 ('k', lambda n: 1, lambda n: M + 1),
+                 ('l', lambda n, k: max(n, k), lambda n, k: n + k)]),
+    Spec(d_sin, [('n', lambda: 0, lambda: M + 1),
+                 ('k', lambda n: 1, lambda n: M + 1),
+                 ('l', lambda n, k: max(n, k), lambda n, k: n + k + 1)]),
+    Spec(d_h, [('n', lambda: 1, lambda: M + 1),
+               ('k', lambda n: 0, lambda n: M + 1),
+               ('l', lambda n, k: max(n, k + 1), lambda n, k: n + k + 1)]),
 
-    Non-zero for k >= n+1, 1 <= l <= k, (k-n-1)%2==0, (l-k)%2==0.
-    Full range tested to verify zeros outside valid indices.
-    """
-    rows = []
-    for l in range(MAX_INDEX + 1):
-        for k in range(l+1, MAX_INDEX + 1):
-            for n in range(1, k + 1):
-                c = c_phi_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('c_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
+    Spec(d_phi_evo, [('k', lambda: 0, lambda: M + 1),
+                     ('l', lambda k: 0, lambda k: M + 1),
+                     ('n', lambda k, l: 0, lambda k, l: l // 2 + k + 1)]),
 
+    Spec(c_phi_evo, [('l', lambda: 0, lambda: M + 1),
+                     ('k', lambda l: l + 1, lambda l: M + 1),
+                     ('n', lambda l, k: 1, lambda l, k: k + 1)],
+         order=('k', 'l', 'n')),
 
-def generate_c_phi_pow_evo():
-    """Generate test data for d_phi_pow_evo.
-
-    Non-zero for (i+n-k)%2==0 and (l-k)%2==0.
-    Uses a smaller MAX_INDEX due to computational cost.
-    """
-    rows = []
-    for i in range(MAX_INDEX_POW + 1):
-        for l in range(MAX_INDEX + 1):
-            for k in range(l+i,MAX_INDEX + 1):
-                for n in range(i, k + 1):
-                    c = c_phi_pow_evo(k, l, n, i)
-                    rows.append((k, l, n, i, c.p, c.q))
-    write_csv('c_phi_pow_evo.csv', rows, ['k', 'l', 'n', 'i', 'num', 'den'])
-
-
-def generate_c_sin_phi_evo():
-    """Generate test data for c_sin_phi_evo (sparse, raw indices)."""
-    rows = []
-    for l in range(MAX_INDEX + 1):
-        for k in range(l, MAX_INDEX + 1):
-            for n in range(k + 1):
-                c = c_sin_phi_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('c_sin_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
-
-
-def generate_d_sin_phi_evo():
-    """Generate test data for d_sin_phi_evo (dense, transformed indices).
-
-    Valid range: k >= 0, l >= 0, 1 <= n <= l//2 + k.
-    """
-    rows = []
-    for k in range(MAX_INDEX + 1):
-        for l in range(MAX_INDEX + 1):
-            for n in range(1, l // 2 + k + 1):
-                c = d_sin_phi_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('d_sin_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
-
-
-def generate_c_cos_phi_evo():
-    """Generate test data for c_cos_phi_evo (sparse, raw indices)."""
-    rows = []
-    for l in range(MAX_INDEX + 1):
-        for k in range(l, MAX_INDEX + 1):
-            for n in range(1, k + 1):
-                c = c_cos_phi_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('c_cos_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
-
-
-def generate_d_cos_phi_evo():
-    """Generate test data for d_cos_phi_evo (dense, transformed indices).
-
-    Valid range: k >= 0, l >= 0, l%2 <= n <= (l+1)//2 + k.
-    """
-    rows = []
-    for k in range(MAX_INDEX + 1):
-        for l in range(MAX_INDEX + 1):
-            for n in range(l % 2, (l + 1) // 2 + k + 1):
-                c = d_cos_phi_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('d_cos_phi_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
-
-
-def generate_c_sin_phi_inv_evo():
-    """Generate test data for d_sin_phi_inv_evo.
-
-    Non-zero for (n-k)%2==0 and (n-l)%2==0.
-    Full range tested to verify zeros outside valid indices.
-    """
-    rows = []
-    for l in range(MAX_INDEX + 1):
-        for k in range(l, MAX_INDEX + 1):
-            for n in range(k + 1):
-                c = c_sin_phi_inv_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('c_sin_phi_inv_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
-
-
-def generate_c_N_evo():
-    rows = []
-    for l in range(MAX_INDEX + 1):
-        for k in range(l, MAX_INDEX + 1):
-            for n in range(1, k+2):
-                c = c_N_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('c_N_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
-
-
-def generate_cp_evo_nkl():
-    rows = []
-    for l in range(1, MAX_INDEX + 1):
-        for k in range(l, MAX_INDEX + 1):
-            for n in range(k + 2):
-                c = cp_evo_nkl(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('cp_evo_nkl.csv', rows, ['k', 'l', 'n', 'num', 'den'])
-
-
-def generate_c_h_evo():
-    rows = []
-    for l in range(1, MAX_INDEX + 1):
-        for k in range(l, MAX_INDEX + 1):
-            for n in range(k + 2):
-                c = c_h_evo(k, l, n)
-                rows.append((k, l, n, c.p, c.q))
-    write_csv('c_h_evo.csv', rows, ['k', 'l', 'n', 'num', 'den'])
+    Spec(c_phi_pow_evo,
+         [('i', lambda: 0, lambda: MP + 1),
+          ('l', lambda i: 0, lambda i: M + 1),
+          ('k', lambda i, l: l + i, lambda i, l: M + 1),
+          ('n', lambda i, l, k: i, lambda i, l, k: k + 1)],
+         order=('k', 'l', 'n', 'i')),
+    Spec(c_sin_phi_evo,
+         [('l', lambda: 0, lambda: M + 1),
+          ('k', lambda l: l, lambda l: M + 1),
+          ('n', lambda l, k: 0, lambda l, k: k + 1)],
+         order=('k', 'l', 'n')),
+    Spec(d_sin_phi_evo,
+         [('k', lambda: 0, lambda: M + 1),
+          ('l', lambda k: 0, lambda k: M + 1),
+          ('n', lambda k, l: 1, lambda k, l: l // 2 + k + 1)]),
+    Spec(c_cos_phi_evo,
+         [('l', lambda: 0, lambda: M + 1),
+          ('k', lambda l: l, lambda l: M + 1),
+          ('n', lambda l, k: 1, lambda l, k: k + 1)],
+         order=('k', 'l', 'n')),
+    Spec(d_cos_phi_evo,
+         [('k', lambda: 0, lambda: M + 1),
+          ('l', lambda k: 0, lambda k: M + 1),
+          ('n', lambda k, l: l % 2, lambda k, l: (l + 1) // 2 + k + 1)]),
+    Spec(c_sin_phi_inv_evo,
+         [('l', lambda: 0, lambda: M + 1),
+          ('k', lambda l: l, lambda l: M + 1),
+          ('n', lambda l, k: 0, lambda l, k: k + 1)],
+         order=('k', 'l', 'n')),
+    Spec(c_N_evo,
+         [('l', lambda: 0, lambda: M + 1),
+          ('k', lambda l: l, lambda l: M + 1),
+          ('n', lambda l, k: 1, lambda l, k: k + 2)],
+         order=('k', 'l', 'n')),
+    Spec(cp_evo_nkl,
+         [('l', lambda: 1, lambda: M + 1),
+          ('k', lambda l: l, lambda l: M + 1),
+          ('n', lambda l, k: 0, lambda l, k: k + 2)],
+         order=('k', 'l', 'n')),
+    Spec(c_h_evo,
+         [('l', lambda: 1, lambda: M + 1),
+          ('k', lambda l: l, lambda l: M + 1),
+          ('n', lambda l, k: 0, lambda l, k: k + 2)],
+         order=('k', 'l', 'n')),
+]
 
 
 if __name__ == '__main__':
-    generate_d_phi()
-    generate_d_cos()
-    generate_d_sin()
-    generate_d_h()
-    generate_d_phi_evo()
-    generate_c_phi_evo()
-    generate_c_phi_pow_evo()
-    generate_c_sin_phi_evo()
-    generate_d_sin_phi_evo()
-    generate_c_cos_phi_evo()
-    generate_d_cos_phi_evo()
-    generate_c_sin_phi_inv_evo()
-    generate_c_N_evo()
-    generate_cp_evo_nkl()
-    generate_c_h_evo()
+    for spec in SPECS:
+        generate_csv(spec)
