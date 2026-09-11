@@ -95,10 +95,12 @@ def test_cos_phi_evo_dense(ref_evo):
 # ---------------------------------------------------------------------------
 
 def test_h_evo(ref_evo):
+    expected = ref_evo["h"]
     result = ev_evo(fourier_series.h_a_evo2(MAX_ORDER_EVO, MAX_ORDER_EVO) + rho*sin_psi/ mp_a, ref_evo) * mp_a
-    assert_close("h [m]  evo", ref_evo["h"], result, TOL_EVO * mp_a)
+    assert_close("h [m]  evo", expected, result, TOL_EVO * mp_a)
 
 
 def test_h_evo_dense(ref_evo):
+    expected = ref_evo["h"]
     result = ev_evo(fourier_series.h_a_evo_dense_m2(MAX_ORDER_EVO) - b_a + rho * sin_psi / mp_a, ref_evo) * mp_a
-    assert_close("h [m]  evo_dense", ref_evo["h"], result, TOL_EVO * mp_a)
+    assert_close("h [m]  evo_dense", expected, result, TOL_EVO * mp_a)

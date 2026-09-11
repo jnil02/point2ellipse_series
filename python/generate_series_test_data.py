@@ -1,0 +1,42 @@
+"""
+Generates test data for series to ensure consistent definitions on the C++ side.
+"""
+
+import math
+from symbols import sin_psi, rho_ae2, b_a
+import fourier_series as fs
+from generate_test_data import write_csv
+
+A, B   = 1.0, 0.5
+E2     = 1 - (B/A)**2
+B_A    = B/A
+ORDER  = 8
+PSIS   = [45, 135, 225, 315]          # one per quadrant
+
+def evolute_rho(psi):                 # same formula as sweep_evo / plot
+    ac = abs(A*math.cos(psi)); bs = abs(B*math.sin(psi))
+    return (A**2 - B**2) / (ac**(2/3) + bs**(2/3))**1.5
+
+# test points -> exact evo-series inputs
+POINTS = []
+for pdeg in PSIS:
+    psi = math.radians(pdeg)
+    rho = 0.5 * evolute_rho(psi)
+    POINTS.append((math.sin(psi), rho/(A*E2), B_A))   # (sin_psi, rho_ae2, b_a)
+
+# series under test: (filename, sympy callable returning expr in the 3 symbols)
+SERIES = [
+    ('phi_evo_sin_pow_dense_m2', lambda: fs.phi_evo_sin_pow_dense_m2(ORDER)),
+    ('sin_phi_evo_dense_m',      lambda: fs.sin_phi_evo_dense_m(ORDER)),
+    ('cos_phi_evo_dense_m',      lambda: fs.cos_phi_evo_dense_m(ORDER)),
+    ('h_a_evo_dense_m2',         lambda: fs.h_a_evo_dense_m2(ORDER)),
+]
+
+for name, make in SERIES:
+    expr = make()
+    rows = []
+    for s, r, ba in POINTS:
+        val = float(expr.subs({sin_psi: s, rho_ae2: r, b_a: ba}))
+        rows.append((ORDER, repr(s), repr(r), repr(ba), repr(val)))
+    write_csv(name + '_series.csv', rows,
+              ['order', 'sin_psi', 'rho_ae2', 'b_a', 'value'])

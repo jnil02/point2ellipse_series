@@ -23,8 +23,34 @@ target_compile_definitions(test_coefficients
         TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
         )
 
+add_executable(test_series_values
+        test_series_values.cpp
+        ../coefficients.cpp
+        ../coefficients_evo.cpp
+        )
+
+target_include_directories(test_series_values
+        PRIVATE
+        # Points to root/cpp/. This is to give local header files priority over
+        # installed (potentially old) header files.
+        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        )
+
+target_link_libraries(test_series_values
+        PRIVATE
+        gmpxx
+        gmp
+        )
+
+target_compile_definitions(test_series_values
+        PRIVATE
+        TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
+        )
+
+
 include(CTest)
 add_test(NAME test_coefficients COMMAND test_coefficients)
+add_test(NAME test_series_values COMMAND test_series_values)
 
 add_executable(test_series
         test_series.cpp

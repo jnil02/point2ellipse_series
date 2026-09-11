@@ -22,6 +22,7 @@ mpq_class cp_evo_nkl(int k, int l, int n);
 mpq_class c_h_evo(int k, int l, int n);
 mpq_class d_h_evo(int k, int l, int n);
 mpq_class d_h_evo2(int k, int l, int n);
+mpq_class d_h_evo3(int k, int l, int n);
 
 // TODO(JO) Temporary. These are intermediate coefficients and should be
 //  removed once the final coefficients are in place.

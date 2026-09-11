@@ -9,8 +9,7 @@ import sympy as sp
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
     c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo2, c_cos_phi_evo, c_sin_phi_inv_evo, c_N_evo, \
-    c_h_evo2, d_phi_evo2, d_cos_phi_evo_m, cp_evo_nkl2, \
-    dh_evo_m2
+    c_h_evo2, d_phi_evo2, d_cos_phi_evo_m, cp_evo_nkl2, d_h_evo_m2
 
 
 def phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
@@ -434,8 +433,10 @@ def h_a_evo_dense_m2(K):
     """
     s = sp.S.Zero
     for k in range(2, K+1):
+        cm = sp.S.Zero
         sn = k % 2
         for l in range(0, (k // 2) + 1):
             for n in range(0, (k // 2) + 1):
-                s += dh_evo_m2(k, l, n) * b_a ** (1 + sn + 2 * n) * rho_ae2 ** (k) * sin_psi ** (2*l + sn)
+                cm += d_h_evo_m2(k, l, n) * b_a ** (2 * n) * sin_psi ** (2 * l)
+        s += cm * b_a ** (1+sn) * sin_psi ** sn * rho_ae2 ** (k)
     return s

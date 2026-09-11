@@ -18,6 +18,9 @@ inline mpfr::mpreal series_coeff<mpfr::mpreal>(const mpq_class& c) {
 	mpfr_set_z(den.mpfr_ptr(), c.get_den().get_mpz_t(), mpfr::mpreal::get_default_rnd());
 	return num / den;
 }
+template<> inline double series_coeff<double>(const mpq_class& c) {
+	return c.get_d();
+}
 
 // Raise base to integer power.
 template<typename T>
@@ -26,6 +29,10 @@ T series_pow(const T& base, int exp);
 template<>
 inline mpfr::mpreal series_pow<mpfr::mpreal>(const mpfr::mpreal& base, int exp) {
 	return mpfr::pow(base, static_cast<long>(exp));
+}
+// FIXME(JO) The different versions should be put in different headers such that we don't need headers for both types if only one is needed.
+template<> inline double series_pow<double>(const double& b, int e) {
+	return std::pow(b, e);
 }
 
 // sin(2*n * psi) — for multiple-angle series.

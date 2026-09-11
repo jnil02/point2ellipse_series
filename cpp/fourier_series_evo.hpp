@@ -16,6 +16,7 @@ using point_to_ellipse_series::c_cos_phi_evo;
 using point_to_ellipse_series::c_h_evo;
 using point_to_ellipse_series::d_h_evo;
 using point_to_ellipse_series::d_h_evo2;
+using point_to_ellipse_series::d_h_evo3;
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
  *
@@ -317,13 +318,13 @@ inline T h_a_evo_dense_m(int M,
 }
 
 template<typename T>
-inline T h_a_evo_dense_m2(int M,
+inline T h_a_evo_dense_m2(int K,
 						  const T& sin_psi_v,
 						  const T& rho_ae2_v,
 						  const T& b_a_v) {
 	T s(0);
 
-	for (int k = 0; k <= M; ++k) {
+	for (int k = 0; k <= K; ++k) {
 		T cm(0);
 		const int prtm = k % 2;
 
@@ -340,3 +341,29 @@ inline T h_a_evo_dense_m2(int M,
 	}
 	return s;
 }
+
+template<typename T>
+inline T h_a_evo_dense_m3(int K,
+						  const T& sin_psi_v,
+						  const T& rho_ae2_v,
+						  const T& b_a_v) {
+	T s(0);
+
+	for (int k = 2; k <= K; ++k) {
+		T cm(0);
+		const int prtm = k % 2;
+
+		for (int l = 0; l <= k / 2; ++l) {
+			for (int n = 0; n <= k / 2; ++n) {
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo3(k, l, n))
+						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * n)
+						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * l);
+			}
+		}
+		s = s + cm * point_to_ellipse_series::series_pow<T>(b_a_v, 1+prtm)
+				* point_to_ellipse_series::series_pow<T>(sin_psi_v, prtm)
+				* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k);
+	}
+	return s;
+}
+

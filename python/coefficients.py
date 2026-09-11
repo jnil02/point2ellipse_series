@@ -552,7 +552,7 @@ def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     return c_h_evo(2 * k + l, l, 2 * n + 1 - sn)
 
 @cache.ints_cache
-def dh_evo_m2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+def d_h_evo_m2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Series coefficients for h/a - rho/a*sin(psi) in sin powers for small rho.
 
     :param l: sin power index.
