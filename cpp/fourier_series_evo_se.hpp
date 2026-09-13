@@ -51,15 +51,6 @@ inline Expression h_a_evo(int N, int K) {
 }
 
 /** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression h_a_evo_dense(int N, int K) {
-	return h_a_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression h_a_evo_dense_m(int K) {
-	return h_a_evo_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
-}
-
-inline Expression h_a_evo_dense_m2(int K) {
-	return h_a_evo_dense_m2<Expression>(K, sin_psi, rho_ae2, b_a);
+inline Expression h_a_evo_dense_m3(int K) {
+	return h_a_evo_dense_m3<Expression>(K, sin_psi, rho_ae2, b_a);
 }

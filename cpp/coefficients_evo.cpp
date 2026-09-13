@@ -485,12 +485,9 @@ mpq_class c_h_evo(int k, int l, int n) {
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
+// FIXME(JO) Kept due to benchmark and convergence plot usage. Replace.
 mpq_class d_h_evo(int k, int l, int n) {
 	return c_h_evo(2 * k + l, l, 2 * n + 1 - (l % 2));
-}
-
-mpq_class d_h_evo2(int k, int l, int n) {
-	return c_h_evo(k, 2 * l + (k % 2), 2 * n + 1 - (k % 2));
 }
 
 mpq_class d_h_evo3(int k, int l, int n) {

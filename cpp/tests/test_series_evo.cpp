@@ -162,22 +162,7 @@ TEST_CASE_METHOD(RefEvo, "h metres evo", "[series_evo]") {
 	assert_close("h [m]  evo", h, result, TOL * mp_a());
 }
 
-TEST_CASE_METHOD(RefEvo, "h metres evo_dense", "[series_evo]") {
-	const mpreal result = ev(h_a_evo_dense(MAX_ORD, MAX_ORD), subs) * mp_a();
-	assert_close("h [m]  evo_dense", h, result, TOL * mp_a());
-}
-
-TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m", "[series_evo]") {
-	const mpreal result = ev(h_a_evo_dense_m(MAX_ORD), subs) * mp_a();
-	assert_close("h [m]  evo_dense_m", h, result, TOL * mp_a());
-}
-
-TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m2", "[series_evo]") {
-	const mpreal result = ev(h_a_evo_dense_m2(MAX_ORD), subs) * mp_a();
+TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m3", "[series_evo]") {
+	const mpreal result = ev(h_a_evo_dense_m3(MAX_ORD), subs) * mp_a() - mp_b() + rho * abs_sin_psi;
 	assert_close("h [m]  evo_dense_m2", h, result, TOL * mp_a());
-}
-
-TEST_CASE_METHOD(RefEvo, "slask", "[series_evo]") {
-	std::cout << h_a_evo_dense_m2(4) << std::endl;
-	std::cout << point_to_ellipse_series::series_coeff<Expression>(d_h_evo2(0, 0, 0)) << std::endl;
 }
