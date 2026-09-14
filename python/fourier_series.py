@@ -248,14 +248,15 @@ def phi_evo_sin_pow_dense_m2(K):
     """
     d = sp.S.Zero
     for k in range(1, K + 1):
-        s = (k+1) % 2
+        cm = sp.S.Zero
+        s = (k + 1) % 2
         r = (k - 1) // 2
         for l in range(0, r + 1):
             for n in range(0, r + 1):
-                d += (sin_psi ** (s + 2*l)
-                      * rho_ae2 ** k
-                      * b_a ** (1 + s + 2 * n)
+                cm += (sin_psi ** (2*l)
+                      * b_a ** (2 * n)
                       * d_phi_evo2(k, l, n))
+        d += cm * b_a ** (1 + s) * sin_psi ** (s) * rho_ae2 ** k
     return d
 
 
@@ -301,9 +302,11 @@ def sin_phi_evo_dense_m(K):
     """
     s = sp.S.Zero
     for k in range(2, K+1):
+        cm = sp.S.Zero
         for l in range(0, k // 2 + 1):
             for n in range(1, k // 2 + 1):
-                s += d_sin_phi_evo2(k, l, n) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2 * l + (k % 2))
+                cm += d_sin_phi_evo2(k, l, n) * b_a ** (2 * n) * sin_psi ** (2 * l)
+        s += cm * b_a ** (k % 2) * sin_psi ** (k % 2) * rho_ae2 ** (k)
     return s
 
 
@@ -332,11 +335,13 @@ def cos_phi_evo_dense_m(K):
     """
     s = sp.S.Zero
     for k in range(1, K + 1):
+        cm = sp.S.Zero
         p = (k - 1) % 2
         q = (k - 1) // 2
-        for l in range(0, q +1):
-            for n in range(p, math.ceil((k - 1)/2) + 1):
-                s += d_cos_phi_evo_m(k, l, n) * b_a ** (2 * n + (k % 2)) * rho_ae2 ** (k) * sin_psi ** (2 * l + (k - 1) % 2)
+        for l in range(0, q + 1):
+            for n in range(p, k // 2 + 1):
+                cm += d_cos_phi_evo_m(k, l, n) * b_a ** (2 * n) * sin_psi ** (2 * l)
+        s += cm * b_a ** (k % 2) * sin_psi ** ((k - 1) % 2) * rho_ae2 ** (k)
     return s
 
 
