@@ -108,21 +108,16 @@ TEST_CASE_METHOD(RefEvo, "(phi-sgn*pi/2)/(sgn*|cos(psi)|) evo_dense_m", "[series
 	assert_close("(phi-sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense_m", expected, result, TOL);
 }
 
+TEST_CASE_METHOD(RefEvo, "(phi-sgn*pi/2)/(sgn*|cos(psi)|) evo_dense_m2", "[series_evo]") {
+	const mpreal expected = (phi - sgn * mpfr::const_pi() / 2) / (sgn * abs_cos_psi);
+	const mpreal result   = ev(phi_evo_sin_pow_dense_m2(MAX_ORD), subs);
+	assert_close("(phi-sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense_m", expected, result, TOL);
+}
+
+
 // ---------------------------------------------------------------------------
 // (sin(phi) - sgn) / sgn
 // ---------------------------------------------------------------------------
-
-TEST_CASE_METHOD(RefEvo, "(sin(phi)-sgn)/sgn evo_dense", "[series_evo]") {
-	const mpreal expected = (mpfr::sin(phi) - sgn) / sgn;
-	const mpreal result   = ev(sin_phi_evo_dense(MAX_ORD, MAX_ORD), subs);
-	assert_close("(sin(phi)-sgn)/sgn  evo_dense", expected, result, TOL);
-}
-
-TEST_CASE_METHOD(RefEvo, "(sin(phi)-sgn)/sgn evo_dense_m", "[series_evo]") {
-	const mpreal expected = (mpfr::sin(phi) - sgn) / sgn;
-	const mpreal result   = ev(sin_phi_evo_dense_m(MAX_ORD), subs);
-	assert_close("(sin(phi)-sgn)/sgn  evo_dense_m", expected, result, TOL);
-}
 
 TEST_CASE_METHOD(RefEvo, "(sin(phi)-sgn)/sgn evo_dense_m2", "[series_evo]") {
 	const mpreal expected = (mpfr::sin(phi) - sgn) / sgn;
@@ -133,18 +128,6 @@ TEST_CASE_METHOD(RefEvo, "(sin(phi)-sgn)/sgn evo_dense_m2", "[series_evo]") {
 // ---------------------------------------------------------------------------
 // cos(phi) / |cos(psi)|
 // ---------------------------------------------------------------------------
-
-TEST_CASE_METHOD(RefEvo, "cos(phi)/|cos(psi)| evo_dense", "[series_evo]") {
-	const mpreal expected = mpfr::cos(phi) / abs_cos_psi;
-	const mpreal result   = ev(cos_phi_evo_dense(MAX_ORD, MAX_ORD), subs);
-	assert_close("cos(phi)/|cos(psi)|  evo_dense", expected, result, TOL);
-}
-
-TEST_CASE_METHOD(RefEvo, "cos(phi)/|cos(psi)| evo_dense_m", "[series_evo]") {
-	const mpreal expected = mpfr::cos(phi) / abs_cos_psi;
-	const mpreal result   = ev(cos_phi_evo_dense_m(MAX_ORD), subs);
-	assert_close("cos(phi)/|cos(psi)|  evo_dense_m", expected, result, TOL);
-}
 
 TEST_CASE_METHOD(RefEvo, "cos(phi)/|cos(psi)| evo_dense_m2", "[series_evo]") {
 	const mpreal expected = mpfr::cos(phi) / abs_cos_psi;

@@ -75,6 +75,102 @@ mpq_class d_phi_evo(int k, int l, int n) {
 	return cache.insert(ret, (uint) k, (uint) l, (uint) n);
 }
 
+mpq_class d_phi_evo2(int k, int l, int n) {
+	assert(k > 0 && l >= 0 && n >= 0);
+
+	static UintsCache<mpq_class> cache;
+	if (auto *ret = cache.get((uint) k, (uint) l, (uint) n))
+		return *ret;
+
+	const int s = k % 2;
+	const int m_k = (k - 1) / 2;
+
+	// The outer factor contains C(k/2, m_k-n). For a negative lower index
+	// SymPy's binomial is zero, so the complete coefficient is zero.
+	if (n > m_k) {
+		mpq_class ret(0);
+		return cache.insert(ret, (uint) k, (uint) l, (uint) n);
+	}
+
+	const int Q = 1 - s + 2 * n;  // Maximum value of q.
+
+	// Precompute the q-only factor
+	//
+	//    T[q] = C(k-2-q, Q-q).
+	//
+	// Since n <= m_k, Q <= k-1. For q < Q the upper argument is therefore
+	// non-negative. At q == Q the lower argument is zero, so T[Q] = 1 even
+	// in the one case where the upper argument is -1.
+	std::vector<mpz_class> T(Q + 1);
+	for (int q = 0; q <= Q; ++q) {
+		if (Q - q == 0)
+			T[q] = 1;
+		else
+			mpz_bin_uiui(T[q].get_mpz_t(),
+						 (unsigned long) (k - 2 - q),
+						 (unsigned long) (Q - q));
+	}
+
+	mpz_class d(0);
+
+	// The j-only factor is
+	//
+	//    C(m_k-n, l-n+j).
+	//
+	// Since m_k-n >= 0, it is nonzero only when
+	//
+	//    0 <= l-n+j <= m_k-n,
+	//
+	// giving the bounds below.
+	const int j_min = std::max(0, n - l);
+	const int j_max = std::min(n, m_k - l);
+
+	for (int j = j_min; j <= j_max; ++j) {
+		mpz_class bj;
+		mpz_bin_uiui(bj.get_mpz_t(),
+					 (unsigned long) (m_k - n),
+					 (unsigned long) (l - n + j));
+
+		// Inner sum:
+		//
+		//   sum_{q=2j}^{Q}
+		//      2^(q-2j) * C(q-j, j) * T[q].
+		//
+		// Advance both q-dependent factors incrementally.
+		mpz_class sum_(0);
+		mpz_class shift(1);  // 2^(q-2j), starts at q = 2j.
+		mpz_class bqj(1);    // C(q-j,j) = C(j,j) = 1 at q = 2j.
+
+		for (int q = 2 * j, p = j; q <= Q; ++q, ++p) {
+			sum_ += shift * bqj * T[q];
+
+			shift *= 2;
+
+			// C(p+1,j) = C(p,j) * (p+1) / (p+1-j).
+			bqj *= (p + 1);
+			bqj /= (p + 1 - j);  // Exact integer division.
+		}
+
+		d += sum_ * bj;
+	}
+
+	// Outer factor:
+	//
+	//   (-1)^(l+n+k) / k * C(k/2, m_k-n).
+	//
+	// Everything accumulated above is integral, so rational arithmetic is
+	// deferred until here.
+	mpq_class result =
+			binomial_rational(mpq_class(k, 2), (long) (m_k - n))
+			* mpq_class(powm1(l + n + k))
+			/ mpq_class(mpz_class(k))
+			* mpq_class(d);
+	result.canonicalize();
+
+	mpq_class ret = result;
+	return cache.insert(ret, (uint) k, (uint) l, (uint) n);
+}
+
 // Old implementation
 //mpq_class c_phi_evo(int n, int k, int l) {
 //	assert(n >= 0 && k >= n + 1 && l >= 1 && l <= k);
@@ -498,8 +594,17 @@ mpq_class d_sin_phi_evo(int k, int l, int n) {
 	return c_sin_phi_evo(l + 2 * k, l, 2 * n + (l % 2));
 }
 
+mpq_class d_sin_phi_evo2(int k, int l, int n) {
+	return c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2));
+}
+
 mpq_class d_cos_phi_evo(int k, int l, int n) {
 	return c_cos_phi_evo(l + 1 + 2 * k, l, 2 * n + 1 - (l % 2));
+}
+
+mpq_class d_cos_phi_evo_m(int k, int l, int n) {
+	const int p = (k-1) % 2;
+	return c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p);
 }
 
 }  // namespace point_to_ellipse_series

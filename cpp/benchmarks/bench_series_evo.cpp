@@ -75,17 +75,17 @@ int main(int argc, char* argv[]) {
 
 	} else if (series == "phi_evo_dense_m") {
 		auto t0 = Clock::now();
-		volatile auto r = phi_evo_sin_pow_dense_m<mpfr::mpreal>(N, sp, ra, ba);
+		volatile auto r = phi_evo_sin_pow_dense_m2<mpfr::mpreal>(N, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (series == "sin_phi_evo_dense") {
 		auto t0 = Clock::now();
-		volatile auto r = sin_phi_evo_dense<mpfr::mpreal>(N, K, sp, ra, ba);
+		volatile auto r = sin_phi_evo_dense_m2<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (series == "cos_phi_evo_dense") {
 		auto t0 = Clock::now();
-		volatile auto r = cos_phi_evo_dense<mpfr::mpreal>(N, K, sp, ra, ba);
+		volatile auto r = cos_phi_evo_dense_m2<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (series == "h_a_evo_dense_m3") {

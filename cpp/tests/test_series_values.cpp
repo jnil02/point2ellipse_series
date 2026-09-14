@@ -46,10 +46,10 @@ static void check(const std::string& csv,
 }
 
 TEST_CASE("phi evo series py/cpp", "[series][evo]")
-{ check("phi_evo_sin_pow_dense_m2_series.csv", phi_evo_sin_pow_dense_m<double>); }
+{ check("phi_evo_sin_pow_dense_m2_series.csv", phi_evo_sin_pow_dense_m2<double>); }
 TEST_CASE("sin(phi) evo series py/cpp", "[series][evo]")
-{ check("sin_phi_evo_dense_m_series.csv", sin_phi_evo_dense_m<double>); }
+{ check("sin_phi_evo_dense_m_series.csv", sin_phi_evo_dense_m2<double>); }
 TEST_CASE("cos(phi) evo series py/cpp", "[series][evo]")
-{ check("cos_phi_evo_dense_m_series.csv", cos_phi_evo_dense_m<double>); }
+{ check("cos_phi_evo_dense_m_series.csv", cos_phi_evo_dense_m2<double>); }
 TEST_CASE("h evo series py/cpp", "[series][evo]")
 { check("h_a_evo_dense_m2_series.csv", h_a_evo_dense_m3<double>); }

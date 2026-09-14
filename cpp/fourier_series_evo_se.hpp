@@ -12,6 +12,9 @@ inline Expression phi_evo_sin_pow_dense(int N, int K) {
 inline Expression phi_evo_sin_pow_dense_m(int K) {
 	return phi_evo_sin_pow_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
 }
+inline Expression phi_evo_sin_pow_dense_m2(int K) {
+	return phi_evo_sin_pow_dense_m2<Expression>(K, sin_psi, rho_ae2, b_a);
+}
 
 /** Symbolic convenience overload: returns Expression using the global symbolic variables. */
 inline Expression phi_evo_sin_pow(int N, int K) {
@@ -19,28 +22,11 @@ inline Expression phi_evo_sin_pow(int N, int K) {
 }
 
 /** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression sin_phi_evo_dense(int N, int K) {
-	return sin_phi_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression sin_phi_evo_dense_m(int K) {
-	return sin_phi_evo_dense_m<Expression>(K, sin_psi, rho_ae2, b_a);
-}
 inline Expression sin_phi_evo_dense_m2(int K) {
 	return sin_phi_evo_dense_m2<Expression>(K, sin_psi, rho_ae2, b_a);
 }
 
 /** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression cos_phi_evo_dense(int N, int K) {
-	return cos_phi_evo_dense<Expression>(N, K, sin_psi, rho_ae2, b_a);
-}
-
-/** Symbolic convenience overload: returns Expression using the global symbolic variables. */
-inline Expression cos_phi_evo_dense_m(int N) {
-	return cos_phi_evo_dense_m<Expression>(N, sin_psi, rho_ae2, b_a);
-}
-
 inline Expression cos_phi_evo_dense_m2(int N) {
 	return cos_phi_evo_dense_m2<Expression>(N, sin_psi, rho_ae2, b_a);
 }
