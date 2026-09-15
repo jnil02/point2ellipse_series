@@ -26,6 +26,7 @@ for pdeg in PSIS:
 
 # series under test: (filename, sympy callable returning expr in the 3 symbols)
 SERIES = [
+    ('phi_evo_sin_pow',          lambda: fs.phi_evo_sin_pow(ORDER, ORDER)),
     ('phi_evo_sin_pow_dense_m2', lambda: fs.phi_evo_sin_pow_dense_m2(ORDER)),
     ('sin_phi_evo_dense_m',      lambda: fs.sin_phi_evo_dense_m(ORDER)),
     ('cos_phi_evo_dense_m',      lambda: fs.cos_phi_evo_dense_m(ORDER)),

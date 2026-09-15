@@ -115,6 +115,7 @@ public:
 			const T&  sin_n = pows_.sin_[n];
 			for (int l = 0; l <= lmax; ++l)
 				slab = slab
+						// FIXME(JO) The d_h_evo is no longer used. Use d_h_evo instead?
 					   + point_to_ellipse_series::series_coeff<T>(d_h_evo(n, k, l))
 						 * pows_.b_[1 - sn + 2 * l] * rho_m * sin_n;
 		}

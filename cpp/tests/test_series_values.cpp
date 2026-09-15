@@ -45,11 +45,27 @@ static void check(const std::string& csv,
 	}
 }
 
+static void check(const std::string& csv,
+				  const std::function<double(int,int,double,double,double)>& fn) {
+	auto rows = load(std::string(TEST_DATA_DIR) + "/" + csv);
+	REQUIRE(!rows.empty());
+	for (auto& r : rows) {
+		double got = fn(r.order, r.order, r.sin_psi, r.rho_ae2, r.b_a);
+		double tol = 1e-9 * std::max(1.0, std::abs(r.value));   // abs+rel
+		INFO(csv << "  py=" << r.value << " cpp=" << got);
+		CHECK(std::abs(got - r.value) < tol);
+	}
+}
+
+TEST_CASE("phi evo series sparse py/cpp", "[series][evo]")
+{ check("phi_evo_sin_pow_series.csv", phi_evo_sin_pow_sparse<double>); }
 TEST_CASE("phi evo series py/cpp", "[series][evo]")
 { check("phi_evo_sin_pow_dense_m2_series.csv", phi_evo_sin_pow_dense_m2<double>); }
+
 TEST_CASE("sin(phi) evo series py/cpp", "[series][evo]")
 { check("sin_phi_evo_dense_m_series.csv", sin_phi_evo_dense_m2<double>); }
 TEST_CASE("cos(phi) evo series py/cpp", "[series][evo]")
 { check("cos_phi_evo_dense_m_series.csv", cos_phi_evo_dense_m2<double>); }
+
 TEST_CASE("h evo series py/cpp", "[series][evo]")
 { check("h_a_evo_dense_m2_series.csv", h_a_evo_dense_m3<double>); }

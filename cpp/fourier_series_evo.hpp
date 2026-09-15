@@ -100,15 +100,14 @@ inline T phi_evo_sin_pow_dense_m2(int K,
  * @return Series result as type T.
  */
 template<typename T>
-inline T phi_evo_sin_pow(int N, int K,
-						 const T& sin_psi_v, const T& cos_psi_v,
-						 const T& rho_ae2_v, const T& b_a_v) {
+inline T phi_evo_sin_pow_sparse(int N, int K,
+								const T& sin_psi_v,
+								const T& rho_ae2_v, const T& b_a_v) {
 	T d(0);
 	for (int l = 0; l <= N; ++l)
 		for (int k = l + 1; k <= K; ++k)
 			for (int n = 1; n <= k; ++n)
 				d = d + point_to_ellipse_series::series_coeff<T>(c_phi_evo(k, l, n))
-						* cos_psi_v
 						* point_to_ellipse_series::series_pow<T>(sin_psi_v, l)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
 						* point_to_ellipse_series::series_pow<T>(b_a_v, n);
