@@ -521,7 +521,7 @@ def c_h_evo(k: int, l: int, n: int) -> sp.core.Rational:
     return cp_evo_nkl(k, l, n) - c_N_evo(k, l, n)
 
 @cache.ints_cache
-def c_h_evo2(l: int, k: int, n: int) -> sp.core.Rational:
+def c_h_evo2(k: int, l: int, n: int) -> sp.core.Rational:
     """Series coefficients for h/a - rho/a*sin(psi)/sin(phi) in sin powers for small rho.
 
     Sparse coefficients with every other coefficient being zero.
@@ -562,7 +562,7 @@ def d_h_evo_m2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """
     assert l >= 0 and k >= 0 and n >= 0 and n <= k // 2 and l <= k // 2, f"dh_evo_m indices out of range. n: {l} k: {k} l: {n}"
     sn = k % 2
-    return c_h_evo2(2 * l + sn,k, 2 * n + 1 + sn)
+    return c_h_evo2(k, 2 * l + sn, 2 * n + 1 + sn)
 
 @cache.ints_cache
 def a_mr(m: int, r: int) -> sp.core.numbers.Rational:

@@ -114,6 +114,22 @@ inline T phi_evo_sin_pow_sparse(int N, int K,
 	return d;
 }
 
+template<typename T>
+inline T sin_phi_evo_sin_pow_sparse(int L, int K,
+									const T& sin_psi_v,
+									const T& rho_ae2_v, const T& b_a_v) {
+	T d(0);
+	for (int l = 0; l <= L; ++l)
+		for (int k = l; k <= K; ++k)
+			for (int n = 0; n <= k; ++n)
+				d = d + point_to_ellipse_series::series_coeff<T>(c_sin_phi_evo(k, l, n))
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, l)
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
+						* point_to_ellipse_series::series_pow<T>(b_a_v, n);
+	return d;
+}
+
+
 /** Inside-evolute series for sin(phi) in sin-powers (dense).
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
@@ -147,6 +163,22 @@ inline T sin_phi_evo_dense_m2(int K,
 	}
 	return s;
 }
+
+template<typename T>
+inline T cos_phi_evo_sin_pow_sparse(int L, int K,
+									const T& sin_psi_v,
+									const T& rho_ae2_v, const T& b_a_v) {
+	T d(0);
+	for (int l = 0; l <= L; ++l)
+		for (int k = l; k <= K; ++k)
+			for (int n = 1; n <= k; ++n)
+				d = d + point_to_ellipse_series::series_coeff<T>(c_cos_phi_evo(k, l, n))
+						* point_to_ellipse_series::series_pow<T>(sin_psi_v, l)
+						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
+						* point_to_ellipse_series::series_pow<T>(b_a_v, n);
+	return d;
+}
+
 
 /** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (dense).
  *
