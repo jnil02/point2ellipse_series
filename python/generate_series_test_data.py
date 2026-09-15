@@ -32,6 +32,7 @@ SERIES = [
     ('sin_phi_evo_dense_m',      lambda: fs.sin_phi_evo_dense_m(ORDER)),
     ('cos_phi_evo',              lambda: fs.cos_phi_evo(ORDER, ORDER)),
     ('cos_phi_evo_dense_m',      lambda: fs.cos_phi_evo_dense_m(ORDER)),
+    ('h_a_evo',                  lambda: fs.h_a_evo2(ORDER, ORDER)),
     ('h_a_evo_dense_m2',         lambda: fs.h_a_evo_dense_m2(ORDER)),
 ]
 

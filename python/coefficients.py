@@ -477,7 +477,7 @@ def cp_evo_nkl(k: int, l: int, n: int) -> sp.core.Rational:
     return sp.S.Zero
 
 @cache.ints_cache
-def cp_evo_nkl2(l: int, k: int, n: int) -> sp.core.Rational:
+def cp_evo_nkl2(k: int, l: int, n: int) -> sp.core.Rational:
     """
     Adjusted for the new summation ranges for which rho*sin(psi)/a has been pulled out.
 
@@ -531,12 +531,12 @@ def c_h_evo2(k: int, l: int, n: int) -> sp.core.Rational:
     :param n: epsilon power index.
     :return: Rational coefficient.
     """
-    assert l >= 0 and k >= l and n >= 0 and n <= k + 1, f"ch_evo indices out of range. n: {l} k: {k} l: {n}"
+    assert l >= 0 and k >= l and n >= 1 and n <= k + 1, f"ch_evo indices out of range. n: {l} k: {k} l: {n}"
     if (l - k) % 2 != 0 or (l - n - 1) % 2 != 0:
         return sp.S.Zero
     if l==0:
         return -c_N_evo(k, l, n)
-    return cp_evo_nkl2(l, k, n) - c_N_evo(k, l, n)
+    return cp_evo_nkl2(k, l, n) - c_N_evo(k, l, n)
 
 @cache.ints_cache
 def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:

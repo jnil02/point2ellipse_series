@@ -141,11 +141,13 @@ TEST_CASE_METHOD(RefEvo, "cos(phi)/|cos(psi)| evo_dense_m2", "[series_evo]") {
 // ---------------------------------------------------------------------------
 
 TEST_CASE_METHOD(RefEvo, "h metres evo", "[series_evo]") {
-	const mpreal result = ev(h_a_evo(MAX_ORD, MAX_ORD), subs) * mp_a();
-	assert_close("h [m]  evo", h, result, TOL * mp_a());
+	const mpreal expected = h;
+	const mpreal result = ev(h_a_evo(MAX_ORD, MAX_ORD), subs) * mp_a() + rho * abs_sin_psi;
+	assert_close("h [m]  evo", expected, result, TOL * mp_a());
 }
 
 TEST_CASE_METHOD(RefEvo, "h metres evo_dense_m3", "[series_evo]") {
+	const mpreal expected = h;
 	const mpreal result = ev(h_a_evo_dense_m3(MAX_ORD), subs) * mp_a() - mp_b() + rho * abs_sin_psi;
-	assert_close("h [m]  evo_dense_m2", h, result, TOL * mp_a());
+	assert_close("h [m]  evo_dense_m2", expected, result, TOL * mp_a());
 }

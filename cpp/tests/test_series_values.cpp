@@ -72,5 +72,7 @@ TEST_CASE("cos(phi) evo series sparse py/cpp", "[series][evo]")
 TEST_CASE("cos(phi) evo series py/cpp", "[series][evo]")
 { check("cos_phi_evo_dense_m_series.csv", cos_phi_evo_dense_m2<double>); }
 
+TEST_CASE("h evo series sparse py/cpp", "[series][evo]")
+{ check("h_a_evo_series.csv", h_a_evo2<double>); }
 TEST_CASE("h evo series py/cpp", "[series][evo]")
 { check("h_a_evo_dense_m2_series.csv", h_a_evo_dense_m3<double>); }

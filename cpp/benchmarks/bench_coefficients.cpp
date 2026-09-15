@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
 	} else if (fn == "d_h_evo") {
 		require_args(3);
 		auto t0 = Clock::now();
-		volatile auto r = d_h_evo(iarg(0), iarg(1), iarg(2));
+		volatile auto r = d_h_evo3(iarg(0), iarg(1), iarg(2));
 		(void)r; print(elapsed_ms(t0));
 
 		// --- intermediate / helper coefficients ---

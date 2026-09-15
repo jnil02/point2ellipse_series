@@ -17,7 +17,7 @@ using point_to_ellipse_series::c_phi_evo;
 using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
 using point_to_ellipse_series::c_h_evo;
-using point_to_ellipse_series::d_h_evo;
+using point_to_ellipse_series::c_h_evo2;
 using point_to_ellipse_series::d_h_evo3;
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
@@ -218,10 +218,10 @@ inline T cos_phi_evo_dense_m2(int K,
 	return s;
 }
 
-/** Inside-evolute series for h/a in sin-powers.
+/** Inside-evolute series for h/a - rho/a*sin(psi) in sin-powers.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
- * @param N     sin power series truncation order.
+ * @param L     sin power series truncation order.
  * @param K     rho_ae2 power series truncation order.
  * @param sin_psi_v   Value/expression for |sin(psi)|.
  * @param rho_ae2_v   Value/expression for rho/(a*e²).
@@ -229,13 +229,13 @@ inline T cos_phi_evo_dense_m2(int K,
  * @return Series result as type T.
  */
 template<typename T>
-inline T h_a_evo(int N, int K,
-				 const T& sin_psi_v, const T& rho_ae2_v, const T& b_a_v) {
+inline T h_a_evo2(int L, int K,
+				  const T& sin_psi_v, const T& rho_ae2_v, const T& b_a_v) {
 	T s(0);
-	for (int l = 0; l <= N; ++l)
+	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
-			for (int n = 0; n <= k + 1; ++n)
-				s = s + point_to_ellipse_series::series_coeff<T>(c_h_evo(k, l, n))
+			for (int n = 1; n <= k + 1; ++n)
+				s = s + point_to_ellipse_series::series_coeff<T>(c_h_evo2(k, l, n))
 						* point_to_ellipse_series::series_pow<T>(b_a_v, n)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
 						* point_to_ellipse_series::series_pow<T>(sin_psi_v, l);

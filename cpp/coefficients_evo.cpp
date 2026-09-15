@@ -558,6 +558,30 @@ mpq_class cp_evo_nkl(int k, int l, int n) {
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
+mpq_class cp_evo_nkl2(int k, int l, int n) {
+	assert(l >= 1 && k >= l && n >= 1 && n <= k + 1);
+
+	if ((l - k) % 2 != 0 || (k + 1 - n) % 2 != 0)
+		return {0};
+
+	static UintsCache<mpq_class> cache;
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
+		return *ret;
+
+	mpq_class ret(0);
+
+	if (n <= 2 && n <= k-1)
+		// k = 0, l=0, n = 2
+		ret = c_sin_phi_inv_evo(k - 1, l - 1, n);
+	else if (3 <= n && n <= k-1)
+		ret = c_sin_phi_inv_evo(k - 1, l - 1, n) - c_sin_phi_inv_evo(k - 1, l - 1, n - 2);
+	else if (3 <= n && n <= k+1)
+		ret = -c_sin_phi_inv_evo(k - 1, l - 1, n - 2);
+	// else (ret = 0) will happen for e.g. 1,1,2.
+
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
+}
+
 mpq_class c_h_evo(int k, int l, int n) {
 	assert(l >= 0 && k >= l && n >= 0 && n <= k + 1);
 
@@ -581,9 +605,25 @@ mpq_class c_h_evo(int k, int l, int n) {
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
-// FIXME(JO) Kept due to benchmark and convergence plot usage. Replace.
-mpq_class d_h_evo(int k, int l, int n) {
-	return c_h_evo(2 * k + l, l, 2 * n + 1 - (l % 2));
+mpq_class c_h_evo2(int k, int l, int n) {
+	assert(l >= 0 && k >= l && n >= 1 && n <= k + 1);
+
+	if ((l - k) % 2 != 0 || (l - n - 1) % 2 != 0)
+		return {0};
+
+	static UintsCache<mpq_class> cache;
+	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n))
+		return *ret;
+
+	mpq_class ret(0);
+
+	if (l == 0) {
+		ret = -c_N_evo(k, l, n);
+	} else {
+		ret = cp_evo_nkl2(k, l, n) - c_N_evo(k, l, n);
+	}
+
+	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
 mpq_class d_h_evo3(int k, int l, int n) {

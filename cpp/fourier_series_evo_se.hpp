@@ -28,7 +28,7 @@ inline Expression cos_phi_evo_dense_m2(int N) {
 
 /** Symbolic convenience overload: returns Expression using the global symbolic variables. */
 inline Expression h_a_evo(int N, int K) {
-	return h_a_evo<Expression>(N, K, sin_psi, rho_ae2, b_a);
+	return h_a_evo2<Expression>(N, K, sin_psi, rho_ae2, b_a);
 }
 
 /** Symbolic convenience overload: returns Expression using the global symbolic variables. */

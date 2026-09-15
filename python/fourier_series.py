@@ -391,7 +391,7 @@ def sin_phi_inv_evo3(N, K):
         for k in range(l, K+1):
             for n in range(1,k+1+1):
                 # k = 1, l=3, n = 0
-                s += cp_evo_nkl2(l, k, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += cp_evo_nkl2(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
 
@@ -410,19 +410,19 @@ def Na_evo2(N, K):
     return s
 
 
-def h_a_evo2(N, K):
+def h_a_evo2(L, K):
     """Series for h/a - rho/a*sin(psi) in sin powers for small rho.
 
     Intermediate sum with sparse coefficients.
 
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for l in range(0, N+1):
-        for k in range(l, K+1):
-            for n in range(1, k+1+1):
+    for l in range(0, L + 1):
+        for k in range(l, K + 1):
+            for n in range(1, k + 1 + 1):
                 s += c_h_evo2(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
