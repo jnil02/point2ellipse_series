@@ -8,6 +8,7 @@
 #include <cmath>
 #include <stdexcept>
 #include "fourier_series_evo.hpp"
+#include "convergence/fourier_series_accum.hpp"
 
 struct SRow { int order; double sin_psi, rho_ae2, b_a, value; };
 
@@ -76,3 +77,36 @@ TEST_CASE("h evo series sparse py/cpp", "[series][evo]")
 { check("h_evo_sparse_series.csv", h_evo_sparse<double>); }
 TEST_CASE("h evo series py/cpp", "[series][evo]")
 { check("h_evo_dense_series.csv", h_evo_dense<double>); }
+
+// ---------------------------------------------------------------------------
+// Accumulator regression: the incremental accumulators used by sweep_evo /
+// diag_coeff_evo must reproduce their dense series exactly.  The CSV `value`
+// column is the (Python-verified) dense series value, so summing addOrder over
+// all orders must match it.
+// ---------------------------------------------------------------------------
+
+TEST_CASE("PhiEvoAccum matches phi_evo_dense", "[series][evo][accum]") {
+	auto rows = load(std::string(TEST_DATA_DIR) + "/phi_evo_dense_series.csv");
+	REQUIRE(!rows.empty());
+	for (auto& r : rows) {
+		EvoBasePowers<double> pows(r.sin_psi, r.rho_ae2, r.b_a, r.order);
+		PhiEvoAccum<double>   acc(pows);
+		for (int N = 1; N <= r.order; ++N) acc.addOrder(N);
+		double tol = 1e-9 * std::max(1.0, std::abs(r.value));
+		INFO("PhiEvoAccum  series=" << r.value << "  accum=" << acc.value());
+		CHECK(std::abs(acc.value() - r.value) < tol);
+	}
+}
+
+TEST_CASE("HEvoAccum matches h_evo_dense", "[series][evo][accum]") {
+	auto rows = load(std::string(TEST_DATA_DIR) + "/h_evo_dense_series.csv");
+	REQUIRE(!rows.empty());
+	for (auto& r : rows) {
+		EvoBasePowers<double> pows(r.sin_psi, r.rho_ae2, r.b_a, r.order);
+		HEvoAccum<double>    acc(pows);
+		for (int N = 0; N <= r.order; ++N) acc.addOrder(N);
+		double tol = 1e-9 * std::max(1.0, std::abs(r.value));
+		INFO("HAEvoAccum  series=" << r.value << "  accum=" << acc.value());
+		CHECK(std::abs(acc.value() - r.value) < tol);
+	}
+}

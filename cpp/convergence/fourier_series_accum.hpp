@@ -3,10 +3,11 @@
 /*
  * Incremental (slab-by-slab) accumulators for the inside-evolute series.
  *
- * Evaluating phi_evo_sin_pow_dense_m or h_a_evo_dense_m at each truncation
- * order N in a loop re-sums all prior slabs, giving O(N^2) work per (psi, rho)
- * point and O(N^3) total.  The classes here decouple slab addition so each
- * new order costs only the m=N contribution — O(N^2) total.
+ * Evaluating phi_evo_dense or h_evo_dense at each truncation order N in a loop
+ * re-sums all prior slabs, giving O(N^2) work per (psi, rho) point and O(N^3)
+ * total.  The classes here decouple slab addition so each new order costs only
+ * the m=N contribution — O(N^2) total.  Each addOrder(N) reproduces exactly the
+ * k=N term of the corresponding dense series (same coefficient, same powers).
  *
  * Usage:
  *
@@ -15,7 +16,7 @@
  *   HAEvoAccum<mpreal>    h_acc(pows);
  *   for (int N = 1; N <= MAX_ORDER; ++N) {
  *       mpreal cm = phi_acc.addOrder(N);  // returns slab C_m; also updates value()
- *       h_acc.addOrder(N);
+ *       h_acc.addOrder(N);                // h_evo_dense starts at k=2; N<2 adds 0
  *       use(phi_acc.value(), h_acc.value());
  *   }
  *
@@ -58,7 +59,7 @@ struct EvoBasePowers {
 };
 
 // ---------------------------------------------------------------------------
-// PhiEvoAccum — incremental accumulator for phi_evo_sin_pow_dense_m
+// PhiEvoAccum — incremental accumulator for phi_evo_dense
 // ---------------------------------------------------------------------------
 
 template<typename T>
@@ -67,21 +68,18 @@ public:
 	explicit PhiEvoAccum(const EvoBasePowers<T>& pows)
 			: pows_(pows), accum_(T(0)) {}
 
-	// Add the m=N slab (mirrors the inner loop of phi_evo_sin_pow_dense_m).
+	// Add the m=N slab (mirrors the k=N term of phi_evo_dense).
 	// Returns the slab value so callers can inspect C_m without a separate class.
 	T addOrder(int N) {
 		T slab(0);
-		const int L      = (N - 1) / 2;
-		const int parity = (N - 1) % 2;
-		const T&  rho_m  = pows_.rho_[N];
-		for (int k = 0; k <= L; ++k) {
-			const int n     = N - 1 - 2 * k;
-			const T&  sin_n = pows_.sin_[n];
-			for (int l = 0; l <= L; ++l)
+		const int s = (N + 1) % 2;
+		const int r = (N - 1) / 2;
+		for (int l = 0; l <= r; ++l)
+			for (int n = 0; n <= r; ++n)
 				slab = slab
-					   + point_to_ellipse_series::series_coeff<T>(d_phi_evo(n, k, l))
-						 * sin_n * rho_m * pows_.b_[parity + 1 + 2 * l];
-		}
+					   + point_to_ellipse_series::series_coeff<T>(d_phi_evo2(N, l, n))
+						 * pows_.sin_[2 * l] * pows_.b_[2 * n];
+		slab = slab * pows_.rho_[N] * pows_.sin_[s] * pows_.b_[s + 1];
 		accum_ = accum_ + slab;
 		return slab;
 	}
@@ -94,29 +92,27 @@ private:
 };
 
 // ---------------------------------------------------------------------------
-// HAEvoAccum — incremental accumulator for h_a_evo_dense_m
+// HEvoAccum — incremental accumulator for h_evo_dense
 // ---------------------------------------------------------------------------
 
 template<typename T>
-class HAEvoAccum {
+class HEvoAccum {
 public:
-	explicit HAEvoAccum(const EvoBasePowers<T>& pows)
+	explicit HEvoAccum(const EvoBasePowers<T>& pows)
 			: pows_(pows), accum_(T(0)) {}
 
-	// Add the m=N slab (mirrors the inner loop of h_a_evo_dense_m).
+	// Add the m=N slab (mirrors the k=N term of h_evo_dense); zero for N<2.
 	// Returns the slab value.
 	T addOrder(int N) {
 		T slab(0);
-		const int sn    = N % 2;
-		const int lmax  = (N + 1) / 2;
-		const T&  rho_m = pows_.rho_[N];
-		for (int k = 0; k <= N / 2; ++k) {
-			const int n     = N - 2 * k;
-			const T&  sin_n = pows_.sin_[n];
-			for (int l = 0; l <= lmax; ++l)
-				slab = slab
-					   + point_to_ellipse_series::series_coeff<T>(d_h_evo3(n, k, l))
-						 * pows_.b_[1 - sn + 2 * l] * rho_m * sin_n;
+		if (N >= 2) {
+			const int p = N % 2;
+			for (int l = 0; l <= N / 2; ++l)
+				for (int n = 0; n <= N / 2; ++n)
+					slab = slab
+						   + point_to_ellipse_series::series_coeff<T>(d_h_evo3(N, l, n))
+							 * pows_.b_[2 * n] * pows_.sin_[2 * l];
+			slab = slab * pows_.b_[1 + p] * pows_.sin_[p] * pows_.rho_[N];
 		}
 		accum_ = accum_ + slab;
 		return slab;

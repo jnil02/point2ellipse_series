@@ -132,28 +132,21 @@ int main() {
 
 			EvoBasePowers<mpreal> pows(abs_sin_psi, rho_ae2_v, b_a_v, MAX_ORDER);
 			PhiEvoAccum<mpreal>   phi_acc(pows);
-			HAEvoAccum<mpreal>    h_acc(pows);
+			HEvoAccum<mpreal>    h_acc(pows);
 
-			h_acc.addOrder(0);                       // h has a constant term; phi does not
 			for (int N = 1; N <= MAX_ORDER; ++N) {
 				phi_acc.addOrder(N);
 				h_acc.addOrder(N);
 
-				// phi via phi_evo_sin_pow_dense_m (incremental):
+				// phi via phi_evo_dense (incremental):
 				//   series = (phi - sgn*pi/2) / (sgn*|cos(psi)|)
 				//   phi    = sgn*pi/2 + sgn*|cos(psi)| * series
 				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_acc.value();
-//				const mpreal phi_series = phi_evo_sin_pow_dense_m<mpreal>(
-//						N, abs_sin_psi, rho_ae2_v, b_a_v);
-//				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_series;
 
-
-				// h via h_a_evo_dense_m (incremental):
-				//   series = h/a  →  h = series * a
-				const mpreal h_approx = h_acc.value() * a;
-//				const mpreal h_series = h_a_evo_dense_m<mpreal>(
-//						N, abs_sin_psi, rho_ae2_v, b_a_v);
-//				const mpreal h_approx = h_series * a;
+				// h via h_evo_dense (incremental):
+				//   series = (h + b - rho*sin(psi)) / a
+				//   h      = a*series - b + rho*sin(psi)   (rho*sin(psi) == y)
+				const mpreal h_approx = a * h_acc.value() - mp_b() + y;
 
 				// Compute series errors,
 				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
