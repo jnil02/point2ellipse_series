@@ -232,8 +232,8 @@ def phi_evo_sparse(L, K):
     """
     d = sp.S.Zero
     for l in range(0, L + 1):
-        for k in range(l+1,K+1):
-            for n in range(1,k+1):
+        for k in range(l + 1, K + 1):
+            for n in range(1, k + 1):
                 d += sin_psi ** l * rho_ae2 ** k * b_a ** n * c_phi_evo(k, l, n)
     return d
 
@@ -253,26 +253,26 @@ def phi_evo_dense(K):
         r = (k - 1) // 2
         for l in range(0, r + 1):
             for n in range(0, r + 1):
-                cm += (sin_psi ** (2*l)
+                cm += (sin_psi ** (2 * l)
                        * b_a ** (2 * n)
                        * d_phi_evo(k, l, n))
         d += cm * b_a ** (1 + s) * sin_psi ** (s) * rho_ae2 ** k
     return d
 
 
-def phi_pow_evo(i, N, K):
+def phi_pow_evo(i, L, K):
     """Series for (phi - pi/2)^i in sin powers for small rho.
 
     :param i: integer power.
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
     d = sp.S.Zero
-    for n in range(0, N+1):
-        for k in range(n+i, K+1):
-            for l in range(i,k+1):
-                d += sin_psi ** n * rho_ae2 ** k * b_a ** l * c_phi_pow_evo(k, n, l, i)
+    for l in range(0, L + 1):
+        for k in range(l + i, K + 1):
+            for n in range(i, k + 1):
+                d += sin_psi ** l * rho_ae2 ** k * b_a ** n * c_phi_pow_evo(k, l, n, i)
     return cos_psi ** i * d
 
 
@@ -285,8 +285,8 @@ def sin_phi_evo_sparse(L, K):
     """
     s = sp.S.Zero
     for l in range(0, L + 1):
-        for k in range(l, K+1):
-            for n in range(0, k+1):
+        for k in range(l, K + 1):
+            for n in range(0, k + 1):
                 s += c_sin_phi_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
@@ -301,7 +301,7 @@ def sin_phi_evo_dense(K):
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for k in range(2, K+1):
+    for k in range(2, K + 1):
         cm = sp.S.Zero
         for l in range(0, k // 2 + 1):
             for n in range(1, k // 2 + 1):
@@ -310,17 +310,17 @@ def sin_phi_evo_dense(K):
     return s
 
 
-def cos_phi_evo_sparse(N, K):
+def cos_phi_evo_sparse(L, K):
     """Series for cos(phi)/cos(psi) in sin powers for small rho.
 
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for l in range(0, N+1):
-        for k in range(l, K+1):
-            for n in range(1, k+1):
+    for l in range(0, L + 1):
+        for k in range(l, K + 1):
+            for n in range(1, k + 1):
                 s += c_cos_phi_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
@@ -345,65 +345,64 @@ def cos_phi_evo_dense(K):
     return s
 
 
-def sin_phi_inv_evo(N, K):
+def sin_phi_inv_evo(L, K):
     """Series for 1/sin(phi) in sin powers for small rho.
 
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for l in range(N+1):
-        for k in range(l, K+1):
-            for n in range(k+1):
+    for l in range(0, L + 1):
+        for k in range(l, K + 1):
+            for n in range(0, k + 1):
                 s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
 
-def sin_phi_inv_evo2(N, K):
+def sin_phi_inv_evo2(L, K):
     """Series for 1/sin(phi)-1 in sin powers for small rho.
 
     Note, series for 1/sin(phi) __-1__.
 
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for l in range(N+1):
-        for k in range(l, K+1):
-            for n in range(1,k+1):
+    for l in range(0, L + 1):
+        for k in range(l, K + 1):
+            for n in range(1, k + 1):
                 s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
 
-def sin_phi_inv_evo3(N, K):
+def sin_phi_inv_evo3(L, K):
     """Series for rho/a * (1/sin(phi)-1) in sin powers for small rho.
 
     Note, series for 1/sin(phi) __-1__.
 
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for l in range(1,N+1):
-        for k in range(l, K+1):
-            for n in range(1,k+1+1):
-                # k = 1, l=3, n = 0
+    for l in range(1, L + 1):
+        for k in range(l, K + 1):
+            for n in range(1, k + 1 + 1):
                 s += cp_evo_nkl(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
 
-def Na_evo2(N, K):
+def Na_evo2(L, K):
     """Series for epsilon^2/a*N in sin powers for small rho.
 
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
     s = sp.S.Zero
-    for l in range(N+1):
+    for l in range(0, L + 1):
         for k in range(l, K+1):
             for n in range(1, k+2):
                 s += c_N_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
@@ -432,7 +431,6 @@ def h_evo_dense(K):
 
     Using dense (all non-zero) coefficients.
 
-    :param N: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """

@@ -198,7 +198,7 @@ inline T h_evo_sparse(int L, int K,
 	return s;
 }
 
-/** Inside-evolute series for (h - b + rho * |sin(psi)|) / a in sin-powers (dense).
+/** Inside-evolute series for (h + b - rho * |sin(psi)|) / a in sin-powers (dense).
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin power series truncation order.
