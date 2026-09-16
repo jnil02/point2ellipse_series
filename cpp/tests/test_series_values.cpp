@@ -58,21 +58,21 @@ static void check(const std::string& csv,
 }
 
 TEST_CASE("phi evo series sparse py/cpp", "[series][evo]")
-{ check("phi_evo_sin_pow_series.csv", phi_evo_sin_pow_sparse<double>); }
+{ check("phi_evo_sparse_series.csv", phi_evo_sparse<double>); }
 TEST_CASE("phi evo series py/cpp", "[series][evo]")
-{ check("phi_evo_sin_pow_dense_m2_series.csv", phi_evo_sin_pow_dense_m2<double>); }
+{ check("phi_evo_dense_series.csv", phi_evo_dense<double>); }
 
 TEST_CASE("sin(phi) evo series sparse py/cpp", "[series][evo]")
-{ check("sin_phi_evo_sin_pow_series.csv", sin_phi_evo_sin_pow_sparse<double>); }
+{ check("sin_phi_evo_sparse_series.csv", sin_phi_evo_sparse<double>); }
 TEST_CASE("sin(phi) evo series py/cpp", "[series][evo]")
-{ check("sin_phi_evo_dense_m_series.csv", sin_phi_evo_dense_m2<double>); }
+{ check("sin_phi_evo_dense_series.csv", sin_phi_evo_dense<double>); }
 
 TEST_CASE("cos(phi) evo series sparse py/cpp", "[series][evo]")
-{ check("cos_phi_evo_series.csv", cos_phi_evo_sin_pow_sparse<double>); }
+{ check("cos_phi_evo_sparse_series.csv", cos_phi_evo_sparse<double>); }
 TEST_CASE("cos(phi) evo series py/cpp", "[series][evo]")
-{ check("cos_phi_evo_dense_m_series.csv", cos_phi_evo_dense_m2<double>); }
+{ check("cos_phi_evo_dense_series.csv", cos_phi_evo_dense<double>); }
 
 TEST_CASE("h evo series sparse py/cpp", "[series][evo]")
-{ check("h_a_evo_series.csv", h_a_evo2<double>); }
+{ check("h_evo_sparse_series.csv", h_evo_sparse<double>); }
 TEST_CASE("h evo series py/cpp", "[series][evo]")
-{ check("h_a_evo_dense_m2_series.csv", h_a_evo_dense_m3<double>); }
+{ check("h_evo_dense_series.csv", h_evo_dense<double>); }

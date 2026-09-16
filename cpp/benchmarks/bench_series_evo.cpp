@@ -70,33 +70,33 @@ int main(int argc, char* argv[]) {
 
 	if (series == "phi_evo_dense") {
 		auto t0 = Clock::now();
-		volatile auto r = phi_evo_sin_pow_dense<mpfr::mpreal>(N, K, sp, ra, ba);
+		volatile auto r = phi_evo_dense<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (series == "phi_evo_dense_m") {
 		auto t0 = Clock::now();
-		volatile auto r = phi_evo_sin_pow_dense_m2<mpfr::mpreal>(N, sp, ra, ba);
+		volatile auto r = phi_evo_dense<mpfr::mpreal>(N, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (series == "sin_phi_evo_dense") {
 		auto t0 = Clock::now();
-		volatile auto r = sin_phi_evo_dense_m2<mpfr::mpreal>(K, sp, ra, ba);
+		volatile auto r = sin_phi_evo_dense<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (series == "cos_phi_evo_dense") {
 		auto t0 = Clock::now();
-		volatile auto r = cos_phi_evo_dense_m2<mpfr::mpreal>(K, sp, ra, ba);
+		volatile auto r = cos_phi_evo_dense<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
-	} else if (series == "h_a_evo_dense_m3") {
+	} else if (series == "h_evo_dense") {
 		auto t0 = Clock::now();
-		volatile auto r = h_a_evo_dense_m3<mpfr::mpreal>(K, sp, ra, ba);
+		volatile auto r = h_evo_dense<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
 	} else {
 		std::cerr << "Unknown series: " << series << "\n";
-		std::cerr << "Known: phi_evo_dense, phi_evo_dense_m, sin_phi_evo_dense,\n"
-				  << "       cos_phi_evo_dense, h_a_evo_dense\n";
+		std::cerr << "Known: phi_evo_dense, phi_evo_dense, sin_phi_evo_dense,\n"
+				  << "       cos_phi_evo_dense, h_evo_dense\n";
 		return 1;
 	}
 

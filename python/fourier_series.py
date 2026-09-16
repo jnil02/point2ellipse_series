@@ -220,25 +220,25 @@ def cos_phi_in_sin_pow2(N: int, K: int, J: int):
     return s - sin_psi2 * t
 
 
-def phi_evo_sin_pow(N, K):
+def phi_evo_sparse(L, K):
     """Series for (phi - pi/2)/cos(phi) in sin-powers for small rho with simple sums
 
     The simple sums and exponents come at the cost of half of the computed
     coefficients being zero.
 
-    :param N: sin power limit.
+    :param L: sin power limit.
     :param K: rho powers limit.
     :return: Symbolic series.
     """
     d = sp.S.Zero
-    for l in range(0, N+1):
+    for l in range(0, L + 1):
         for k in range(l+1,K+1):
             for n in range(1,k+1):
                 d += sin_psi ** l * rho_ae2 ** k * b_a ** n * c_phi_evo(k, l, n)
     return d
 
 
-def phi_evo_sin_pow_dense_m2(K):
+def phi_evo_dense(K):
     """Series for (phi - pi/2)/cos(psi) in sin-powers for small rho with simple sums
 
     organised by total rho_ae2 power m.
@@ -276,7 +276,7 @@ def phi_pow_evo(i, N, K):
     return cos_psi ** i * d
 
 
-def sin_phi_evo_sin_pow(L, K):
+def sin_phi_evo_sparse(L, K):
     """Series for sin(phi) in sin powers for small rho.
 
     :param L: sin power limit.
@@ -291,7 +291,7 @@ def sin_phi_evo_sin_pow(L, K):
     return s
 
 
-def sin_phi_evo_dense_m(K):
+def sin_phi_evo_dense(K):
     """Series for sin(phi) - 1 in rho powers for small rho.
 
     Using dense (all non-zero) coefficients.
@@ -310,7 +310,7 @@ def sin_phi_evo_dense_m(K):
     return s
 
 
-def cos_phi_evo(N, K):
+def cos_phi_evo_sparse(N, K):
     """Series for cos(phi)/cos(psi) in sin powers for small rho.
 
     :param N: sin power limit.
@@ -324,7 +324,7 @@ def cos_phi_evo(N, K):
                 s += c_cos_phi_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
-def cos_phi_evo_dense_m(K):
+def cos_phi_evo_dense(K):
     """Series for cos(phi)/cos(psi) in rho powers for small rho.
 
     Using dense (all non-zero) coefficients.
@@ -410,7 +410,7 @@ def Na_evo2(N, K):
     return s
 
 
-def h_a_evo2(L, K):
+def h_evo_sparse(L, K):
     """Series for h/a - rho/a*sin(psi) in sin powers for small rho.
 
     Intermediate sum with sparse coefficients.
@@ -427,7 +427,7 @@ def h_a_evo2(L, K):
     return s
 
 
-def h_a_evo_dense_m2(K):
+def h_evo_dense(K):
     """Series for (h + b - rho*sin(psi))/a in sin powers for small rho.
 
     Using dense (all non-zero) coefficients.

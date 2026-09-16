@@ -11,7 +11,7 @@ A, B   = 1.0, 0.5
 E2     = 1 - (B/A)**2
 B_A    = B/A
 ORDER  = 8
-PSIS   = [45, 135, 225, 315]          # one per quadrant
+PSIS   = [44, 136, 224, 316]          # One per quadrant.
 
 def evolute_rho(psi):                 # same formula as sweep_evo / plot
     ac = abs(A*math.cos(psi)); bs = abs(B*math.sin(psi))
@@ -26,14 +26,14 @@ for pdeg in PSIS:
 
 # series under test: (filename, sympy callable returning expr in the 3 symbols)
 SERIES = [
-    ('phi_evo_sin_pow',          lambda: fs.phi_evo_sin_pow(ORDER, ORDER)),
-    ('phi_evo_sin_pow_dense_m2', lambda: fs.phi_evo_sin_pow_dense_m2(ORDER)),
-    ('sin_phi_evo_sin_pow',      lambda: fs.sin_phi_evo_sin_pow(ORDER, ORDER)),
-    ('sin_phi_evo_dense_m',      lambda: fs.sin_phi_evo_dense_m(ORDER)),
-    ('cos_phi_evo',              lambda: fs.cos_phi_evo(ORDER, ORDER)),
-    ('cos_phi_evo_dense_m',      lambda: fs.cos_phi_evo_dense_m(ORDER)),
-    ('h_a_evo',                  lambda: fs.h_a_evo2(ORDER, ORDER)),
-    ('h_a_evo_dense_m2',         lambda: fs.h_a_evo_dense_m2(ORDER)),
+    ('phi_evo_sparse',      lambda: fs.phi_evo_sparse(ORDER, ORDER)),
+    ('phi_evo_dense',       lambda: fs.phi_evo_dense(ORDER)),
+    ('sin_phi_evo_sparse',  lambda: fs.sin_phi_evo_sparse(ORDER, ORDER)),
+    ('sin_phi_evo_dense',   lambda: fs.sin_phi_evo_dense(ORDER)),
+    ('cos_phi_evo_sparse',  lambda: fs.cos_phi_evo_sparse(ORDER, ORDER)),
+    ('cos_phi_evo_dense',   lambda: fs.cos_phi_evo_dense(ORDER)),
+    ('h_evo_sparse',        lambda: fs.h_evo_sparse(ORDER, ORDER)),
+    ('h_evo_dense',         lambda: fs.h_evo_dense(ORDER)),
 ]
 
 for name, make in SERIES:
