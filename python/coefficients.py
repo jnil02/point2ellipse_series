@@ -100,31 +100,6 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
                             * sp.binomial(sp.Rational(k, 2) + r - q + l - k - t - 1, l - k - t))
     return h
 
-@cache.ints_cache
-def d_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
-    """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
-
-    Dense coefficients. All the coefficients are non-zero.
-
-    :param k: rho power of inner power series (sigma).
-    :param l: sin-multiple.
-    :param n: e² power of innermost power series (epsilon).
-    :return: Coefficient as a sympy rational number.
-    """
-    assert l >= 0 and k >= 0 and n >= 0 and n <= l // 2+k, f"d_phi_evo indices out of range. k: {k} l: {l} n: {n}"
-    c = sp.S.Zero
-    s = l % 2
-    m = l + 1 + 2 * k
-    for j in range(n + 1):
-        b = sp.S.Zero
-        ka = l // 2 - n + j
-        for i in range(0, min(j, ka) + 1):
-            b += (-1) ** i * sp.binomial(j, i) * sp.binomial(ka - i + k, ka - i)
-        sum = sp.S.Zero
-        for q in range(2 * j, s + 2 * n + 1):
-            sum += 2 ** (q - 2 * j) * sp.binomial(q - j, j) * sp.binomial(l - 1 + 2 * k - q, s + 2 * n - q)
-        c += sum * b
-    return (-1) ** (l // 2 + n + l + 1) * sp.binomial(sp.Rational(m, 2), l // 2 + k - n) / m * c
 
 @cache.ints_cache
 def d_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:

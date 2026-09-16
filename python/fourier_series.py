@@ -7,7 +7,7 @@ import math
 import sympy as sp
 
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
-from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, d_phi_evo, \
+from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, \
     c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo2, c_cos_phi_evo, c_sin_phi_inv_evo, c_N_evo, \
     c_h_evo2, d_phi_evo2, d_cos_phi_evo_m, cp_evo_nkl2, d_h_evo_m2
 

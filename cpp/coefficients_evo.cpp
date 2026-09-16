@@ -13,68 +13,6 @@ namespace point_to_ellipse_series {
 
 using uint = unsigned int;
 
-mpq_class d_phi_evo(int k, int l, int n) {
-	assert(l >= 0 && k >= 0 && n >= 0 && n <= l / 2 + k);
-
-	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) k, (uint) l, (uint) n))
-		return *ret;
-
-	const int s = l % 2;
-	const int m = l + 1 + 2 * k;
-	const int Q = s + 2 * n;  // Maximum value of q.
-
-	// Every factor of the double sum is a non-negative integer, so the whole
-	// accumulator c is an integer: rational arithmetic is deferred to the final
-	// outer factor. Precompute the q-only factor T[q] = C(l-1+2k-q, Q-q), which
-	// is independent of j (turns O(n^2) binomial calls into O(n)). The second
-	// argument Q-q is always >= 0; the first is >= 0 except when Q-q == 0, where
-	// C(top, 0) = 1, so a plain integer binomial covers every case.
-	std::vector<mpz_class> T(Q + 1);
-	for (int q = 0; q <= Q; ++q) {
-		if (Q - q == 0)
-			T[q] = 1;
-		else
-			mpz_bin_uiui(T[q].get_mpz_t(), (unsigned long) (l - 1 + 2 * k - q),
-						 (unsigned long) (Q - q));
-	}
-
-	mpz_class c(0);
-	// The inner b-sum reduces in closed form to b(j) = C(l/2+k-n, k-j) via the
-	// alternating binomial identity sum_i (-1)^i C(j,i) C(x-i,k) = C(x-j,k-j).
-	// It is nonzero only for max(0, n-l/2) <= j <= k, which bounds the loop.
-	for (int j = std::max(0, n - l / 2); j <= std::min(n, k); ++j) {
-		mpz_class b;
-		mpz_bin_uiui(b.get_mpz_t(), (unsigned long) (l / 2 + k - n),
-					 (unsigned long) (k - j));
-
-		// Inner sum: sum_{q=2j}^{Q} 2^(q-2j) * C(q-j, j) * T[q]. Both 2^(q-2j)
-		// and C(q-j, j) are advanced incrementally to avoid recomputation.
-		mpz_class sum_(0);
-		mpz_class shift(1);   // 2^(q-2j), starts at q = 2j.
-		mpz_class bqj(1);     // C(q-j, j),  C(j, j) = 1 at q = 2j.
-		for (int q = 2 * j, p = j; q <= Q; ++q, ++p) {
-			sum_ += shift * bqj * T[q];
-			shift *= 2;
-			bqj *= (p + 1);        // C(p+1, j) = C(p, j) * (p+1) / (p+1-j).
-			bqj /= (p + 1 - j);    // Exact integer division.
-		}
-
-		c += sum_ * b;
-	}
-
-	// Outer factor: (-1)^(l/2 + n + l + 1) * binomial(m/2, l/2 + k - n) / m
-	mpq_class result =
-			binomial_rational(mpq_class(m, 2), (long) (l / 2 + k - n))
-			* mpq_class(powm1(l / 2 + n + l + 1))
-			/ mpq_class(mpz_class(m))
-			* mpq_class(c);
-	result.canonicalize();
-
-	mpq_class ret = result;
-	return cache.insert(ret, (uint) k, (uint) l, (uint) n);
-}
-
 mpq_class d_phi_evo2(int k, int l, int n) {
 	assert(k > 0 && l >= 0 && n >= 0);
 
