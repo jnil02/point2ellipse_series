@@ -1,15 +1,15 @@
 /*
  * Convergence sweep for the inside-evolute series.
  *
- * For each point (psi, rho) on a polar grid the series phi_evo_sin_pow_dense
- * and h_a_evo_dense are evaluated at increasing truncation orders N=K=1..MAX_ORDER
- * using mpreal arithmetic.  The absolute error against the closed-form Vermeille
- * reference is written to a CSV file.  rho intentionally extends beyond the evolute
- * (rho_evo) so that divergence is visible.
+ * For each point (psi, rho) on a polar grid the series phi_evo_dense and
+ * h_evo_dense are evaluated at increasing truncation orders N=K=1..MAX_ORDER
+ * using mpreal arithmetic.  The absolute error against the closed-form
+ * Vermeille reference is written to a CSV file.  rho intentionally extends
+ * beyond the evolute (rho_evo) so that divergence is visible.
  *
  * Ellipse parameters are set via CMake target_compile_definitions
- * (ELLIPSE_A + ELLIPSE_B or ELLIPSE_INV_F).  The default in CMakeLists.txt
- * is the unit ellipse a=1, b=0.5 (b/a=0.5), which has a large evolute convenient
+ * (ELLIPSE_A + ELLIPSE_B or ELLIPSE_INV_F). The default in CMakeLists.txt is
+ * the unit ellipse a=1, b=0.5 (b/a=0.5), which has a large evolute convenient
  * for convergence studies.
  *
  * Output columns:
