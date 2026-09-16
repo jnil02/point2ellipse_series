@@ -14,8 +14,7 @@ using point_to_ellipse_series::c_phi_evo;
 using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
 using point_to_ellipse_series::c_h_evo;
-using point_to_ellipse_series::c_h_evo2;
-using point_to_ellipse_series::d_h_evo3;
+using point_to_ellipse_series::d_h_evo;
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (sparse).
  *
@@ -191,7 +190,8 @@ inline T h_evo_sparse(int L, int K,
 	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
 			for (int n = 1; n <= k + 1; ++n)
-				s = s + point_to_ellipse_series::series_coeff<T>(c_h_evo2(k, l, n))
+				s = s + point_to_ellipse_series::series_coeff<T>(
+						c_h_evo(k, l, n))
 						* point_to_ellipse_series::series_pow<T>(b_a, n)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2, k)
 						* point_to_ellipse_series::series_pow<T>(abs_sin_psi, l);
@@ -219,7 +219,8 @@ inline T h_evo_dense(int K,
 
 		for (int l = 0; l <= k / 2; ++l) {
 			for (int n = 0; n <= k / 2; ++n) {
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_h_evo3(k, l, n))
+				cm = cm + point_to_ellipse_series::series_coeff<T>(
+						d_h_evo(k, l, n))
 						  * point_to_ellipse_series::series_pow<T>(b_a_v, 2 * n)
 						  * point_to_ellipse_series::series_pow<T>(sin_psi_v, 2 * l);
 			}

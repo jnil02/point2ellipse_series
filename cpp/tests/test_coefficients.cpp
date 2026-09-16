@@ -24,8 +24,7 @@ using point_to_ellipse_series::c_cos_phi_evo;
 using point_to_ellipse_series::c_sin_phi_inv_evo;
 using point_to_ellipse_series::c_N_evo;
 using point_to_ellipse_series::cp_evo_nkl;
-using point_to_ellipse_series::cp_evo_nkl2;
-using point_to_ellipse_series::c_h_evo2;
+using point_to_ellipse_series::c_h_evo;
 
 // ---------------------------------------------------------------------------
 // CSV helpers
@@ -263,13 +262,8 @@ TEST_CASE("cp_evo_nkl Python reference", "[coefficients][evo]") {
 	check_against_csv_3(csv_path, cp_evo_nkl);
 }
 
-TEST_CASE("cp_evo_nkl2 Python reference", "[coefficients][evo]") {
-	const std::string csv_path = std::string(TEST_DATA_DIR) + "/cp_evo_nkl2.csv";
-	check_against_csv_3(csv_path, cp_evo_nkl2);
-}
-
 TEST_CASE("c_h_evo Python reference", "[coefficients][evo]") {
-	const std::string csv_path = std::string(TEST_DATA_DIR) + "/c_h_evo2.csv";
-	check_against_csv_3(csv_path, c_h_evo2);
+	const std::string csv_path = std::string(TEST_DATA_DIR) + "/c_h_evo.csv";
+	check_against_csv_3(csv_path, c_h_evo);
 }
 

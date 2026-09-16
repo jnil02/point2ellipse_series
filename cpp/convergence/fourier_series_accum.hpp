@@ -110,7 +110,8 @@ public:
 			for (int l = 0; l <= N / 2; ++l)
 				for (int n = 0; n <= N / 2; ++n)
 					slab = slab
-						   + point_to_ellipse_series::series_coeff<T>(d_h_evo3(N, l, n))
+						   + point_to_ellipse_series::series_coeff<T>(
+							d_h_evo(N, l, n))
 							 * pows_.b_[2 * n] * pows_.sin_[2 * l];
 			slab = slab * pows_.b_[1 + p] * pows_.sin_[p] * pows_.rho_[N];
 		}
