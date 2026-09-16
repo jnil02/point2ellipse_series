@@ -20,72 +20,6 @@ using point_to_ellipse_series::c_h_evo;
 using point_to_ellipse_series::c_h_evo2;
 using point_to_ellipse_series::d_h_evo3;
 
-/** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
- *
- * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
- * @param N     sin power series truncation order.
- * @param K     rho_ae2 power series truncation order.
- * @param sin_psi_v   Value/expression for |sin(psi)|.
- * @param rho_ae2_v   Value/expression for rho/(a*e²).
- * @param b_a_v       Value/expression for b/a.
- * @return Series result as type T.
- */
-template<typename T>
-inline T phi_evo_sin_pow_dense(int N, int K,
-							   const T& sin_psi_v, const T& rho_ae2_v, const T& b_a_v) {
-	T d(0);
-	for (int n = 0; n <= N; ++n)
-		for (int k = 0; k <= K; ++k)
-			for (int l = 0; l <= n / 2 + k; ++l)
-				d = d + point_to_ellipse_series::series_coeff<T>(d_phi_evo(k, n, l))
-						* point_to_ellipse_series::series_pow<T>(sin_psi_v, n)
-						* point_to_ellipse_series::series_pow<T>(rho_ae2_v, n + 1 + 2 * k)
-						* point_to_ellipse_series::series_pow<T>(b_a_v, (n % 2) + 1 + 2 * l);
-	return d;
-}
-
-template<typename T>
-inline T phi_evo_sin_pow_dense_m(int K,
-								 const T& sin_psi_v, const T& rho_ae2_v, const T& b_a_v) {
-	T d(0);
-	for (int k = 1; k <= K; ++k) {
-		T cm(0);
-		const int r      = (k - 1) / 2;   // floor((m-1)/2): upper bound for k and l
-		const int s = (k + 1) % 2;   // n%2 == (m-1)%2 for all valid n at this m
-		for (int l = 0; l <= r; ++l) {
-			for (int n = 0; n <= r; ++n)
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_phi_evo(l, k - 1 - 2 * l, n))
-						* point_to_ellipse_series::series_pow<T>(sin_psi_v, k - 1 - 2 * l)
-						* point_to_ellipse_series::series_pow<T>(b_a_v, 2 * n);
-		}
-		d = d + cm * point_to_ellipse_series::series_pow<T>(rho_ae2_v, k)
-					 * point_to_ellipse_series::series_pow<T>(b_a_v, s + 1);
-	}
-	return d;
-}
-
-template<typename T>
-inline T phi_evo_dense(int K,
-					   const T& abs_sin_psi, const T& rho_ae2, const T& b_a) {
-	T d(0);
-	for (int k = 1; k <= K; ++k) {
-		T cm(0);
-		const int s = (k + 1) % 2;
-		const int r = (k - 1) / 2;
-		for (int l = 0; l <= r; ++l) {
-			for (int n = 0; n <= r; ++n)
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_phi_evo2(k, l, n))
-						  * point_to_ellipse_series::series_pow<T>(abs_sin_psi, 2 * l)
-						  * point_to_ellipse_series::series_pow<T>(b_a, 2 * n);
-		}
-		d = d + cm * point_to_ellipse_series::series_pow<T>(rho_ae2, k)
-				* point_to_ellipse_series::series_pow<T>(abs_sin_psi, s)
-				* point_to_ellipse_series::series_pow<T>(b_a, s + 1);
-	}
-	return d;
-}
-
-
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (sparse).
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
@@ -108,6 +42,37 @@ inline T phi_evo_sparse(int L, int K,
 						* point_to_ellipse_series::series_pow<T>(abs_sin_psi, l)
 						* point_to_ellipse_series::series_pow<T>(rho_ae2, k)
 						* point_to_ellipse_series::series_pow<T>(b_a, n);
+	return d;
+}
+
+/** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
+ *
+ * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
+ * @param N     sin power series truncation order.
+ * @param K     rho_ae2 power series truncation order.
+ * @param sin_psi_v   Value/expression for |sin(psi)|.
+ * @param rho_ae2_v   Value/expression for rho/(a*e²).
+ * @param b_a_v       Value/expression for b/a.
+ * @return Series result as type T.
+ */
+template<typename T>
+inline T phi_evo_dense(int K,
+					   const T& abs_sin_psi, const T& rho_ae2, const T& b_a) {
+	T d(0);
+	for (int k = 1; k <= K; ++k) {
+		T cm(0);
+		const int s = (k + 1) % 2;
+		const int r = (k - 1) / 2;
+		for (int l = 0; l <= r; ++l) {
+			for (int n = 0; n <= r; ++n)
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_phi_evo2(k, l, n))
+						  * point_to_ellipse_series::series_pow<T>(abs_sin_psi, 2 * l)
+						  * point_to_ellipse_series::series_pow<T>(b_a, 2 * n);
+		}
+		d = d + cm * point_to_ellipse_series::series_pow<T>(rho_ae2, k)
+				* point_to_ellipse_series::series_pow<T>(abs_sin_psi, s)
+				* point_to_ellipse_series::series_pow<T>(b_a, s + 1);
+	}
 	return d;
 }
 
