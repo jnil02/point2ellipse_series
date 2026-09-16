@@ -11,7 +11,7 @@ from typing import Callable, Optional, Sequence, Tuple
 
 from coefficients import (d_phi, d_sin, d_cos, d_h, d_phi_evo2, c_phi_evo,
                           c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo2,
-                          c_cos_phi_evo, d_cos_phi_evo, c_sin_phi_inv_evo,
+                          c_cos_phi_evo, d_cos_phi_evo_m, c_sin_phi_inv_evo,
                           c_N_evo, cp_evo_nkl, cp_evo_nkl2, c_h_evo2)
 
 # Generate all indices up to and including this value.
@@ -129,10 +129,10 @@ SPECS = [
           ('k', lambda l: l, lambda l: M + 1),
           ('n', lambda l, k: 1, lambda l, k: k + 1)],
          order=('k', 'l', 'n')),
-    Spec(d_cos_phi_evo,
-         [('k', lambda: 0, lambda: M + 1),
-          ('l', lambda k: 0, lambda k: M + 1),
-          ('n', lambda k, l: l % 2, lambda k, l: (l + 1) // 2 + k + 1)]),
+    Spec(d_cos_phi_evo_m,
+         [('k', lambda: 1, lambda: M + 1),
+          ('l', lambda k: 0, lambda k: (k - 1) // 2 + 1),
+          ('n', lambda k, l: (k - 1) % 2, lambda k, l: k // 2 + 1)]),
     Spec(c_sin_phi_inv_evo,
          [('l', lambda: 0, lambda: M + 1),
           ('k', lambda l: l, lambda l: M + 1),

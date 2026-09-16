@@ -204,15 +204,6 @@ def c_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     return d
 
 @cache.ints_cache
-def d_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
-    """Dense cos(phi)/|cos(psi)| series coefficients — all non-zero by construction.
-
-    d_cos_phi_evo(n, k, l) = c_cos_phi_evo(n, n + 1 + 2*k, 2*l + 1 - (n % 2))
-    """
-    assert l >= 0 and k >= 0 and n >= l % 2 and n <= (l + 1) // 2 + k, \
-        f"d_cos_phi_evo indices out of range. n: {l} k: {k} l: {n}"
-    return c_cos_phi_evo(l + 1 + 2 * k, l, 2 * n + 1 - (l % 2))
-
 def d_cos_phi_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Dense cos(phi)/|cos(psi)| series coefficients — all non-zero by construction.
 

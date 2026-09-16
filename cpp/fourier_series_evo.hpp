@@ -9,7 +9,6 @@
 
 using point_to_ellipse_series::d_phi_evo2;
 using point_to_ellipse_series::d_sin_phi_evo2;
-using point_to_ellipse_series::d_cos_phi_evo;
 using point_to_ellipse_series::d_cos_phi_evo_m;
 using point_to_ellipse_series::c_phi_evo;
 using point_to_ellipse_series::c_sin_phi_evo;

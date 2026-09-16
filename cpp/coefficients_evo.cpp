@@ -572,10 +572,6 @@ mpq_class d_sin_phi_evo2(int k, int l, int n) {
 	return c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2));
 }
 
-mpq_class d_cos_phi_evo(int k, int l, int n) {
-	return c_cos_phi_evo(l + 1 + 2 * k, l, 2 * n + 1 - (l % 2));
-}
-
 mpq_class d_cos_phi_evo_m(int k, int l, int n) {
 	const int p = (k-1) % 2;
 	return c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p);
