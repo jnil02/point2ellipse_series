@@ -77,7 +77,7 @@ public:
 		for (int l = 0; l <= r; ++l)
 			for (int n = 0; n <= r; ++n)
 				slab = slab
-					   + point_to_ellipse_series::series_coeff<T>(d_phi_evo2(N, l, n))
+					   + point_to_ellipse_series::series_coeff<T>(d_phi_evo(N, l, n))
 						 * pows_.sin_[2 * l] * pows_.b_[2 * n];
 		slab = slab * pows_.rho_[N] * pows_.sin_[s] * pows_.b_[s + 1];
 		accum_ = accum_ + slab;

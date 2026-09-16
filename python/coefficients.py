@@ -102,7 +102,7 @@ def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 
 @cache.ints_cache
-def d_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+def d_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Coefficients for series expansion of phi-pi/2 within the ellipse evolute.
 
     This version if for the single series version, series in sigma.
@@ -186,7 +186,7 @@ def c_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     return d
 
 @cache.ints_cache
-def d_sin_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+def d_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     assert l >= 0 and k >= 2 and n >= 1 and l <= k // 2 and n <= k // 2, \
         f"d_sin_phi_evo indices out of range. n: {l} k: {k} l: {n}"
     return c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2))
@@ -204,7 +204,7 @@ def c_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     return d
 
 @cache.ints_cache
-def d_cos_phi_evo_m(k: int, l: int, n: int) -> sp.core.numbers.Rational:
+def d_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """Dense cos(phi)/|cos(psi)| series coefficients — all non-zero by construction.
 
     d_cos_phi_evo(n, k, l) = c_cos_phi_evo(n, n + 1 + 2*k, 2*l + 1 - (n % 2))

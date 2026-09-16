@@ -13,7 +13,7 @@ namespace point_to_ellipse_series {
 
 using uint = unsigned int;
 
-mpq_class d_phi_evo2(int k, int l, int n) {
+mpq_class d_phi_evo(int k, int l, int n) {
 	assert(k > 0 && l >= 0 && n >= 0);
 
 	static UintsCache<mpq_class> cache;
@@ -568,11 +568,11 @@ mpq_class d_h_evo3(int k, int l, int n) {
 	return c_h_evo(k, 2 * l + (k % 2), 2 * n + 1 + (k % 2));
 }
 
-mpq_class d_sin_phi_evo2(int k, int l, int n) {
+mpq_class d_sin_phi_evo(int k, int l, int n) {
 	return c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2));
 }
 
-mpq_class d_cos_phi_evo_m(int k, int l, int n) {
+mpq_class d_cos_phi_evo(int k, int l, int n) {
 	const int p = (k-1) % 2;
 	return c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p);
 }

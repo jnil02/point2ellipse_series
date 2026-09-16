@@ -7,9 +7,9 @@
 #include "fourier_series.hpp"
 #include "coefficients_evo.hpp"
 
-using point_to_ellipse_series::d_phi_evo2;
-using point_to_ellipse_series::d_sin_phi_evo2;
-using point_to_ellipse_series::d_cos_phi_evo_m;
+using point_to_ellipse_series::d_phi_evo;
+using point_to_ellipse_series::d_sin_phi_evo;
+using point_to_ellipse_series::d_cos_phi_evo;
 using point_to_ellipse_series::c_phi_evo;
 using point_to_ellipse_series::c_sin_phi_evo;
 using point_to_ellipse_series::c_cos_phi_evo;
@@ -62,7 +62,7 @@ inline T phi_evo_dense(int K,
 		const int r = (k - 1) / 2;
 		for (int l = 0; l <= r; ++l) {
 			for (int n = 0; n <= r; ++n)
-				cm = cm + point_to_ellipse_series::series_coeff<T>(d_phi_evo2(k, l, n))
+				cm = cm + point_to_ellipse_series::series_coeff<T>(d_phi_evo(k, l, n))
 						  * point_to_ellipse_series::series_pow<T>(abs_sin_psi, 2 * l)
 						  * point_to_ellipse_series::series_pow<T>(b_a, 2 * n);
 		}
@@ -108,7 +108,7 @@ inline T sin_phi_evo_dense(int K,
 		for (int l = 0; l <= k / 2; ++l) {
 			for (int n = 1; n <= k / 2; ++n) {
 				cm = cm
-					 + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo2(k, l, n))
+					 + point_to_ellipse_series::series_coeff<T>(d_sin_phi_evo(k, l, n))
 					   * point_to_ellipse_series::series_pow<T>(b_a, 2 * n)
 					   * point_to_ellipse_series::series_pow<T>(abs_sin_psi, 2 * l);
 			}
@@ -161,7 +161,7 @@ inline T cos_phi_evo_dense(int K,
 		for (int l = 0; l <= q; ++l) {
 			for (int n = p; n <= k / 2; ++n) {
 				cm = cm
-					 + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo_m(k, l, n))
+					 + point_to_ellipse_series::series_coeff<T>(d_cos_phi_evo(k, l, n))
 					   * point_to_ellipse_series::series_pow<T>(b_a, 2 * n)
 					   * point_to_ellipse_series::series_pow<T>(abs_sin_psi, 2 * l);
 			}
