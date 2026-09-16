@@ -8,7 +8,6 @@
 #include "coefficients_evo.hpp"
 
 using point_to_ellipse_series::d_phi_evo2;
-using point_to_ellipse_series::d_sin_phi_evo;
 using point_to_ellipse_series::d_sin_phi_evo2;
 using point_to_ellipse_series::d_cos_phi_evo;
 using point_to_ellipse_series::d_cos_phi_evo_m;

@@ -186,16 +186,6 @@ def c_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     return d
 
 @cache.ints_cache
-def d_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
-    """Dense sin(phi) series coefficients — all non-zero by construction.
-
-    d_sin_phi_evo(n, k, l) = c_sin_phi_evo(n, n + 2*k, 2*l + (n % 2))
-    """
-    assert l >= 0 and k >= 0 and n >= 1 and n <= l // 2 + k, \
-        f"d_sin_phi_evo indices out of range. n: {l} k: {k} l: {n}"
-    return c_sin_phi_evo(l + 2 * k, l, 2 * n + (l % 2))
-
-@cache.ints_cache
 def d_sin_phi_evo2(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     assert l >= 0 and k >= 2 and n >= 1 and l <= k // 2 and n <= k // 2, \
         f"d_sin_phi_evo indices out of range. n: {l} k: {k} l: {n}"

@@ -568,10 +568,6 @@ mpq_class d_h_evo3(int k, int l, int n) {
 	return c_h_evo(k, 2 * l + (k % 2), 2 * n + 1 + (k % 2));
 }
 
-mpq_class d_sin_phi_evo(int k, int l, int n) {
-	return c_sin_phi_evo(l + 2 * k, l, 2 * n + (l % 2));
-}
-
 mpq_class d_sin_phi_evo2(int k, int l, int n) {
 	return c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2));
 }

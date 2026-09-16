@@ -9,7 +9,6 @@
 namespace point_to_ellipse_series {
 
 mpq_class d_phi_evo2(int k, int l, int n);
-mpq_class d_sin_phi_evo(int n, int k, int l);
 mpq_class d_sin_phi_evo2(int k, int l, int n);
 mpq_class d_cos_phi_evo(int k, int l, int n);
 mpq_class d_cos_phi_evo_m(int k, int l, int n);
