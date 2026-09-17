@@ -2,9 +2,9 @@
 #include <cassert>
 #include <map>
 
-#include "series_substitution.hpp"
-#include "cache.hpp"
-#include "util.hpp"
+#include "detail/series_substitution.hpp"
+#include "detail/cache.hpp"
+#include "detail/util.hpp"
 
 #include "coefficients.hpp"
 

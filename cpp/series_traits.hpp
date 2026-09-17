@@ -1,7 +1,7 @@
 #pragma once
 
 #include "coefficients.hpp"
-#include "util.hpp"
+#include "detail/util.hpp"
 
 namespace point_to_ellipse_series {
 

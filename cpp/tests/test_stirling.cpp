@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include <gmpxx.h>
 
-#include "stirling.hpp"
+#include "detail/stirling.hpp"
 
 using point_to_ellipse_series::stirling1_unsigned;
 using point_to_ellipse_series::stirling1_signed;

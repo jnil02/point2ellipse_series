@@ -3,8 +3,6 @@
 #include <unordered_map>
 #include <gmpxx.h>
 
-#include "coefficients.hpp"
-
 namespace point_to_ellipse_series {
 
 inline std::string mpz_to_str(const mpz_class& x) { return x.get_str(10); }

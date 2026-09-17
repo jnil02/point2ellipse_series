@@ -1,8 +1,9 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
+#include "detail/lexpr.hpp"
+
 #include <gmpxx.h>
-#include "lexpr.hpp"
 
 // ---------------------------------------------------------------------------
 // Helpers

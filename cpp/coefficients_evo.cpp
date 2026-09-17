@@ -1,13 +1,13 @@
 
+#include "coefficients_evo.hpp"
+
+#include "detail/cache.hpp"
+#include "detail/util.hpp"
+#include "detail/series_substitution.hpp"
+#include "detail/stirling.hpp"
+
 #include <cassert>
 #include <map>
-
-#include "cache.hpp"
-#include "util.hpp"
-#include "series_substitution.hpp"
-
-#include "coefficients_evo.hpp"
-#include "stirling.hpp"
 
 namespace point_to_ellipse_series {
 

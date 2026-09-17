@@ -1,13 +1,14 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
+#include "coefficients.hpp"
+#include "coefficients_evo.hpp"
+
+#include "detail/util.hpp"
+
 #include <string>
 #include <vector>
 #include <stdexcept>
-
-#include "util.hpp"
-#include "coefficients.hpp"
-#include "coefficients_evo.hpp"
 
 using point_to_ellipse_series::mpz_to_str;
 using point_to_ellipse_series::d_phi;

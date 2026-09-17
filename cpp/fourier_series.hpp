@@ -5,8 +5,9 @@
  */
 
 #include "coefficients.hpp"
-#include "polynomials.hpp"
 #include "series_traits.hpp"
+
+#include "detail/polynomials.hpp"
 
 namespace point_to_ellipse_series {
 
