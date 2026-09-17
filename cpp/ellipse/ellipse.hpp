@@ -5,47 +5,42 @@
 
 #include "ellipse_params.hpp"
 
-using mpfr::mpreal;
-using mpfr::abs;
-using mpfr::sin;
-using mpfr::cos;
-using mpfr::atan;
-using mpfr::sqrt;
-using mpfr::cbrt;
-using mpfr::const_pi;
-
 // Set default precision once for your app (like mp.dps but in bits).
 inline void set_precision_bits(mpfr_prec_t bits) {
-	mpreal::set_default_prec(bits);
+	mpfr::mpreal::set_default_prec(bits);
 }
 
 // Ellipse constants derived from ELLIPSE_A and ELLIPSE_B/ELLIPSE_F (see ellipse_params.hpp).
 // Lazy evaluation such that set precision is respected.
-inline const mpreal& mp_a()  { static const mpreal v = mpreal(ELLIPSE_A);                                   return v; }
+inline const mpfr::mpreal& mp_a()  { static const mpfr::mpreal v = mpfr::mpreal(ELLIPSE_A);                                 return v; }
 #ifdef ELLIPSE_B
-inline const mpreal& mp_b()  { static const mpreal v = mpreal(ELLIPSE_B);                                   return v; }
-inline const mpreal& mp_f()  { static const mpreal v = (mp_a() - mp_b()) / mp_a();                          return v; }
+inline const mpfr::mpreal& mp_b()  { static const mpfr::mpreal v = mpfr::mpreal(ELLIPSE_B);                                 return v; }
+inline const mpfr::mpreal& mp_f()  { static const mpfr::mpreal v = (mp_a() - mp_b()) / mp_a();                              return v; }
 #else
-inline const mpreal& mp_f()  { static const mpreal v = mpreal(1) / mpreal(ELLIPSE_INV_F);                   return v; }
-inline const mpreal& mp_b()  { static const mpreal v = mp_a() * (mpreal(1) - mp_f());                       return v; }
+inline const mpfr::mpreal& mp_f()  { static const mpfr::mpreal v = mpfr::mpreal(1) / mpfr::mpreal(ELLIPSE_INV_F);           return v; }
+inline const mpfr::mpreal& mp_b()  { static const mpfr::mpreal v = mp_a() * (mpfr::mpreal(1) - mp_f());                     return v; }
 #endif
 
-inline const mpreal& mp_e2() { static const mpreal v = mpreal(1) - (mp_b() * mp_b()) / (mp_a() * mp_a()); return v; }
+inline const mpfr::mpreal& mp_e2() { static const mpfr::mpreal v = mpfr::mpreal(1) - (mp_b() * mp_b()) / (mp_a() * mp_a()); return v; }
 
 // Geodetic (lat,alt) to 2D Cartesian (x,y).
-inline std::pair<mpreal, mpreal>
-mp_ellipse_to_cartesian(const mpreal& phi, const mpreal& h) {
-	const mpreal s = sin(phi);
-	const mpreal c = cos(phi);
-	const mpreal N = mp_a() / sqrt(mpreal(1) - mp_e2() * s * s);
-	const mpreal x = (N + h) * c;
-	const mpreal y = ((mpreal(1) - mp_e2()) * N + h) * s;
+inline std::pair<mpfr::mpreal, mpfr::mpreal>
+mp_ellipse_to_cartesian(const mpfr::mpreal& phi, const mpfr::mpreal& h) {
+	const mpfr::mpreal s = mpfr::sin(phi);
+	const mpfr::mpreal c = mpfr::cos(phi);
+	const mpfr::mpreal N = mp_a() / mpfr::sqrt(mpfr::mpreal(1) - mp_e2() * s * s);
+	const mpfr::mpreal x = (N + h) * c;
+	const mpfr::mpreal y = ((mpfr::mpreal(1) - mp_e2()) * N + h) * s;
 	return {x, y};
 }
 
 // Cartesian to elliptical coordinate transformation by Vermeille (2011).
-inline std::pair<mpreal, mpreal>
-mp_cartesian_to_ellipse(const mpreal& x, const mpreal& z) {
+inline std::pair<mpfr::mpreal, mpfr::mpreal>
+mp_cartesian_to_ellipse(const mpfr::mpreal& x, const mpfr::mpreal& z) {
+	// To get cleaner code.
+	using mpfr::mpreal; using mpfr::abs; using mpfr::sin; using mpfr::cos;
+	using mpfr::atan; using mpfr::sqrt; using mpfr::cbrt; using mpfr::const_pi;
+
 	// Derived constants. Cached on first call with the precision at that time.
 	static const mpreal a2          = mp_a() * mp_a();
 	static const mpreal b2          = mp_b() * mp_b();
