@@ -22,12 +22,4 @@ mpq_class cp_evo_nkl(int k, int l, int n);
 mpq_class c_h_evo(int k, int l, int n);
 mpq_class d_h_evo(int k, int l, int n);
 
-// TODO(JO) Temporary. These are intermediate coefficients and should be
-//  removed once the final coefficients are in place.
-//  Used for benchmarking
-mpq_class a_mr(int m, int r);
-mpq_class B_rt(int r, int t);
-mpq_class C_mt(int m, int t);
-mpq_class R(int n, int k, int l, int i);
-
 }  // namespace point_to_ellipse_series

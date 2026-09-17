@@ -33,7 +33,7 @@
 #include <iostream>
 #include <string>
 
-#include "coefficients_evo.hpp"
+#include "detail/coefficients_evo_internal.hpp"
 
 using namespace point_to_ellipse_series;
 using Clock = std::chrono::steady_clock;
@@ -90,19 +90,19 @@ int main(int argc, char* argv[]) {
 	} else if (fn == "a_mr") {
 		require_args(2);
 		auto t0 = Clock::now();
-		volatile auto r = a_mr(iarg(0), iarg(1));
+		volatile auto r = detail::a_mr(iarg(0), iarg(1));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "B_rt") {
 		require_args(2);
 		auto t0 = Clock::now();
-		volatile auto r = B_rt(iarg(0), iarg(1));
+		volatile auto r = detail::B_rt(iarg(0), iarg(1));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "C_mt") {
 		require_args(2);
 		auto t0 = Clock::now();
-		volatile auto r = C_mt(iarg(0), iarg(1));
+		volatile auto r = detail::C_mt(iarg(0), iarg(1));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "c_N_evo") {
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
 	} else if (fn == "R") {
 		require_args(4);
 		auto t0 = Clock::now();
-		volatile auto r = R(iarg(0), iarg(1), iarg(2), iarg(3));
+		volatile auto r = detail::R(iarg(0), iarg(1), iarg(2), iarg(3));
 		(void)r; print(elapsed_ms(t0));
 
 	} else {

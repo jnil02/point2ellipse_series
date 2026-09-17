@@ -1,6 +1,5 @@
 
-#include "coefficients_evo.hpp"
-
+#include "detail/coefficients_evo_internal.hpp"
 #include "detail/cache.hpp"
 #include "detail/util.hpp"
 #include "detail/series_substitution.hpp"
@@ -351,6 +350,8 @@ mpq_class c_sin_phi_inv_evo(int k, int l, int n) {
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
+namespace detail {
+
 mpq_class a_mr(int m, int r) {
 	assert(m >= 0 && r >= 0 && r <= m);
 
@@ -447,6 +448,8 @@ mpq_class R(int n, int k, int l, int i) {
 	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
 }
 
+} // namespace detail
+
 mpq_class c_N_evo(int k, int l, int n) {
 	assert(l >= 0 && k >= l && n >= 0 && n <= k + 1);
 
@@ -464,7 +467,7 @@ mpq_class c_N_evo(int k, int l, int n) {
 			const int t = p + 1 - n;
 
 			if (t % 2 == 0 && t >= 0 && t <= 2 * i)
-				d += C_mt(i, t / 2) * R(l, k, p, i);
+				d += detail::C_mt(i, t / 2) * detail::R(l, k, p, i);
 		}
 	}
 

@@ -45,6 +45,15 @@ set_target_properties(ptecoef_static PROPERTIES OUTPUT_NAME ptecoef)
 target_link_libraries(ptecoef_shared PRIVATE gmpxx gmp)
 target_link_libraries(ptecoef_static PRIVATE gmpxx gmp)
 
+target_include_directories(ptecoef_shared
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+target_include_directories(ptecoef_static
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
 include(GNUInstallDirs)
 
 # Install coefficient library. (run ldconfig subsequently.)
