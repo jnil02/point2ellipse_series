@@ -38,6 +38,15 @@
 
 #include "fourier_series_evo.hpp"
 
+using point_to_ellipse_series::phi_evo_sparse;
+using point_to_ellipse_series::phi_evo_dense;
+using point_to_ellipse_series::sin_phi_evo_sparse;
+using point_to_ellipse_series::sin_phi_evo_dense;
+using point_to_ellipse_series::cos_phi_evo_sparse;
+using point_to_ellipse_series::cos_phi_evo_dense;
+using point_to_ellipse_series::h_evo_sparse;
+using point_to_ellipse_series::h_evo_dense;
+
 using Clock = std::chrono::steady_clock;
 
 static double elapsed_ms(Clock::time_point t0) {

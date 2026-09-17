@@ -10,6 +10,15 @@
 #include "fourier_series_evo.hpp"
 #include "convergence/fourier_series_accum.hpp"
 
+using point_to_ellipse_series::phi_evo_sparse;
+using point_to_ellipse_series::phi_evo_dense;
+using point_to_ellipse_series::sin_phi_evo_sparse;
+using point_to_ellipse_series::sin_phi_evo_dense;
+using point_to_ellipse_series::cos_phi_evo_sparse;
+using point_to_ellipse_series::cos_phi_evo_dense;
+using point_to_ellipse_series::h_evo_sparse;
+using point_to_ellipse_series::h_evo_dense;
+
 struct SRow { int order; double sin_psi, rho_ae2, b_a, value; };
 
 static std::vector<SRow> load(const std::string& path) {

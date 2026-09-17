@@ -26,7 +26,8 @@
 
 #include <vector>
 
-#include "fourier_series_evo.hpp"
+#include "coefficients_evo.hpp"
+#include "series_traits.hpp"
 
 // ---------------------------------------------------------------------------
 // EvoBasePowers — precomputed power tables for the three series bases
@@ -77,7 +78,7 @@ public:
 		for (int l = 0; l <= r; ++l)
 			for (int n = 0; n <= r; ++n)
 				slab = slab
-					   + point_to_ellipse_series::series_coeff<T>(d_phi_evo(N, l, n))
+					   + point_to_ellipse_series::series_coeff<T>(point_to_ellipse_series::d_phi_evo(N, l, n))
 						 * pows_.sin_[2 * l] * pows_.b_[2 * n];
 		slab = slab * pows_.rho_[N] * pows_.sin_[s] * pows_.b_[s + 1];
 		accum_ = accum_ + slab;
@@ -110,8 +111,7 @@ public:
 			for (int l = 0; l <= N / 2; ++l)
 				for (int n = 0; n <= N / 2; ++n)
 					slab = slab
-						   + point_to_ellipse_series::series_coeff<T>(
-							d_h_evo(N, l, n))
+						   + point_to_ellipse_series::series_coeff<T>(point_to_ellipse_series::d_h_evo(N, l, n))
 							 * pows_.b_[2 * n] * pows_.sin_[2 * l];
 			slab = slab * pows_.b_[1 + p] * pows_.sin_[p] * pows_.rho_[N];
 		}
