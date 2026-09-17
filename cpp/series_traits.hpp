@@ -1,56 +1,20 @@
 #pragma once
 
-#include <mpreal.h>
-
 #include "coefficients.hpp"
 #include "util.hpp"
 
 namespace point_to_ellipse_series {
 
 // Convert rational coefficient to type T.
-template<typename T>
-T to(const mpq_class& c);
-
-template<>
-inline mpfr::mpreal to<mpfr::mpreal>(const mpq_class& c) {
-	mpfr::mpreal num, den;
-	mpfr_set_z(num.mpfr_ptr(), c.get_num().get_mpz_t(), mpfr::mpreal::get_default_rnd());
-	mpfr_set_z(den.mpfr_ptr(), c.get_den().get_mpz_t(), mpfr::mpreal::get_default_rnd());
-	return num / den;
-}
-template<> inline double to<double>(const mpq_class& c) {
-	return c.get_d();
-}
+template<typename T> T to(const mpq_class& c);
 
 // Raise base to integer power.
-template<typename T>
-T ipow(const T& base, int exp);
-
-template<>
-inline mpfr::mpreal ipow<mpfr::mpreal>(const mpfr::mpreal& base, int exp) {
-	return mpfr::pow(base, static_cast<long>(exp));
-}
-// FIXME(JO) The different versions should be put in different headers such that we don't need headers for both types if only one is needed.
-template<> inline double ipow<double>(const double& b, int e) {
-	return std::pow(b, e);
-}
+template<typename T> T ipow(const T& base, int exp);
 
 // sin(2*n * psi) — for multiple-angle series.
-template<typename T>
-T isin_mul(const T& psi_v, int n);
-
-template<>
-inline mpfr::mpreal isin_mul<mpfr::mpreal>(const mpfr::mpreal& psi_v, int n) {
-	return mpfr::sin(mpfr::mpreal(2 * n) * psi_v);
-}
+template<typename T> T isin_mul(const T& psi_v, int n);
 
 // cos(2*n * psi) — for multiple-angle series.
-template<typename T>
-T icos_mul(const T& psi_v, int n);
-
-template<>
-inline mpfr::mpreal icos_mul<mpfr::mpreal>(const mpfr::mpreal& psi_v, int n) {
-	return mpfr::cos(mpfr::mpreal(2 * n) * psi_v);
-}
+template<typename T> T icos_mul(const T& psi_v, int n);
 
 }  // namespace point_to_ellipse_series

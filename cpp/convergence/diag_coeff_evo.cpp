@@ -33,6 +33,7 @@
 
 #include "ellipse.hpp"
 #include "fourier_series_accum.hpp"
+#include "series_traits_mpfr.hpp"
 
 using mpfr::mpreal;
 using mpfr::const_pi;
