@@ -117,7 +117,7 @@ TEST_CASE("HEvoAccum matches h_evo_dense", "[series][evo][accum]") {
 		HEvoAccum<double>    acc(pows);
 		for (int N = 0; N <= r.order; ++N) acc.addOrder(N);
 		double tol = 1e-9 * std::max(1.0, std::abs(r.value));
-		INFO("HAEvoAccum  series=" << r.value << "  accum=" << acc.value());
+		INFO("HEvoAccum  series=" << r.value << "  accum=" << acc.value());
 		CHECK(std::abs(acc.value() - r.value) < tol);
 	}
 }

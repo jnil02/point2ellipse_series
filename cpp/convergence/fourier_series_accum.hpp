@@ -13,7 +13,7 @@
  *
  *   EvoBasePowers<mpreal> pows(sin_psi, rho_ae2, b_a, MAX_ORDER);
  *   PhiEvoAccum<mpreal>   phi_acc(pows);
- *   HAEvoAccum<mpreal>    h_acc(pows);
+ *   HEvoAccum<mpreal>    h_acc(pows);
  *   for (int N = 1; N <= MAX_ORDER; ++N) {
  *       mpreal cm = phi_acc.addOrder(N);  // returns slab C_m; also updates value()
  *       h_acc.addOrder(N);                // h_evo_dense starts at k=2; N<2 adds 0

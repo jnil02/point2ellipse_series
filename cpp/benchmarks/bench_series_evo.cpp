@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 		volatile auto r = phi_evo_dense<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
-	} else if (series == "phi_evo_dense_m") {
+	} else if (series == "phi_evo_dense") {
 		auto t0 = Clock::now();
 		volatile auto r = phi_evo_dense<mpfr::mpreal>(N, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
