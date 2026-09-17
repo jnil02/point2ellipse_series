@@ -29,10 +29,10 @@ inline T phi_evo_sparse(int L, int K,
 	for (int l = 0; l <= L; ++l)
 		for (int k = l + 1; k <= K; ++k)
 			for (int n = 1; n <= k; ++n)
-				s += series_coeff<T>(c_phi_evo(k, l, n))
-					 * series_pow<T>(b_a, n)
-					 * series_pow<T>(abs_sin_psi, l)
-					 * series_pow<T>(rho_ae2, k);
+				s += to<T>(c_phi_evo(k, l, n))
+					 * ipow<T>(b_a, n)
+					 * ipow<T>(abs_sin_psi, l)
+					 * ipow<T>(rho_ae2, k);
 	return s;
 }
 
@@ -60,13 +60,13 @@ inline T phi_evo_dense(int K,
 
 		for (int l = 0; l <= q; ++l) {
 			for (int n = 0; n <= q; ++n)
-				cm += series_coeff<T>(d_phi_evo(k, l, n))
-					 * series_pow<T>(b_a, 2 * n)
-					 * series_pow<T>(abs_sin_psi, 2 * l);
+				cm += to<T>(d_phi_evo(k, l, n))
+					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(abs_sin_psi, 2 * l);
 		}
-		s += cm * series_pow<T>(b_a, p + 1)
-			 * series_pow<T>(abs_sin_psi, p)
-			 * series_pow<T>(rho_ae2, k);
+		s += cm * ipow<T>(b_a, p + 1)
+			 * ipow<T>(abs_sin_psi, p)
+			 * ipow<T>(rho_ae2, k);
 	}
 	return s;
 }
@@ -80,10 +80,10 @@ inline T sin_phi_evo_sparse(int L, int K,
 	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
 			for (int n = 0; n <= k; ++n)
-				s += series_coeff<T>(c_sin_phi_evo(k, l, n))
-					 * series_pow<T>(b_a, n)
-					 * series_pow<T>(abs_sin_psi, l)
-					 * series_pow<T>(rho_ae2, k);
+				s += to<T>(c_sin_phi_evo(k, l, n))
+					 * ipow<T>(b_a, n)
+					 * ipow<T>(abs_sin_psi, l)
+					 * ipow<T>(rho_ae2, k);
 	return s;
 }
 
@@ -109,14 +109,14 @@ inline T sin_phi_evo_dense(int K,
 		const int q = k / 2;
 		for (int l = 0; l <= q; ++l) {
 			for (int n = 1; n <= q; ++n) {
-				cm += series_coeff<T>(d_sin_phi_evo(k, l, n))
-					  * series_pow<T>(b_a, 2 * n)
-					  * series_pow<T>(abs_sin_psi, 2 * l);
+				cm += to<T>(d_sin_phi_evo(k, l, n))
+					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(abs_sin_psi, 2 * l);
 			}
 		}
-		s += cm * series_pow<T>(b_a, p)
-			 * series_pow<T>(abs_sin_psi, p)
-			 * series_pow<T>(rho_ae2, k);
+		s += cm * ipow<T>(b_a, p)
+			 * ipow<T>(abs_sin_psi, p)
+			 * ipow<T>(rho_ae2, k);
 	}
 	return s;
 }
@@ -130,10 +130,10 @@ inline T cos_phi_evo_sparse(int L, int K,
 	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
 			for (int n = 1; n <= k; ++n)
-				d += series_coeff<T>(c_cos_phi_evo(k, l, n))
-					 * series_pow<T>(b_a, n)
-					 * series_pow<T>(abs_sin_psi, l)
-					 * series_pow<T>(rho_ae2, k);
+				d += to<T>(c_cos_phi_evo(k, l, n))
+					 * ipow<T>(b_a, n)
+					 * ipow<T>(abs_sin_psi, l)
+					 * ipow<T>(rho_ae2, k);
 	return d;
 }
 
@@ -160,14 +160,14 @@ inline T cos_phi_evo_dense(int K,
 		const int q = (k - 1) / 2;
 		for (int l = 0; l <= q; ++l) {
 			for (int n = p; n <= k / 2; ++n) {
-				cm += series_coeff<T>(d_cos_phi_evo(k, l, n))
-					  * series_pow<T>(b_a, 2 * n)
-					  * series_pow<T>(abs_sin_psi, 2 * l);
+				cm += to<T>(d_cos_phi_evo(k, l, n))
+					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(abs_sin_psi, 2 * l);
 			}
 		}
-		s += cm * series_pow<T>(b_a, 1 - p)
-			 * series_pow<T>(abs_sin_psi, p)
-			 * series_pow<T>(rho_ae2, k);
+		s += cm * ipow<T>(b_a, 1 - p)
+			 * ipow<T>(abs_sin_psi, p)
+			 * ipow<T>(rho_ae2, k);
 	}
 
 	return s;
@@ -192,10 +192,10 @@ inline T h_evo_sparse(int L, int K,
 	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
 			for (int n = 1; n <= k + 1; ++n)
-				s += series_coeff<T>(c_h_evo(k, l, n))
-					 * series_pow<T>(b_a, n)
-					 * series_pow<T>(abs_sin_psi, l)
-					 * series_pow<T>(rho_ae2, k);
+				s += to<T>(c_h_evo(k, l, n))
+					 * ipow<T>(b_a, n)
+					 * ipow<T>(abs_sin_psi, l)
+					 * ipow<T>(rho_ae2, k);
 	return s;
 }
 
@@ -222,14 +222,14 @@ inline T h_evo_dense(int K,
 		const int q = k / 2;
 		for (int l = 0; l <= q; ++l) {
 			for (int n = 0; n <= q; ++n) {
-				cm += series_coeff<T>(d_h_evo(k, l, n))
-					  * series_pow<T>(b_a, 2 * n)
-					  * series_pow<T>(abs_sin_psi, 2 * l);
+				cm += to<T>(d_h_evo(k, l, n))
+					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(abs_sin_psi, 2 * l);
 			}
 		}
-		s += cm * series_pow<T>(b_a, 1 + p)
-			 * series_pow<T>(abs_sin_psi, p)
-			 * series_pow<T>(rho_ae2, k);
+		s += cm * ipow<T>(b_a, 1 + p)
+			 * ipow<T>(abs_sin_psi, p)
+			 * ipow<T>(rho_ae2, k);
 	}
 	return s;
 }

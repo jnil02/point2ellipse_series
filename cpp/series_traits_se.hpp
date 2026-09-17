@@ -15,22 +15,22 @@ inline SymEngine::Expression mpq_to_expr(const mpq_class& d) {
 }
 
 template<>
-inline SymEngine::Expression series_coeff<SymEngine::Expression>(const mpq_class& c) {
+inline SymEngine::Expression to<SymEngine::Expression>(const mpq_class& c) {
 	return mpq_to_expr(c);
 }
 
 template<>
-inline SymEngine::Expression series_pow<SymEngine::Expression>(const SymEngine::Expression& base, int exp) {
+inline SymEngine::Expression ipow<SymEngine::Expression>(const SymEngine::Expression& base, int exp) {
 	return SymEngine::pow(base, SymEngine::Expression(exp));
 }
 
 template<>
-inline SymEngine::Expression series_sin_mul<SymEngine::Expression>(const SymEngine::Expression& psi_v, int n) {
+inline SymEngine::Expression isin_mul<SymEngine::Expression>(const SymEngine::Expression& psi_v, int n) {
 	return SymEngine::sin(SymEngine::Expression(2 * n) * psi_v);
 }
 
 template<>
-inline SymEngine::Expression series_cos_mul<SymEngine::Expression>(const SymEngine::Expression& psi_v, int n) {
+inline SymEngine::Expression icos_mul<SymEngine::Expression>(const SymEngine::Expression& psi_v, int n) {
 	return SymEngine::cos(SymEngine::Expression(2 * n) * psi_v);
 }
 
