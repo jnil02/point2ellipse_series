@@ -27,7 +27,7 @@
 #include <string>
 #include <mpreal.h>
 
-#include "ellipse.hpp"
+#include "ellipse/ellipse.hpp"
 #include "fourier_series_accum.hpp"
 #include "series_traits/series_traits_mpfr.hpp"
 

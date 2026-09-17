@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 #include <symengine/real_mpfr.h>
 
 #include "fourier_series_evo_se.hpp"
-#include "ellipse.hpp"
+#include "ellipse/ellipse.hpp"
 
 using mpfr::mpreal;
 using SymEngine::Expression;

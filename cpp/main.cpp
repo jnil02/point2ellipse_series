@@ -9,7 +9,7 @@
 #include <symengine/real_mpfr.h>
 
 #include "fourier_series_se.hpp"
-#include "ellipse.hpp"
+#include "ellipse/ellipse.hpp"
 
 
 int main() {
