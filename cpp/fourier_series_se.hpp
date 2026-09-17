@@ -4,7 +4,7 @@
 #include <symengine/ntheory.h>
 
 #include "fourier_series.hpp"
-#include "series_traits_se.hpp"
+#include "series_traits/series_traits_se.hpp"
 #include "symbols.hpp"
 
 using SymEngine::Expression;
