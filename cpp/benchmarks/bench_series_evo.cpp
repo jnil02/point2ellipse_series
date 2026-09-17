@@ -37,6 +37,7 @@
 #include <mpreal.h>
 
 #include "fourier_series_evo.hpp"
+#include "series_traits/series_traits_mpfr.hpp"
 
 using point_to_ellipse_series::phi_evo_sparse;
 using point_to_ellipse_series::phi_evo_dense;

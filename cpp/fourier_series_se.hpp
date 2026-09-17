@@ -13,6 +13,15 @@ using SymEngine::sin;
 using SymEngine::cos;
 
 using point_to_ellipse_series::powm1;
+using point_to_ellipse_series::phi_in_sin_pow;
+using point_to_ellipse_series::phi_in_sin_pow2;
+using point_to_ellipse_series::phi_in_sin_mul;
+using point_to_ellipse_series::sin_phi_in_sin_pow;
+using point_to_ellipse_series::sin_phi_in_cos_mul;
+using point_to_ellipse_series::cos_phi_in_sin_pow;
+using point_to_ellipse_series::cos_phi_in_cos_mul;
+using point_to_ellipse_series::h_in_sin_pow;
+using point_to_ellipse_series::h_in_cos_mul;
 
 inline Expression sigma(int J, const Expression& delta) {
 	Expression d(0);

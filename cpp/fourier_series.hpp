@@ -8,15 +8,7 @@
 #include "polynomials.hpp"
 #include "series_traits.hpp"
 
-using point_to_ellipse_series::d_phi;
-using point_to_ellipse_series::d_phi2;
-using point_to_ellipse_series::c_phi;
-using point_to_ellipse_series::d_sin;
-using point_to_ellipse_series::c_sin;
-using point_to_ellipse_series::d_cos;
-using point_to_ellipse_series::c_cos;
-using point_to_ellipse_series::d_h;
-using point_to_ellipse_series::c_h;
+namespace point_to_ellipse_series {
 
 /** Series expansion of (phi - psi) / (sin(psi) * cos(psi)) in sin-powers.
  *
@@ -30,15 +22,15 @@ using point_to_ellipse_series::c_h;
  */
 template<typename T>
 inline T phi_in_sin_pow(int N, int K,
-						const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+						const T &sin_psi_v, const T &varrho_v, const T &e2_v) {
 	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n + 1); l <= k + n; ++l)
-				d = d + point_to_ellipse_series::to<T>(d_phi(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::ipow<T>(sin_psi_v, 2 * n);
+				d += to<T>(d_phi(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* ipow<T>(sin_psi_v, 2 * n);
 	return d;
 }
 
@@ -57,15 +49,15 @@ inline T phi_in_sin_pow(int N, int K,
  */
 template<typename T>
 inline T phi_in_sin_pow2(int N, int K,
-						 const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+						 const T &sin_psi_v, const T &varrho_v, const T &e2_v) {
 	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = k; l <= k + n; ++l)
-				d = d + point_to_ellipse_series::to<T>(d_phi2(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::ipow<T>(sin_psi_v, 2 * n + 1);
+				d += to<T>(d_phi2(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* ipow<T>(sin_psi_v, 2 * n + 1);
 	return d;
 }
 
@@ -82,15 +74,15 @@ inline T phi_in_sin_pow2(int N, int K,
  */
 template<typename T>
 inline T phi_in_sin_mul(int N, int K, int L,
-						const T& psi_v, const T& varrho_v, const T& e2_v) {
+						const T &psi_v, const T &varrho_v, const T &e2_v) {
 	T d(0);
 	for (int n = 1; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d = d + point_to_ellipse_series::to<T>(c_phi(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::isin_mul<T>(psi_v, n);
+				d += to<T>(c_phi(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* isin_mul<T>(psi_v, n);
 	return d;
 }
 
@@ -106,15 +98,16 @@ inline T phi_in_sin_mul(int N, int K, int L,
  */
 template<typename T>
 inline T sin_phi_in_sin_pow(int N, int K,
-							const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+							const T &sin_psi_v, const T &varrho_v,
+							const T &e2_v) {
 	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n); l <= n + k; ++l)
-				d = d + point_to_ellipse_series::to<T>(d_sin(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::ipow<T>(sin_psi_v, 2 * n);
+				d += to<T>(d_sin(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* ipow<T>(sin_psi_v, 2 * n);
 	return d;
 }
 
@@ -131,15 +124,15 @@ inline T sin_phi_in_sin_pow(int N, int K,
  */
 template<typename T>
 inline T sin_phi_in_cos_mul(int N, int K, int L,
-							const T& psi_v, const T& varrho_v, const T& e2_v) {
+							const T &psi_v, const T &varrho_v, const T &e2_v) {
 	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d = d + point_to_ellipse_series::to<T>(c_sin(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::icos_mul<T>(psi_v, n);
+				d += to<T>(c_sin(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* icos_mul<T>(psi_v, n);
 	return d;
 }
 
@@ -155,15 +148,16 @@ inline T sin_phi_in_cos_mul(int N, int K, int L,
  */
 template<typename T>
 inline T cos_phi_in_sin_pow(int N, int K,
-							const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+							const T &sin_psi_v, const T &varrho_v,
+							const T &e2_v) {
 	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(k, n); l < n + k; ++l)
-				d = d + point_to_ellipse_series::to<T>(d_cos(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::ipow<T>(sin_psi_v, 2 * n);
+				d += to<T>(d_cos(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* ipow<T>(sin_psi_v, 2 * n);
 	return d;
 }
 
@@ -180,15 +174,15 @@ inline T cos_phi_in_sin_pow(int N, int K,
  */
 template<typename T>
 inline T cos_phi_in_cos_mul(int N, int K, int L,
-							const T& psi_v, const T& varrho_v, const T& e2_v) {
+							const T &psi_v, const T &varrho_v, const T &e2_v) {
 	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 1; k <= K; ++k)
 			for (int l = std::max(n, k); l <= L; ++l)
-				d = d + point_to_ellipse_series::to<T>(c_cos(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::icos_mul<T>(psi_v, n);
+				d += to<T>(c_cos(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* icos_mul<T>(psi_v, n);
 	return d;
 }
 
@@ -204,15 +198,15 @@ inline T cos_phi_in_cos_mul(int N, int K, int L,
  */
 template<typename T>
 inline T h_in_sin_pow(int N, int K,
-					  const T& sin_psi_v, const T& varrho_v, const T& e2_v) {
+					  const T &sin_psi_v, const T &varrho_v, const T &e2_v) {
 	T d(0);
 	for (int n = 1; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = std::max(k + 1, n); l <= n + k; ++l)
-				d = d + point_to_ellipse_series::to<T>(d_h(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::ipow<T>(sin_psi_v, 2 * n);
+				d += to<T>(d_h(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* ipow<T>(sin_psi_v, 2 * n);
 	return d;
 }
 
@@ -229,14 +223,16 @@ inline T h_in_sin_pow(int N, int K,
  */
 template<typename T>
 inline T h_in_cos_mul(int N, int K, int L,
-					  const T& psi_v, const T& varrho_v, const T& e2_v) {
+					  const T &psi_v, const T &varrho_v, const T &e2_v) {
 	T d(0);
 	for (int n = 0; n <= N; ++n)
 		for (int k = 0; k <= K; ++k)
 			for (int l = std::max(n, k + 1); l <= L; ++l)
-				d = d + point_to_ellipse_series::to<T>(c_h(n, k, l))
-						* point_to_ellipse_series::ipow<T>(e2_v, l)
-						* point_to_ellipse_series::ipow<T>(varrho_v, k)
-						* point_to_ellipse_series::icos_mul<T>(psi_v, n);
+				d += to<T>(c_h(n, k, l))
+						* ipow<T>(e2_v, l)
+						* ipow<T>(varrho_v, k)
+						* icos_mul<T>(psi_v, n);
 	return d;
 }
+
+} // namespace point_to_ellipse_series
