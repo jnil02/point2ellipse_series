@@ -221,10 +221,10 @@ def cos_phi_in_sin_pow2(N: int, K: int, J: int):
 
 
 def phi_evo_sparse(L, K):
-    """Series for (phi - pi/2)/cos(phi) in sin-powers for small rho with simple sums
+    """Double series for (phi - pi/2) / cos(phi) inside evolute
 
-    The simple sums and exponents come at the cost of half of the computed
-    coefficients being zero.
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho powers limit.
@@ -239,9 +239,9 @@ def phi_evo_sparse(L, K):
 
 
 def phi_evo_dense(K):
-    """Series for (phi - pi/2)/cos(psi) in sin-powers for small rho with simple sums
+    """Series for (phi - pi/2) / cos(psi) inside evolute
 
-    organised by total rho_ae2 power m.
+    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
 
     :param K: maximum rho_ae2 power (the single truncation parameter).
     :return: symbolic series.
@@ -261,7 +261,10 @@ def phi_evo_dense(K):
 
 
 def phi_pow_evo(i, L, K):
-    """Series for (phi - pi/2)^i in sin powers for small rho.
+    """Double Series for (phi - pi/2)^i inside evolute.
+
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param i: integer power.
     :param L: sin power limit.
@@ -277,7 +280,10 @@ def phi_pow_evo(i, L, K):
 
 
 def sin_phi_evo_sparse(L, K):
-    """Series for sin(phi) in sin powers for small rho.
+    """Double series for sin(phi) inside evolute.
+
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho power limit.
@@ -292,9 +298,9 @@ def sin_phi_evo_sparse(L, K):
 
 
 def sin_phi_evo_dense(K):
-    """Series for sin(phi) - 1 in rho powers for small rho.
+    """Series for sin(phi) - 1 inside evolute.
 
-    Using dense (all non-zero) coefficients.
+    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
 
     :param N: sin power limit.
     :param K: rho power limit.
@@ -311,7 +317,10 @@ def sin_phi_evo_dense(K):
 
 
 def cos_phi_evo_sparse(L, K):
-    """Series for cos(phi)/cos(psi) in sin powers for small rho.
+    """Double series for cos(phi)/cos(psi) inside evolute.
+
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho power limit.
@@ -325,9 +334,9 @@ def cos_phi_evo_sparse(L, K):
     return s
 
 def cos_phi_evo_dense(K):
-    """Series for cos(phi)/cos(psi) in rho powers for small rho.
+    """Series for cos(phi)/cos(psi) inside evolute
 
-    Using dense (all non-zero) coefficients.
+    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
 
     :param N: sin power limit.
     :param K: rho power limit.
@@ -346,7 +355,10 @@ def cos_phi_evo_dense(K):
 
 
 def sin_phi_inv_evo(L, K):
-    """Series for 1/sin(phi) in sin powers for small rho.
+    """Double series for 1/sin(phi) inside evolute.
+
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho power limit.
@@ -361,9 +373,12 @@ def sin_phi_inv_evo(L, K):
 
 
 def sin_phi_inv_evo2(L, K):
-    """Series for 1/sin(phi)-1 in sin powers for small rho.
+    """Double series for 1 / sin(phi) - 1 inside evolute.
 
-    Note, series for 1/sin(phi) __-1__.
+    Note, series for 1 / sin(phi) __-1__.
+
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho power limit.
@@ -378,9 +393,12 @@ def sin_phi_inv_evo2(L, K):
 
 
 def sin_phi_inv_evo3(L, K):
-    """Series for rho/a * (1/sin(phi)-1) in sin powers for small rho.
+    """Double series for 1 / sin(phi) - 1 inside evolute.
 
-    Note, series for 1/sin(phi) __-1__.
+    Note, series for 1 / sin(phi) __-1__.
+
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho power limit.
@@ -395,7 +413,10 @@ def sin_phi_inv_evo3(L, K):
 
 
 def Na_evo2(L, K):
-    """Series for epsilon^2/a*N in sin powers for small rho.
+    """Double series for epsilon^2 / a * N inside evolute
+
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho power limit.
@@ -410,9 +431,10 @@ def Na_evo2(L, K):
 
 
 def h_evo_sparse(L, K):
-    """Series for h/a - rho/a*sin(psi) in sin powers for small rho.
+    """Double series for h / a - rho / a * sin(psi) inside evolute
 
-    Intermediate sum with sparse coefficients.
+    The series are in rho / (ae^2) and abs(sin(psi)).
+    Every other coefficient in the series are zero, i.e. sparse.
 
     :param L: sin power limit.
     :param K: rho power limit.
@@ -427,9 +449,9 @@ def h_evo_sparse(L, K):
 
 
 def h_evo_dense(K):
-    """Series for (h + b - rho*sin(psi))/a in sin powers for small rho.
+    """Series for (h + b - rho * sin(psi)) / a inside evolute
 
-    Using dense (all non-zero) coefficients.
+    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
 
     :param K: rho power limit.
     :return: Symbolic series.
