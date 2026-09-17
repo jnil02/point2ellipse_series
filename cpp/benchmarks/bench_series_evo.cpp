@@ -11,10 +11,9 @@
  *
  * Supported series:
  *   phi_evo_dense      N K sin_psi rho_ae2 b_a
- *   phi_evo_dense_m    M   sin_psi rho_ae2 b_a   (M plays the role of N, K unused)
  *   sin_phi_evo_dense  N K sin_psi rho_ae2 b_a
  *   cos_phi_evo_dense  N K sin_psi rho_ae2 b_a
- *   h_a_evo_dense      N K sin_psi rho_ae2 b_a
+ *   h_evo_dense        N K sin_psi rho_ae2 b_a
  *
  * Optional last argument sets the mpreal working precision in bits (default 256).
  *
@@ -83,11 +82,6 @@ int main(int argc, char* argv[]) {
 		volatile auto r = phi_evo_dense<mpfr::mpreal>(K, sp, ra, ba);
 		(void)r; print(elapsed_ms(t0));
 
-	} else if (series == "phi_evo_dense") {
-		auto t0 = Clock::now();
-		volatile auto r = phi_evo_dense<mpfr::mpreal>(N, sp, ra, ba);
-		(void)r; print(elapsed_ms(t0));
-
 	} else if (series == "sin_phi_evo_dense") {
 		auto t0 = Clock::now();
 		volatile auto r = sin_phi_evo_dense<mpfr::mpreal>(K, sp, ra, ba);
@@ -105,7 +99,7 @@ int main(int argc, char* argv[]) {
 
 	} else {
 		std::cerr << "Unknown series: " << series << "\n";
-		std::cerr << "Known: phi_evo_dense, phi_evo_dense, sin_phi_evo_dense,\n"
+		std::cerr << "Known: phi_evo_dense, sin_phi_evo_dense,\n"
 				  << "       cos_phi_evo_dense, h_evo_dense\n";
 		return 1;
 	}

@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_FLAGS -O2)
 
 add_executable(main
-        main.cpp
+        demo/main.cpp
         coefficients.cpp
         )
 
