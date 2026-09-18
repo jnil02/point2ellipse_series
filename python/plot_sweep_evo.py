@@ -8,7 +8,8 @@ rho_evo / N) two figures are produced:
                        Left:  |error| vs rho  for several truncation orders N
                        Right: |error| vs N    for several rho values
   <col>_polar.png  – polar heat map of the decay rate (d log10|err| / dN)
-                     across the full (psi, rho) grid with the evolute overlaid.
+                     across the full (psi, rho) grid, with the evolute and the
+                     ellipse boundary (h = 0) overlaid.
 
 Usage:
     python python/plot_sweep_evo.py
@@ -186,7 +187,14 @@ for col in err_cols:
     evo_rhos = [data[psi][Ns_heat[0]][0][1] for psi in psi_degs_all]
     ax_polar.plot(thetas, evo_rhos, "k--", linewidth=1.5, label="evolute")
 
-    ax_polar.legend(loc="upper left", bbox_to_anchor=(1.15, 1.05))
+    # Ellipse boundary (h = 0): rho_ell(psi) = a*b / sqrt(b²cos²psi + a²sin²psi).
+    ellipse_rhos = [ELLIPSE_A * ELLIPSE_B / math.hypot(ELLIPSE_B * math.cos(t),
+                                                       ELLIPSE_A * math.sin(t))
+                    for t in thetas]
+    ax_polar.plot(thetas, ellipse_rhos, "b--", linewidth=1.5, label="ellipse")
+
+    ax_polar.legend(loc="upper right", bbox_to_anchor=(1.0, 1.0),
+                    bbox_transform=fig_polar.transFigure)
 
     out_path_polar = os.path.join(OUT_DIR, f"sweep_evo_{col}_polar.png")
     fig_polar.savefig(out_path_polar, dpi=150, bbox_inches="tight")
