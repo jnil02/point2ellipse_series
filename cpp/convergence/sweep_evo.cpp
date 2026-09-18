@@ -3,8 +3,8 @@
  *
  * For each point (psi, rho) on a polar grid the series phi_evo_dense and
  * h_evo_dense are evaluated at increasing truncation orders N=K=1..MAX_ORDER
- * using mpreal arithmetic.  The absolute error against the closed-form
- * Vermeille reference is written to a CSV file.  rho intentionally extends
+ * using mpreal arithmetic. The absolute error against the closed-form
+ * Vermeille reference is written to a CSV file. rho intentionally extends
  * beyond the evolute (rho_evo) so that divergence is visible.
  *
  * Ellipse parameters are set via CMake target_compile_definitions

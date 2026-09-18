@@ -9,12 +9,15 @@
  * Cauchy-Hadamard theorem the ratio |C_{m+1}/C_m| converges to 1/R where
  * R is the radius of convergence of the series in rho_ae2.
  *
- *   R = 1/e   → ratio → e   (ae singularity; complex, causes oscillation)
- *   R = ρ_evo/(ae²) → ratio → ae²/ρ_evo  (evolute; real, monotone convergence)
+ * The evolute is the governing singularity at every ψ: the ae branch point
+ * (|rho_ae2| = 1/e) is not on the physical series branch, so it never limits
+ * convergence.  Hence
  *
- * For the default ellipse (a=1, b=0.25): e≈0.9682, ae²=0.9375.
- * - ψ < ~62°: evolute is binding (ρ_evo < ae) → ratio < 0.968, monotone
- * - ψ > ~62°: ae singularity is binding         → ratio → 0.968, oscillating
+ *   R = ρ_evo(ψ)/(ae²)   →   ratio → ae²/ρ_evo(ψ)   for all ψ.
+ *
+ * For the default ellipse (a=1, b=0.25): e≈0.9682, ae²=0.9375.  The ratio
+ * lands below 1 where ρ_evo > ae² and above 1 where ρ_evo < ae² — monotone,
+ * with no ae-driven oscillation — confirming the evolute as the ROC.
  *
  * Output columns:
  *   psi_deg  – polar angle in degrees

@@ -88,7 +88,6 @@ def _edges(a):
 psi_degs_all = sorted(data.keys())
 Ns_heat      = sorted(data[psi_degs_all[0]].keys())
 rhos_heat    = [t[0] for t in data[psi_degs_all[0]][Ns_heat[0]]]
-ae_val       = ELLIPSE_A * math.sqrt(1 - (ELLIPSE_B / ELLIPSE_A) ** 2)
 
 psi_plot_actual = min(data.keys(), key=lambda p: abs(p - PSI_PLOT))
 if abs(psi_plot_actual - PSI_PLOT) > 5:
@@ -187,9 +186,6 @@ for col in err_cols:
     evo_rhos = [data[psi][Ns_heat[0]][0][1] for psi in psi_degs_all]
     ax_polar.plot(thetas, evo_rhos, "k--", linewidth=1.5, label="evolute")
 
-    psi_all_rad = np.linspace(0, np.pi / 2, 200)
-    ax_polar.plot(psi_all_rad, np.full_like(psi_all_rad, ae_val),
-                  "b--", linewidth=1.5, label=f"ae = {ae_val:.3f}")
     ax_polar.legend(loc="upper left", bbox_to_anchor=(1.15, 1.05))
 
     out_path_polar = os.path.join(OUT_DIR, f"sweep_evo_{col}_polar.png")

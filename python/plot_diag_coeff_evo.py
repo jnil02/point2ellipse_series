@@ -3,9 +3,9 @@ Plot coefficient ROC diagnostic from diag_coeff_evo.csv.
 
 Two figures are produced:
 
-  diag_coeff_evo_ratio.png  – |C_{m+1}/C_m| vs m, one line per ψ.
-                               Horizontal reference lines: e (ae bound) and
-                               ae²/ρ_evo(ψ) (evolute bound) for each angle.
+  diag_coeff_evo_ratio.png  – |C_{m+1}/C_m| vs m, one line per ψ, with the
+                               evolute reference ae²/ρ_evo(ψ) dotted per angle
+                               (the governing singularity at every ψ).
 
   diag_coeff_evo_abs.png    – log|C_m| vs m, one line per ψ.
                                Slope = log(1/R) confirms the ROC.
@@ -90,19 +90,12 @@ for psi, color in zip(psi_list, colors):
     rats  = [r[3] for r in rows if r[3] >= 0]
     ax1.plot(ms, rats, color=color, label=f"ψ={psi:.4g}°")
 
-    # Reference: ae bound (ratio → e) and evolute bound (ratio → ae²/ρ_evo)
+    # Evolute reference: the ratio converges to ae²/ρ_evo(ψ) at every ψ
+    # (the evolute is the governing singularity; the ae branch point is not
+    #  on the physical series branch and never limits convergence).
     rho_evo = evolute_rho(psi)
     evo_ref = ae2 / rho_evo
-    psi_rad = math.radians(psi)
-    # Only draw ae reference if ae < rho_evo (ae-dominated)
-    binding = "ae" if ae < rho_evo else "evo"
-    if binding == "ae":
-        ax1.axhline(e, color=color, linestyle=":", linewidth=0.8)
-    else:
-        ax1.axhline(evo_ref, color=color, linestyle=":", linewidth=0.8)
-
-# Permanent label lines
-ax1.axhline(e, color="gray", linestyle="--", linewidth=1.0, label=f"e={e:.4f}  (ae bound)")
+    ax1.axhline(evo_ref, color=color, linestyle=":", linewidth=0.8)
 
 ax1.set_xlabel("m")
 ax1.set_ylabel("|C_m| / |C_{m-1}|")

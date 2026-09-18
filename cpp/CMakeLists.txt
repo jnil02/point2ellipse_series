@@ -70,7 +70,7 @@ install(FILES
 add_subdirectory(tests)
 
 # Convergence sweep binary for the inside-evolute series.
-# Default ellipse: unit ellipse a=1, b=0.25 (ae bound becomes binding at ~62°, good for ROC studies).
+# Default ellipse: unit ellipse a=1, b=0.5 (large evolute; convenient for convergence/ROC studies).
 # Override by redefining ELLIPSE_A + ELLIPSE_B (or ELLIPSE_INV_F) below.
 add_executable(sweep_evo
         convergence/sweep_evo.cpp
