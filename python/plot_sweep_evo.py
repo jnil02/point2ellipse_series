@@ -31,6 +31,7 @@ N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)
 RHO_COUNT = 5   # how many rho curves in the right plot (evenly spaced from data)
 TAIL      = 5   # high-N points used for slope estimate in the heat map
 ERR_FLOOR = 1e-300  # log-plot guard; set to match ~10^-(BITS*log10(2)) for chosen precision
+COLOR_LIM = 1.0  # polar heat-map colour range: rate is clamped to [-COLOR_LIM, +COLOR_LIM]
 
 NON_ERR_COLS = {"psi_deg", "rho", "rho_evo", "N"}
 
@@ -171,12 +172,15 @@ for col in err_cols:
         "blue = fast convergence,  red = divergence"
     )
 
-    vmax = np.nanmax(np.abs(rate))
+    # Fixed symmetric colour range so the mid-tones are well used regardless of
+    # a few extreme-magnitude cells; values outside are clamped (colorbar shows
+    # arrow ends for the clamped range).
+    # COLOR_LIM = np.nanmax(np.abs(rate))  # Match colour range to actual data.
     mesh = ax_polar.pcolormesh(
         _edges(thetas), _edges(rhos_arr), rate.T,
-        cmap="RdBu_r", vmin=-vmax, vmax=vmax, shading="flat"
+        cmap="RdBu_r", vmin=-COLOR_LIM, vmax=COLOR_LIM, shading="flat"
     )
-    fig_polar.colorbar(mesh, ax=ax_polar, pad=0.1,
+    fig_polar.colorbar(mesh, ax=ax_polar, pad=0.1, extend="both",
                        label=f"d log₁₀|{col}| / dN")
 
     T, R = np.meshgrid(thetas, rhos_arr)
