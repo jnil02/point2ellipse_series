@@ -180,9 +180,44 @@ for col in err_cols:
                        label=f"d log₁₀|{col}| / dN")
 
     T, R = np.meshgrid(thetas, rhos_arr)
-    ax_polar.contour(T, R, rate.T, levels=15, colors="k", linewidths=0.4, alpha=0.5)
-    cs0 = ax_polar.contour(T, R, rate.T, levels=[0], colors="k", linewidths=0.4)
-    ax_polar.clabel(cs0, fmt="0", fontsize=8)
+    # Faint contour lines at fixed 0.2-spaced levels (round numbers, so the
+    # labelled values are predictable).
+    step   = 0.2
+    lo     = math.floor(np.nanmin(rate) / step) * step  # Lowest contour.
+    hi     = math.ceil(np.nanmax(rate) / step) * step  # Highest contour.
+    levels = np.round(np.arange(lo, hi + step / 2, step), 10)  # The contours
+    cs = ax_polar.contour(T, R, rate.T, levels=levels, colors="k",
+                          linewidths=0.4, alpha=0.5)
+    ax_polar.contour(T, R, rate.T, levels=[0], colors="k", linewidths=0.4)
+
+    # --- Contour labels -----------------------------------------------------
+    # A label is placed for each (level, spoke) pair: find the radius where the
+    # decay rate along that spoke (radial line) equals the level, and drop the
+    # label there.  clabel then annotates the nearest contour — which is that
+    # level's contour — so placement is deterministic and identical in every
+    # quadrant.  Edit LABEL_LEVELS to choose which contours get labelled.
+    LABEL_LEVELS = [-0.4, -0.2, 0, 0.2, 0.4]
+    SPOKES_DEG   = [45, 135, 225, 315]
+
+    def _crossing_rho(psi_deg, level):
+        """Radius on the spoke `psi_deg` where the decay rate == level."""
+        i   = min(range(len(psi_degs_all)), key=lambda k: abs(psi_degs_all[k] - psi_deg))
+        col = rate[i, :]                    # decay rate vs rho along this spoke
+        for j in range(len(rhos_arr) - 1):
+            a, b = col[j], col[j + 1]
+            if np.isnan(a) or np.isnan(b) or a == b:
+                continue
+            if (a - level) * (b - level) <= 0:            # level crossed here
+                f = (level - a) / (b - a)
+                return rhos_arr[j] + f * (rhos_arr[j + 1] - rhos_arr[j])
+        return None
+
+    manual = [(math.radians(psi_deg), r)
+              for level in LABEL_LEVELS
+              for psi_deg in SPOKES_DEG
+              if (r := _crossing_rho(psi_deg, level)) is not None]
+    if manual:
+        ax_polar.clabel(cs, manual=manual, fmt="%.1f", fontsize=7)
 
     evo_rhos = [data[psi][Ns_heat[0]][0][1] for psi in psi_degs_all]
     ax_polar.plot(thetas, evo_rhos, "k--", linewidth=1.5, label="evolute")
@@ -192,6 +227,10 @@ for col in err_cols:
                                                        ELLIPSE_A * math.sin(t))
                     for t in thetas]
     ax_polar.plot(thetas, ellipse_rhos, "b--", linewidth=1.5, label="ellipse")
+
+    # Drop the in-plot radial (rho) tick labels: the evolute and ellipse
+    # references already give the radial scale.
+    ax_polar.set_yticklabels([])
 
     ax_polar.legend(loc="upper right", bbox_to_anchor=(1.0, 1.0),
                     bbox_transform=fig_polar.transFigure)

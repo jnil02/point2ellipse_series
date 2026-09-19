@@ -7,6 +7,11 @@
  * Vermeille reference is written to a CSV file. rho intentionally extends
  * beyond the evolute (rho_evo) so that divergence is visible.
  *
+ * psi sweeps the full circle (0..360°): the series are built from |sin psi| /
+ * |cos psi| and the physical phi/h are reconstructed with the quadrant sign
+ * (phi odd in y, h even), so a full-circle sweep also checks that the
+ * reconstruction is correct in every quadrant.
+ *
  * Ellipse parameters are set via CMake target_compile_definitions
  * (ELLIPSE_A + ELLIPSE_B or ELLIPSE_INV_F). The default in CMakeLists.txt is
  * the unit ellipse a=1, b=0.5 (b/a=0.5), which has a large evolute convenient
@@ -65,7 +70,7 @@ int main() {
 	time_t tstart, tend;
 	tstart = time(nullptr);
 
-	const int PSI_STEPS = 91;   // PSI_STEPS evenly spaced psi from 0 to 90.
+	const int PSI_STEPS = 360;  // PSI_STEPS evenly spaced psi from 0 to 360
 	const int RHO_STEPS = 50;   // RHO_STEPS evenly spaced rho from rho_min to rho_max.
 	// MAX_ORDER x PSI_STEP x RHO_STEP old time -> new time (accum).
 	// 15x100x100 took 96s -> 16s
@@ -109,12 +114,15 @@ int main() {
 	out << "psi_deg,rho,rho_evo,N,phi_err,h_err\n";
 //	out << "psi_deg,rho,rho_evo,N,phi_err\n";
 
-	for (int i = 0; i < PSI_STEPS; ++i) {
-		const mpreal psi_deg = mpreal(90) * mpreal(i) / mpreal(PSI_STEPS-1);
+	for (int i = 0; i <= PSI_STEPS; ++i) {
+		const mpreal psi_deg = mpreal(360) * mpreal(i) / mpreal(PSI_STEPS);
 		const mpreal psi     = psi_deg / mpreal(180) * pi;
-		const mpreal abs_sin_psi = mpfr::abs(mpfr::sin(psi));
+		const mpreal sin_psi     = mpfr::sin(psi);
+		const mpreal abs_sin_psi = mpfr::abs(sin_psi);
 		const mpreal abs_cos_psi = mpfr::abs(mpfr::cos(psi));
-		const mpreal sgn         = mpreal(1);  // psi in (0°, 90°) so sin(psi) > 0
+		// sgn = sign of sin(psi) = sign of y: phi is odd in y, so the series
+		// magnitude is reflected back to the correct quadrant with this sign.
+		const mpreal sgn         = (sin_psi < 0) ? mpreal(-1) : mpreal(1);
 
 		const mpreal rho_evo = evolute_rho(psi);
 
@@ -145,9 +153,9 @@ int main() {
 				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_acc.value();
 
 				// h via h_evo_dense (incremental):
-				//   series = (h + b - rho*sin(psi)) / a
-				//   h      = a*series - b + rho*sin(psi)   (rho*sin(psi) == y)
-				const mpreal h_approx = a * h_acc.value() - mp_b() + y;
+				//   series = (h + b - rho*|sin(psi)|) / a
+				//   h      = a*series - b + rho*|sin(psi)|   (h is even in y)
+				const mpreal h_approx = a * h_acc.value() - mp_b() + rho * abs_sin_psi;
 
 				// Compute series errors,
 				const mpreal phi_err    = mpfr::abs(phi_approx - true_phi);
