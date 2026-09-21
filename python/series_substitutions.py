@@ -82,21 +82,21 @@ def double_series_power_coeff(n: int, i: int) -> series.SeriesBase:
     return poly_bell_substitution(b_ni)
 
 @cache.ints_cache
-def double_series_power_coeff_evo(n: int, i: int) -> series.SeriesBase:
+def double_series_power_coeff_evo(l: int, i: int) -> series.SeriesBase:
     """Coefficient of the power of a double power series for the inside-evolute chain.
 
     Same as double_series_power_coeff, but the inner generator a_l starts at
     z^{l+1} rather than z^1. This tightens the Bell substitution's nonzero
     condition to k>=i*(l+1) (manuscript: the kappa-sum defining c^phi_{k,l,n,i}
     starts at i_l(l+1)). The result is unchanged from the untightened version;
-    the pruned terms are identically zero after the a_{n,k} substitution.
+    the pruned terms are identically zero after the a_{l,k} substitution.
 
-    :param n: First index of resulting series coefficients.
+    :param l: sin-power (first index of the resulting series coefficients).
     :param i: The power of the double power series.
     :return: Series representing the coefficient.
     """
-    b_ni = polynomials.ordinary_potential_polynomial(n, i, "a")
-    return poly_bell_substitution(b_ni, start=lambda l: l + 1)
+    b_li = polynomials.ordinary_potential_polynomial(l, i, "a")
+    return poly_bell_substitution(b_li, start=lambda l: l + 1)
 
 def a_nk_ser(n: int, k: int, n_offset: int, d_nkl: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol) -> sp.core.Expr:
     """Specific finite a_{n,k} series from max(k, n+offsetI to n+k.
@@ -113,27 +113,27 @@ def a_nk_ser(n: int, k: int, n_offset: int, d_nkl: Callable[[int, int, int], sp.
         a_nk = a_nk + d_nkl(n, k, l) * e2 ** l
     return a_nk
 
-def a_nk_C(n: int, k: int, c: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol):
-    """Specific finite a_{n,k} series from 1 to k if k>=n+1.
+def a_nk_C(l: int, k: int, c: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol):
+    """Specific finite a_{l,k} series from 1 to k if k>=l+1.
 
-    The generator a_{n,k} (paper a_{l,k}) carries the parity constraints of the
-    underlying c coefficients: it is zero unless k >= n+1 and k == n+1 (mod 2),
-    and within a nonzero generator only the e2-powers l == k (mod 2) contribute.
-    Off-parity generators/terms are identically zero, so pruning them here does
-    not change the result, only avoids evaluating provably-zero coefficients.
+    The generator a_{l,k} carries the parity constraints of the underlying c
+    coefficients: it is zero unless k >= l+1 and k == l+1 (mod 2), and within a
+    nonzero generator only the e2-powers n == k (mod 2) contribute. Off-parity
+    generators/terms are identically zero, so pruning them here does not change
+    the result, only avoids evaluating provably-zero coefficients.
 
-    :param n: n index
-    :param k: k index
-    :param c: tripple sum coefficient.
-    :param e2 series base variable.
+    :param l: sin-power index (the generator index).
+    :param k: sigma-power index.
+    :param c: coefficient callback c(k, l, n).
+    :param e2: series base variable.
     :return: expression for finite series.
     """
-    a_nk = sp.S.Zero
-    if k < n + 1 or (k - n - 1) % 2 != 0:
-        return a_nk
-    for l in range(2 - k % 2, k + 1, 2):  # e2-power l == k (mod 2); others vanish
-        a_nk += c(n, k, l) * e2 ** l
-    return a_nk
+    a_lk = sp.S.Zero
+    if k < l + 1 or (k - l - 1) % 2 != 0:
+        return a_lk
+    for n in range(2 - k % 2, k + 1, 2):  # e2-power n == k (mod 2); others vanish
+        a_lk += c(k, l, n) * e2 ** n
+    return a_lk
 
 def a_nk_sub(p: sp.core.Expr, a_nk: Callable[[int, int], sp.core.Expr]) -> sp.core.Expr:
     """Substitute a_{n,k} with the result of the callback.

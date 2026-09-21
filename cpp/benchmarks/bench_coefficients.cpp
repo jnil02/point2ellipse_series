@@ -9,15 +9,15 @@
  * Usage:
  *   bench_coefficients <function> <args...>
  *
- * Supported functions and their arguments (n, k, l are integers):
- *   d_phi_evo         n k l
- *   d_h_evo           n k l
- *   cp_evo            n k l
+ * Supported functions and their arguments (k=sigma, l=sin, n=eps powers):
+ *   d_phi_evo         k l n
+ *   d_h_evo           k l n
+ *   cp_evo            k l n
  *   a_mr              m r
  *   B_rt              r t
  *   C_mt              m t
  *   B_p               n k p
- *   R                 n k l i
+ *   R                 k l n i
  *
  * Output (one line, tab-separated, parseable):
  *   <function>  <args...>  <wall_ms>
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
 	} else if (fn == "cp_evo") {
 		require_args(3);
 		auto t0 = Clock::now();
-		volatile auto r = cp_evo(iarg(1), iarg(0), iarg(2));
+		volatile auto r = cp_evo(iarg(0), iarg(1), iarg(2));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "a_mr") {
@@ -108,7 +108,7 @@ int main(int argc, char* argv[]) {
 	} else if (fn == "c_N_evo") {
 		require_args(3);
 		auto t0 = Clock::now();
-		volatile auto r = c_N_evo(iarg(1), iarg(0), iarg(2));
+		volatile auto r = c_N_evo(iarg(0), iarg(1), iarg(2));
 		(void)r; print(elapsed_ms(t0));
 
 	} else if (fn == "R") {

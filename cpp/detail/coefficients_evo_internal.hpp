@@ -8,6 +8,6 @@ namespace point_to_ellipse_series::detail {
 mpq_class a_mr(int m, int r);
 mpq_class B_rt(int r, int t);
 mpq_class C_mt(int m, int t);
-mpq_class R(int n, int k, int l, int i);
+mpq_class R(int k, int l, int n, int i);
 
 } // namespace point_to_ellipse_series::detail

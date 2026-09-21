@@ -150,13 +150,13 @@ def c_phi_evo(k, l, n):
     return c * (-1) ** ((l + n + 1) // 2) / k
 
 @cache.ints_cache
-def d_phi_pow_evo_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
-    # Polynomial for A_{n,i} in terms of {a_0,...,a_n}. The inside-evolute
+def d_phi_pow_evo_polynomial(k: int, l: int, i: int) -> sp.core.Expr:
+    # Polynomial for A_{l,i} in terms of {a_0,...,a_l}. The inside-evolute
     # generator a_l starts at z^{l+1}, so use the tightened variant based on
     # the nonzero condition k>=i*(l+1)).
-    tmp = series_substitutions.double_series_power_coeff_evo(n, i)[k]
-    # Polynomial for the rho^k coefficients in A_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
-    tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_C(n, k, lambda n,k,l: c_phi_evo(k, n, l), symbols.e2))
+    tmp = series_substitutions.double_series_power_coeff_evo(l, i)[k]
+    # Polynomial for the rho^k coefficients in A_{l,i} in terms of {a_{l,1},...a_{l,k+1}}
+    tmp = series_substitutions.a_nk_sub(tmp, lambda l, k: series_substitutions.a_nk_C(l, k, c_phi_evo, symbols.e2))
     return tmp
 
 
@@ -174,8 +174,8 @@ def c_phi_pow_evo(k: int, l: int, n: int, i: int) -> sp.core.numbers.Rational:
         f"c_phi_pow_evo indices out of range. k: {k} l: {l} n: {n} i: {i}"
     if (i + l - k) % 2 != 0 or (n - k) % 2 != 0:  # Parity constraint from the underlying coefficients.
         return sp.S.Zero
-    tmp = d_phi_pow_evo_polynomial(l, k, i)
-    return sp.expand(tmp).coeff(symbols.e2, n)  # Extract the l:th power of the series.
+    tmp = d_phi_pow_evo_polynomial(k, l, i)
+    return sp.expand(tmp).coeff(symbols.e2, n)  # Extract the n:th e2-power of the series.
 
 @cache.ints_cache
 def c_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
@@ -401,23 +401,13 @@ def c_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
     return polynomials.sin_pow_to_cos_mul(n, k, l, 1, 0, d_h)
 
 @cache.ints_cache
-def R(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
-    assert n >= 0 and k >= n and l >= 0 and l <= k and i>=0 and i <= l//2, \
-        f"R indices out of range. n: {n} k: {k} l: {l} i: {i}"
+def R(k: int, l: int, n: int, i: int) -> sp.core.numbers.Rational:
+    assert l >= 0 and k >= l and n >= 0 and n <= k and i >= 0 and i <= n // 2, \
+        f"R indices out of range. k: {k} l: {l} n: {n} i: {i}"
     s = sp.S.Zero
-    for j in range(max(0,ceil((n + 2 * i - k) / 2.)), n // 2 + 1):
-        s += (-1) ** (j) * sp.binomial(i, j) * c_phi_pow_evo(k, n - 2 * j, l, 2 * i)
+    for j in range(max(0, ceil((l + 2 * i - k) / 2.)), l // 2 + 1):
+        s += (-1) ** (j) * sp.binomial(i, j) * c_phi_pow_evo(k, l - 2 * j, n, 2 * i)
     return s
-
-@cache.ints_cache
-def d_Na_evo2(n: int, k: int, l: int, b_a) -> sp.core.Expr:
-    assert n >= 0 and k >= n and l >= 0 and l <= k, \
-        f"d_Na_evo2 indices out of range. n: {n} k: {k} l: {l}"
-    d = sp.S.Zero
-    for i in range(l // 2 + 1):
-        for t in range(i+1):
-            d += C_mt(i,t) * R(n,k,l,i) * b_a ** (-2*t - 1)
-    return d
 
 @cache.ints_cache
 def c_N_evo(k: int, l: int, n: int) -> sp.core.Rational:
@@ -430,7 +420,7 @@ def c_N_evo(k: int, l: int, n: int) -> sp.core.Rational:
         for i in range(p // 2+1):
             t = p + 1 - n
             if (t % 2 == 0 and t >= 0 and t <= 2*i):
-                d += C_mt(i,t // 2) * R(l, k, p, i)
+                d += C_mt(i,t // 2) * R(k, l, p, i)
     return d
 
 @cache.ints_cache

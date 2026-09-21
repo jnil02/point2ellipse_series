@@ -219,28 +219,28 @@ mpq_class c_phi_evo(int k, int l, int n) {
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
-static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
+static E2Poly c_phi_pow_evo_e2poly_se4(int k, int l, int i) {
 	static UintsCache<E2Poly> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) i)) return *ret;
+	if (auto *ret = cache.get((uint) k, (uint) l, (uint) i)) return *ret;
 
 	static std::map<std::pair<int,int>, std::shared_ptr<TSeriesBase<LExpr>>> series_cache;
-	auto key = std::make_pair(n, i);
+	auto key = std::make_pair(l, i);
 	if (!series_cache.count(key))
 		// Inside-evolute generator a_l starts at z^{l+1} implying a tightened
 		// variant (Bell guard k>=i*(l+1)).
-		series_cache[key] = double_series_power_coeff_evo_lexpr(n, i);
+		series_cache[key] = double_series_power_coeff_evo_lexpr(l, i);
 
 	LExpr lp = series_cache[key]->getItem(k);
 	E2Poly result = lexpr_eval_e2poly(lp, [](int j, int m) {
 		return a_nk_C_lexpr(j, m, c_phi_evo);
 	});
 
-	return cache.insert(result, (uint) n, (uint) k, (uint) i);
+	return cache.insert(result, (uint) k, (uint) l, (uint) i);
 }
 
-mpq_class c_phi_pow_evo_se4(int n, int k, int l, int i) {
-	E2Poly ep = c_phi_pow_evo_e2poly_se4(n, k, i);
-	return (l < (int) ep.size()) ? ep[l] : mpq_class(0);
+mpq_class c_phi_pow_evo_se4(int k, int l, int n, int i) {
+	E2Poly ep = c_phi_pow_evo_e2poly_se4(k, l, i);
+	return (n < (int) ep.size()) ? ep[n] : mpq_class(0);
 }
 
 mpq_class c_phi_pow_evo(int k, int l, int n, int i) {
@@ -254,7 +254,7 @@ mpq_class c_phi_pow_evo(int k, int l, int n, int i) {
 	if (auto *ret = cache.get((uint) l, (uint) k, (uint) n, (uint) i))
 		return *ret;
 
-	mpq_class ret = c_phi_pow_evo_se4(l, k, n, i);  // ← LExpr/GMP pipeline (was: _se2)
+	mpq_class ret = c_phi_pow_evo_se4(k, l, n, i);  // ← LExpr/GMP pipeline (was: _se2)
 
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n, (uint) i);
 }
@@ -427,27 +427,27 @@ mpq_class C_mt(int m, int t) {
 	return cache.insert(ret, (uint) m, (uint) t);
 }
 
-mpq_class R(int n, int k, int l, int i) {
-	assert(n >= 0 && k >= n && l >= 0 && l <= k && i >= 0 && i <= l / 2);
+mpq_class R(int k, int l, int n, int i) {
+	assert(l >= 0 && k >= l && n >= 0 && n <= k && i >= 0 && i <= n / 2);
 
 	static UintsCache<mpq_class> cache;
-	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l, (uint) i))
+	if (auto *ret = cache.get((uint) k, (uint) l, (uint) n, (uint) i))
 		return *ret;
 
 	mpq_class s(0);
 
-	const int j_min = std::max(0, (n + 2 * i - k + 1) / 2);
-	const int j_max = n / 2;
+	const int j_min = std::max(0, (l + 2 * i - k + 1) / 2);
+	const int j_max = l / 2;
 
 	for (int j = j_min; j <= j_max; ++j) {
 		mpz_class binom;
 		mpz_bin_uiui(binom.get_mpz_t(), (unsigned long) i, (unsigned long) j);
 		s += mpq_class(powm1(j) * binom)
-			 * c_phi_pow_evo(k, n - 2 * j, l, 2 * i);
+			 * c_phi_pow_evo(k, l - 2 * j, n, 2 * i);
 	}
 
 	mpq_class ret = s;
-	return cache.insert(ret, (uint) n, (uint) k, (uint) l, (uint) i);
+	return cache.insert(ret, (uint) k, (uint) l, (uint) n, (uint) i);
 }
 
 } // namespace detail
@@ -469,7 +469,7 @@ mpq_class c_N_evo(int k, int l, int n) {
 			const int t = p + 1 - n;
 
 			if (t % 2 == 0 && t >= 0 && t <= 2 * i)
-				d += detail::C_mt(i, t / 2) * detail::R(l, k, p, i);
+				d += detail::C_mt(i, t / 2) * detail::R(k, l, p, i);
 		}
 	}
 
