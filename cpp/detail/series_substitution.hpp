@@ -55,12 +55,17 @@ static E2Poly a_nk_ser_lexpr(int n, int k, int n_offset,
 	return result;
 }
 
-// GMP-only counterpart of a_nk_C: sum_{l=1}^{k} c_nkl(n,k,l) * e2^l.
+// GMP-only counterpart of a_nk_C: sum_{l} c_nkl(k,n,l) * e2^l.
+//
+// The generator a_{n,k} carries the parity of the underlying c coefficients: it
+// is zero unless k>=n+1 and k==n+1 (mod 2), and within a nonzero generator only
+// the e2-powers l==k (mod 2) contribute. Off-parity generators/terms are
+// identically zero, so pruning them here only avoids provably-zero evaluations.
 static E2Poly a_nk_C_lexpr(int n, int k,
 						   const std::function<mpq_class(int, int, int)>& c_nkl) {
-	if (k < n + 1) return {};
+	if (k < n + 1 || (k - n - 1) % 2 != 0) return {};
 	E2Poly result(k + 1, mpq_class(0));
-	for (int l = 1; l <= k; ++l)
+	for (int l = 2 - k % 2; l <= k; l += 2)  // e2-power l == k (mod 2); others vanish
 		result[l] = c_nkl(k, n, l);
 	return result;
 }

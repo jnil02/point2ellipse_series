@@ -116,6 +116,12 @@ def a_nk_ser(n: int, k: int, n_offset: int, d_nkl: Callable[[int, int, int], sp.
 def a_nk_C(n: int, k: int, c: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol):
     """Specific finite a_{n,k} series from 1 to k if k>=n+1.
 
+    The generator a_{n,k} (paper a_{l,k}) carries the parity constraints of the
+    underlying c coefficients: it is zero unless k >= n+1 and k == n+1 (mod 2),
+    and within a nonzero generator only the e2-powers l == k (mod 2) contribute.
+    Off-parity generators/terms are identically zero, so pruning them here does
+    not change the result, only avoids evaluating provably-zero coefficients.
+
     :param n: n index
     :param k: k index
     :param c: tripple sum coefficient.
@@ -123,9 +129,9 @@ def a_nk_C(n: int, k: int, c: Callable[[int, int, int], sp.core.Expr], e2: sp.co
     :return: expression for finite series.
     """
     a_nk = sp.S.Zero
-    if k < n+1:
+    if k < n + 1 or (k - n - 1) % 2 != 0:
         return a_nk
-    for l in range(1, k + 1):
+    for l in range(2 - k % 2, k + 1, 2):  # e2-power l == k (mod 2); others vanish
         a_nk += c(n, k, l) * e2 ** l
     return a_nk
 
