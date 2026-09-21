@@ -9,7 +9,7 @@ import sympy as sp
 from symbols import varrho, rho_ae2, psi, sin_psi, cos_psi, e2, b_a
 from coefficients import c_phi, d_phi, d_phi2, c_sin, c_cos, d_phi_pow, d_cos, d_sin, c_h, d_h, \
     c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo, c_cos_phi_evo, c_sin_phi_inv_evo, c_N_evo, \
-    c_h_evo, d_phi_evo, d_cos_phi_evo, cp_evo_nkl, d_h_evo
+    c_h_evo, d_phi_evo, d_cos_phi_evo, cp_evo, d_h_evo
 
 
 def phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
@@ -408,7 +408,7 @@ def sin_phi_inv_evo3(L, K):
     for l in range(1, L + 1):
         for k in range(l, K + 1):
             for n in range(1, k + 1 + 1):
-                s += cp_evo_nkl(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += cp_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
     return s
 
 

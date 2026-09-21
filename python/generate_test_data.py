@@ -12,7 +12,7 @@ from typing import Callable, Optional, Sequence, Tuple
 from coefficients import (d_phi, d_sin, d_cos, d_h, d_phi_evo, c_phi_evo,
                           c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo,
                           c_cos_phi_evo, d_cos_phi_evo, c_sin_phi_inv_evo,
-                          c_N_evo, cp_evo_nkl, c_h_evo)
+                          c_N_evo, cp_evo, c_h_evo)
 
 # Generate all indices up to and including this value.
 M  = 5  # Max index
@@ -143,7 +143,7 @@ SPECS = [
           ('k', lambda l: l, lambda l: M + 1),
           ('n', lambda l, k: 1, lambda l, k: k + 2)],
          order=('k', 'l', 'n')),
-    Spec(cp_evo_nkl,
+    Spec(cp_evo,
          [('l', lambda: 1, lambda: M + 1),
           ('k', lambda l: l, lambda l: M + 1),
           ('n', lambda l, k: 1, lambda l, k: k + 2)],

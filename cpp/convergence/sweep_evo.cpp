@@ -101,7 +101,9 @@ int main() {
 	// with new series
 	// 30x360x50 took 290s
     // After updated Bell-limits it took 129s.
-	const int MAX_ORDER = 30;   // N = K = 1 .. MAX_ORDER
+	// Return early on a_nkl_C and it takes 84s
+	// 35x360x50 took 172s
+	const int MAX_ORDER = 35;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
 	const mpreal b_a_v = mp_b() / a;

@@ -477,7 +477,7 @@ mpq_class c_N_evo(int k, int l, int n) {
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
 
-mpq_class cp_evo_nkl(int k, int l, int n) {
+mpq_class cp_evo(int k, int l, int n) {
 	assert(l >= 1 && k >= l && n >= 1 && n <= k + 1);
 
 	if ((l - k) % 2 != 0 || (k + 1 - n) % 2 != 0)
@@ -516,7 +516,7 @@ mpq_class c_h_evo(int k, int l, int n) {
 	if (l == 0) {
 		ret = -c_N_evo(k, l, n);
 	} else {
-		ret = cp_evo_nkl(k, l, n) - c_N_evo(k, l, n);
+		ret = cp_evo(k, l, n) - c_N_evo(k, l, n);
 	}
 
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
