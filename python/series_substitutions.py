@@ -12,7 +12,8 @@ import cache
 import series
 
 
-def poly_bell_substitution(p: sp.core.Expr) -> series.SeriesBase:
+def poly_bell_substitution(p: sp.core.Expr,
+                           start: Callable[[int], int] = lambda l: 1) -> series.SeriesBase:
     """Expand a polynomial p(a_0,...,a_n) by substituting Bell polynomials for a_n^i.
 
     p is a multidimensional polynomial in variables a_n. (The assumption is
@@ -20,11 +21,11 @@ def poly_bell_substitution(p: sp.core.Expr) -> series.SeriesBase:
     transferred to the substitution variable.)
     Assume
 
-    a_n = \sum_{k=1}^\infty b_{n,k} z^k
+    a_n = \sum_{k=start(n)}^\infty b_{n,k} z^k
 
     where b_{n,k} are new variables, then
 
-    a_n^i = \sum_{k=j} \hat{B}_{k,i}(b_{n,1},...,b_{n,k-i+1})z^k
+    a_n^i = \sum_{k=i*start(n)} \hat{B}_{k,i}(b_{n,1},...,b_{n,k-i+1})z^k
 
     where \hat{B}_{k,i}(...) is a partial ordinary Bell polynomial.
     See https://en.wikipedia.org/wiki/Bell_polynomials
@@ -32,6 +33,13 @@ def poly_bell_substitution(p: sp.core.Expr) -> series.SeriesBase:
     This function makes the Bell polynomial substitution.
 
     :param p: The polynomial to make the substitution in. Polynomial must be expanded.
+    :param start: Lowest power z^{start(n)} at which generator a_n begins. The
+        default assumes every generator starts at z^1, giving the standard partial
+        ordinary Bell nonzero condition k>=i. For generators that start at
+        z^{n+1} (e.g. the inside-evolute a_l), pass start=lambda l: l+1, which
+        tightens the nonzero condition to k>=i*(n+1). Since b_{n,k}=0 for
+        k<start(n), the extra terms are identically zero, so this only prunes
+        provably-zero terms and does not change the result.
     :return: A coefficient sequence representing the substituted polynomial as a series.
     """
     seqTot = series.SeriesEmpty()  # Sequence for the whole polynomial.
@@ -48,9 +56,13 @@ def poly_bell_substitution(p: sp.core.Expr) -> series.SeriesBase:
                 base_exp = termFactor.as_base_exp() if termFactor.is_Pow else (termFactor, 1)
                 # Retrieve the indices of the coefficient, e.g. "_0" for "a_0".
                 ix = base_exp[0].name[base_exp[0].name.find('_'):]
-                def bellLambdaGen(j, x):
-                    return lambda n: polynomials.partial_ordinary_bell_polynomial(n, j, x) if n >= j else 0
-                seqTerm = seqTerm * series.Series(bellLambdaGen(int(base_exp[1]), 'a' + ix))
+                l_gen = int(ix[1:])  # Generator index l from the symbol name a_l.
+                # The i:th power of a_l starts at z^{i*start(l)}; below that the
+                # partial ordinary Bell polynomial vanishes, so the guard uses it.
+                def bellLambdaGen(j, x, thr):
+                    return lambda n: polynomials.partial_ordinary_bell_polynomial(n, j, x) if n >= thr else 0
+                seqTerm = seqTerm * series.Series(
+                    bellLambdaGen(int(base_exp[1]), 'a' + ix, int(base_exp[1]) * start(l_gen)))
             else:
                 raise Exception("Unhandled factor in sympy expression:" + str(termFactor))
         seqTot = seqTot + seqTerm
@@ -68,6 +80,23 @@ def double_series_power_coeff(n: int, i: int) -> series.SeriesBase:
     b_ni = polynomials.ordinary_potential_polynomial(n, i, "a")
     # Polynomial for the varrho^k coefficient in b_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
     return poly_bell_substitution(b_ni)
+
+@cache.ints_cache
+def double_series_power_coeff_evo(n: int, i: int) -> series.SeriesBase:
+    """Coefficient of the power of a double power series for the inside-evolute chain.
+
+    Same as double_series_power_coeff, but the inner generator a_l starts at
+    z^{l+1} rather than z^1. This tightens the Bell substitution's nonzero
+    condition to k>=i*(l+1) (manuscript: the kappa-sum defining c^phi_{k,l,n,i}
+    starts at i_l(l+1)). The result is unchanged from the untightened version;
+    the pruned terms are identically zero after the a_{n,k} substitution.
+
+    :param n: First index of resulting series coefficients.
+    :param i: The power of the double power series.
+    :return: Series representing the coefficient.
+    """
+    b_ni = polynomials.ordinary_potential_polynomial(n, i, "a")
+    return poly_bell_substitution(b_ni, start=lambda l: l + 1)
 
 def a_nk_ser(n: int, k: int, n_offset: int, d_nkl: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol) -> sp.core.Expr:
     """Specific finite a_{n,k} series from max(k, n+offsetI to n+k.

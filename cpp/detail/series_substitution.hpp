@@ -66,8 +66,16 @@ static E2Poly a_nk_C_lexpr(int n, int k,
 }
 
 // Substitute a_j^e in each APoly term with a TSeries<LExpr> of Bell polynomials.
+//
+// start(j) is the lowest power z^{start(j)} at which generator a_j begins. The
+// default assumes every generator starts at z^1, giving the standard partial
+// ordinary Bell nonzero condition k>=e. For generators that start at z^{j+1}
+// (the inside-evolute a_l), pass start=[](int l){return l+1;}, which tightens
+// the guard to k>=e*(j+1). Since a_{j,m}=0 for m<start(j), the pruned terms are
+// identically zero, so this only removes provably-zero terms.
 static std::shared_ptr<TSeriesBase<LExpr>>
-poly_bell_substitution_lexpr(const APoly& poly) {
+poly_bell_substitution_lexpr(const APoly& poly,
+							 const std::function<int(int)>& start = [](int){ return 1; }) {
 	if (poly.empty())
 		return std::make_shared<TSeriesFactor<LExpr>>(LExpr{});  // zero series
 	std::shared_ptr<TSeriesBase<LExpr>> seqTot = std::make_shared<TSeriesEmpty<LExpr>>();
@@ -75,8 +83,10 @@ poly_bell_substitution_lexpr(const APoly& poly) {
 		std::shared_ptr<TSeriesBase<LExpr>> seqTerm =
 				std::make_shared<TSeriesFactor<LExpr>>(lexpr_const(coeff));
 		for (const auto& [j, e] : monomial) {
-			auto gen = [j=j, e=e](int k) -> LExpr {
-				return (k >= e) ? partial_bell_lexpr(k, e, j) : LExpr{};
+			// a_j^e starts at z^{e*start(j)}; below that partial_bell_lexpr vanishes.
+			int thr = e * start(j);
+			auto gen = [j=j, e=e, thr](int k) -> LExpr {
+				return (k >= thr) ? partial_bell_lexpr(k, e, j) : LExpr{};
 			};
 			seqTerm = (*seqTerm) * std::make_shared<TSeries<LExpr>>(gen);
 		}
@@ -88,6 +98,16 @@ poly_bell_substitution_lexpr(const APoly& poly) {
 static std::shared_ptr<TSeriesBase<LExpr>>
 double_series_power_coeff_lexpr(int n, int i) {
 	return poly_bell_substitution_lexpr(ordinary_potential_polynomial2(n, i));
+}
+
+// Inside-evolute variant: the inner generator a_l starts at z^{l+1}, so the Bell
+// guard tightens to k>=i*(l+1). Values are identical to the untightened version
+// (pruned terms vanish after the a_{n,k} substitution); it only avoids building
+// provably-zero terms.
+static std::shared_ptr<TSeriesBase<LExpr>>
+double_series_power_coeff_evo_lexpr(int n, int i) {
+	return poly_bell_substitution_lexpr(ordinary_potential_polynomial2(n, i),
+										[](int l){ return l + 1; });
 }
 
 }  // namespace point_to_ellipse_series

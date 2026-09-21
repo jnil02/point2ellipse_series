@@ -226,7 +226,9 @@ static E2Poly c_phi_pow_evo_e2poly_se4(int n, int k, int i) {
 	static std::map<std::pair<int,int>, std::shared_ptr<TSeriesBase<LExpr>>> series_cache;
 	auto key = std::make_pair(n, i);
 	if (!series_cache.count(key))
-		series_cache[key] = double_series_power_coeff_lexpr(n, i);
+		// Inside-evolute generator a_l starts at z^{l+1} implying a tightened
+		// variant (Bell guard k>=i*(l+1)).
+		series_cache[key] = double_series_power_coeff_evo_lexpr(n, i);
 
 	LExpr lp = series_cache[key]->getItem(k);
 	E2Poly result = lexpr_eval_e2poly(lp, [](int j, int m) {

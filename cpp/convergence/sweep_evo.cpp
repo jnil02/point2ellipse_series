@@ -98,6 +98,9 @@ int main() {
 	// 80x90x50 took 343s
 	// Phi + h
 	// 30x91x50 took 374s
+	// with new series
+	// 30x360x50 took 290s
+    // After updated Bell-limits it took 129s.
 	const int MAX_ORDER = 30;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();

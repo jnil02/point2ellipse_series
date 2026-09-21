@@ -150,8 +150,10 @@ def c_phi_evo(k, l, n):
 
 @cache.ints_cache
 def d_phi_pow_evo_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
-    # Polynomial for A_{n,i} in terms of {a_0,...,a_n}.
-    tmp = series_substitutions.double_series_power_coeff(n, i)[k]
+    # Polynomial for A_{n,i} in terms of {a_0,...,a_n}. The inside-evolute
+    # generator a_l starts at z^{l+1}, so use the tightened variant based on
+    # the nonzero condition k>=i*(l+1)).
+    tmp = series_substitutions.double_series_power_coeff_evo(n, i)[k]
     # Polynomial for the rho^k coefficients in A_{n,i} in terms of {a_{n,1},...a_{n,k+1}}
     tmp = series_substitutions.a_nk_sub(tmp, lambda n, k: series_substitutions.a_nk_C(n, k, lambda n,k,l: c_phi_evo(k, n, l), symbols.e2))
     return tmp
