@@ -4,6 +4,7 @@ Caching utilities for function taking unsigned integer arguments.
 """
 
 # External includes.
+import functools
 from collections.abc import Hashable
 
 
@@ -42,7 +43,10 @@ class ints_cache:
     def __init__(self, f):
         self.f = f
         self.cache = {}
-        self.__name__ = f.__name__  # So that we can use __name__ as expected.
+        # Copy __name__, __doc__, __qualname__, __wrapped__, ... from the wrapped
+        # function so introspection (help(), __doc__) sees the function, not this
+        # wrapper.
+        functools.update_wrapper(self, f)
 
     def __call__(self, *args):
         ints, others = split_args(*args)
