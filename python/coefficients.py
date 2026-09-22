@@ -18,12 +18,15 @@ from util import rf_half, E2
 
 @cache.ints_cache
 def d_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """(phi - psi) sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for the normal direction φ − ψ.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    Far-field (exterior) base coefficient, from which the sin(φ), cos(φ) and
+    height series far from the center are built.
+
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 1 and l >= max(n + 1, k) and l <= n + k, f"d_phi indices out of range. n: {n} k: {k} l: {l}"
     d = sp.Integer(0)
@@ -42,12 +45,14 @@ def d_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def d_phi2(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute phi-psi sin-power series expansion coefficients __with cos-sin factor integrated in the series__.
+    """Coefficient of the sin-power series for φ − ψ, cos·sin factor folded in.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    Variant of d_phi with the cos·sin prefactor absorbed into the series.
+
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 1 and l >= k and l <= n + k, f"d_phi2 indices out of range. n: {n} k: {k} l: {l}"
     d = sp.Integer(0)
@@ -68,12 +73,12 @@ def d_phi2(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_phi(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute phi-psi Fourier series expansion coefficients.
+    """Coefficient of the Fourier series for the normal direction φ − ψ.
 
-    :param n: Fourier sin-multiple.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: Fourier multiple index.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 1 and k >= 1 and l >= max(n, k), f"c_phi indices out of range. n: {n} k: {k} l: {l}"
     h = sp.Integer(0)
@@ -306,13 +311,16 @@ def d_phi_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
 
 @cache.ints_cache
 def d_phi_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
-    """Compute (phi-psi)^i sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for (φ − ψ)^i.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :param i: The power exponent.
-    :return: Coefficient as a sympy rational number.
+    Powers of the φ − ψ series, used to build the sin(φ), cos(φ) and
+    sin(φ)/sin(ψ) series via their Taylor expansions.
+
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :param i: power exponent.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= i and l >= max(n + i, k) and l <= n + k and i >= 1, \
         f"d_phi_pow indices out of range. n: {n} k: {k} l: {l} i: {i}"
@@ -331,13 +339,13 @@ def d_sin_pow_polynomial(n: int, k: int, i: int) -> sp.core.Expr:
 
 @cache.ints_cache
 def d_sin_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
-    """Compute (sin(phi)/sin(psi)-1)^i sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for (sin(φ)/sin(ψ) − 1)^i.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :param i: The power exponent.
-    :return: Coefficient as a sympy rational number.
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :param i: power exponent.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 0 and l >= 0 and l <= n + k and i >= 0, \
         f"d_sin_pow indices out of range. n: {n} k: {k} l: {l} i: {i}"
@@ -347,12 +355,12 @@ def d_sin_pow(n: int, k: int, l: int, i: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def d_N_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute inverse radius of curvature sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for the inverse radius of curvature.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 1 and k >= 0 and l >= max(n, k + 1) and l <= n + k, \
         f"d_N_nkl indices out of range. n: {n} k: {k} l: {l}"
@@ -366,12 +374,12 @@ def d_N_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def bp_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute cos(phi-psi) sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for cos(φ − ψ).
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 1 and k >= 1 and l >= max(n, k) and l <= n + k - 1, \
         f"bp_nkl indices out of range. n: {n} k: {k} l: {l}"
@@ -384,12 +392,12 @@ def bp_nkl(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def d_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute sin(phi)/sin(psi)-1 sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for sin(φ)/sin(ψ) − 1.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 1 and l >= max(n, k) and l <= n + k, \
         f"d_sin indices out of range. n: {n} k: {k} l: {l}"
@@ -403,12 +411,12 @@ def d_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute sin(phi)/sin(psi)-1 Fourier series expansion coefficients.
+    """Coefficient of the Fourier series for sin(φ)/sin(ψ) − 1.
 
-    :param n: Fourier sin-multiple.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: Fourier multiple index.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 1 and l >= max(n, k), \
         f"c_sin indices out of range. n: {n} k: {k} l: {l}"
@@ -417,12 +425,12 @@ def c_sin(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def d_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute cos(phi)/cos(psi)-1 sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for cos(φ)/cos(ψ) − 1.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 1 and l >= max(n, k) and l <= n + k - 1, \
         f"d_cos indices out of range. n: {n} k: {k} l: {l}"
@@ -436,12 +444,12 @@ def d_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute cos(phi)/cos(psi)-1 Fourier series expansion coefficients.
+    """Coefficient of the Fourier series for cos(φ)/cos(ψ) − 1.
 
-    :param n: Fourier sin-multiple.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: Fourier multiple index.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 1 and l >= max(n, k), \
         f"c_cos indices out of range. n: {n} k: {k} l: {l}"
@@ -450,12 +458,12 @@ def c_cos(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def d_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute (h+a-rho)/a sin-power series expansion coefficients.
+    """Coefficient of the sin-power series for the height term (h + a − ρ)/a.
 
-    :param n: sin-power.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: sin(ψ) power.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 1 and k >= 0 and l >= max(n, k + 1) and l <= n + k, \
         f"d_h indices out of range. n: {n} k: {k} l: {l}"
@@ -467,12 +475,12 @@ def d_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_h(n: int, k: int, l: int) -> sp.core.numbers.Rational:
-    """Compute (h+a-rho)/a Fourier series expansion coefficients.
+    """Coefficient of the Fourier series for the height term (h + a − ρ)/a.
 
-    :param n: Fourier sin-multiple.
-    :param k: varrho power of inner power series.
-    :param l: e² power of innermost power series.
-    :return: Coefficient as a sympy rational number.
+    :param n: Fourier multiple index.
+    :param k: ϱ (= a/ρ) power.
+    :param l: e² power.
+    :return: Coefficient as a sympy rational.
     """
     assert n >= 0 and k >= 0 and l >= max(n, k + 1), \
         f"c_h indices out of range. n: {n} k: {k} l: {l}"
