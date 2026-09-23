@@ -13,7 +13,7 @@ namespace point_to_ellipse_series {
 using uint = unsigned int;
 
 mpq_class d_phi_evo(int k, int l, int n) {
-	assert(k > 0 && l >= 0 && n >= 0);
+	assert(l >= 0 && k >= 1 && n >= 0 && l <= (k - 1) / 2 && n <= (k - 1) / 2);
 
 	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) k, (uint) l, (uint) n))
@@ -355,7 +355,7 @@ mpq_class c_sin_phi_inv_evo(int k, int l, int n) {
 namespace detail {
 
 mpq_class a_mr(int m, int r) {
-	assert(m >= 0 && r >= 0 && r <= m);
+	assert(r >= 0 && r <= m);
 
 	if (m == 0 && r == 0)
 		return {1, 1};
@@ -393,7 +393,7 @@ mpq_class a_mr(int m, int r) {
 }
 
 mpq_class B_rt(int r, int t) {
-	assert(r >= 0 && t >= 0 && r >= t);
+	assert(t >= 0 && r >= t);
 
 	static UintsCache<mpq_class> cache;
 	if (auto *ret = cache.get((uint) r, (uint) t))
@@ -523,14 +523,17 @@ mpq_class c_h_evo(int k, int l, int n) {
 }
 
 mpq_class d_h_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= 2 && n >= 0 && l <= k / 2 && n <= k / 2);
 	return c_h_evo(k, 2 * l + (k % 2), 2 * n + 1 + (k % 2));
 }
 
 mpq_class d_sin_phi_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= 2 && n >= 1 && l <= k / 2 && n <= k / 2);
 	return c_sin_phi_evo(k, 2 * l + (k % 2), 2 * n + (k % 2));
 }
 
 mpq_class d_cos_phi_evo(int k, int l, int n) {
+	assert(l >= 0 && k >= 1 && n >= (k - 1) % 2 && l <= (k - 1) / 2 && n <= k / 2);
 	const int p = (k-1) % 2;
 	return c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p);
 }

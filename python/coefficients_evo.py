@@ -28,6 +28,8 @@ def d_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     :param n: ε (= b/a) power.
     :return: Coefficient as a sympy rational.
     """
+    assert l >= 0 and k >= 1 and n >= 0 and l <= (k - 1) // 2 and n <= (k - 1) // 2, \
+        f"d_phi_evo indices out of range. k: {k} l: {l} n: {n}"
     s = k % 2
     m_k = (k - 1) // 2
     d = sp.S.Zero
@@ -94,7 +96,7 @@ def c_phi_pow_evo(k: int, l: int, n: int, i: int) -> sp.core.numbers.Rational:
     :param i: power exponent.
     :return: Coefficient as a sympy rational.
     """
-    assert l >= 0 and k >= l + i and n >= i and n <= k, \
+    assert l >= 0 and k >= l + i and n >= i and n <= k and i >= 0, \
         f"c_phi_pow_evo indices out of range. k: {k} l: {l} n: {n} i: {i}"
     if (i + l - k) % 2 != 0 or (n - k) % 2 != 0:  # Parity constraint from the underlying coefficients.
         return sp.S.Zero
@@ -177,7 +179,7 @@ def d_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     :param n: ε (= b/a) power.
     :return: Coefficient as a sympy rational.
     """
-    assert k >= 1 and l >= 0 and n >= (k + 1) % 2 and l <= (k - 1) // 2 and n <= ceil((k - 1) / 2.), \
+    assert l >= 0 and k >= 1 and n >= (k - 1) % 2 and l <= (k - 1) // 2 and n <= k // 2, \
         f"d_cos_phi_evo indices out of range. k: {k} l: {l} n: {n}"
     p = (k - 1) % 2
     return c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p)
@@ -307,7 +309,7 @@ def d_h_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     :param n: ε (= b/a) power.
     :return: Coefficient as a sympy rational.
     """
-    assert l >= 0 and k >= 0 and n >= 0 and n <= k // 2 and l <= k // 2, \
+    assert l >= 0 and k >= 2 and n >= 0 and n <= k // 2 and l <= k // 2, \
         f"d_h_evo indices out of range. k: {k} l: {l} n: {n}"
     sn = k % 2
     return c_h_evo(k, 2 * l + sn, 2 * n + 1 + sn)
