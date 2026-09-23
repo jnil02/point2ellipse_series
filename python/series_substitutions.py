@@ -14,7 +14,7 @@ import series
 
 def poly_bell_substitution(p: sp.core.Expr,
                            start: Callable[[int], int] = lambda l: 1) -> series.SeriesBase:
-    """Expand a polynomial p(a_0,...,a_n) by substituting Bell polynomials for a_n^i.
+    r"""Expand a polynomial p(a_0,...,a_n) by substituting Bell polynomials for a_n^i.
 
     p is a multidimensional polynomial in variables a_n. (The assumption is
     that the symbol name ends with "_<number>" which can be parsed and

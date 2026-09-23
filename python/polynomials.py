@@ -50,7 +50,7 @@ def partial_ordinary_bell_polynomial(k: int, i: int, a: str) -> sp.core.Expr:
 
 @cache.ints_cache
 def ordinary_potential_polynomial(n: int, i: int, a: str) -> sp.core.Expr:
-    """Power of power-series series coefficient polynomial.
+    r"""Power of power-series series coefficient polynomial.
 
     Polynomial for n:th series coefficient of i:th power of an infinite series.
 

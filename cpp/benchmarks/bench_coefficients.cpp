@@ -33,6 +33,7 @@
 #include <iostream>
 #include <string>
 
+#include "coefficients_evo.hpp"
 #include "detail/coefficients_evo_internal.hpp"
 
 using namespace point_to_ellipse_series;
