@@ -3,7 +3,7 @@
 #include <symengine/expression.h>
 #include <symengine/ntheory.h>
 
-#include "fourier_series.hpp"
+#include "expansions.hpp"
 #include "series_traits/series_traits_se.hpp"
 #include "symbols.hpp"
 

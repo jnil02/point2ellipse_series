@@ -8,7 +8,7 @@
 #include <symengine/symbol.h>
 #include <symengine/real_mpfr.h>
 
-#include "fourier_series_se.hpp"
+#include "expansions_se.hpp"
 #include "ellipse/ellipse.hpp"
 
 

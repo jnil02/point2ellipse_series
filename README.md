@@ -26,9 +26,10 @@ For the mathematics, see the articles.
 latitude/altitude to Cartesian coordinates and reconstructing the
 point-to-ellipse relations from the truncated series (multi-precision).
 
-- `fourier_series.py` — the truncated series expansions (sin-power series, with
-  Fourier multiple-angle variants).
-- `coefficients.py` — the exact rational series coefficients.
+- `expansions.py`, `expansions_evo.py` — the truncated series expansions
+  (far-field / inside-evolute; sin-power form, with Fourier multiple-angle variants).
+- `coefficients.py`, `coefficients_evo.py` — the exact rational series
+  coefficients (far-field / inside-evolute).
 - `polynomials.py`, `series_substitutions.py`, `series.py` — the symbolic
   machinery (potential/Bell polynomials, series arithmetic, substitutions).
 - `ellipse.py` — the closed-form (Vermeille) reference and ellipse parameters.
@@ -45,7 +46,7 @@ reference via CSV in the tests — but reaches far higher orders. Coefficients a
 exact GMP rationals; the series are templated and evaluate either symbolically
 (SymEngine) or numerically (`mpfr::mpreal`).
 
-- `coefficients[_evo].{hpp,cpp}`, `fourier_series[_evo].hpp` — coefficients and series.
+- `coefficients[_evo].{hpp,cpp}`, `expansions[_evo].hpp` — coefficients and series.
 - `convergence/` — `sweep_evo`, `diag_coeff_evo`: empirical convergence / region-of-
   convergence studies (CSV output, plotted by `python/analysis`).
 - `benchmarks/`, `tests/` — micro-benchmarks and Python-cross-checked tests.

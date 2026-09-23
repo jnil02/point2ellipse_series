@@ -4,7 +4,7 @@ Generates test data for series to ensure consistent definitions on the C++ side.
 
 import math
 from symbols import sin_psi, rho_ae2, b_a
-import fourier_series as fs
+import expansions_evo as fs
 from generate_test_data import write_csv
 
 A, B   = 1.0, 0.5

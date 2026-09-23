@@ -8,8 +8,8 @@
 #include <cmath>
 #include <stdexcept>
 
-#include "fourier_series_evo.hpp"
-#include "convergence/fourier_series_accum.hpp"
+#include "expansions_evo.hpp"
+#include "convergence/expansions_accum.hpp"
 #include "series_traits/series_traits_double.hpp"
 
 using point_to_ellipse_series::phi_evo_sparse;

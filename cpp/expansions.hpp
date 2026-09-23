@@ -13,7 +13,7 @@ namespace point_to_ellipse_series {
 
 /** Series expansion of (phi - psi) / (sin(psi) * cos(psi)) in sin-powers.
  *
- * Matches Python fourier_series.phi_in_sin_pow.
+ * Matches Python expansions.phi_in_sin_pow.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin power series truncation order.
@@ -39,7 +39,7 @@ inline T phi_in_sin_pow(int N, int K,
 
 /** Series expansion of (phi - psi) in sin-powers.
  *
- * Matches Python fourier_series.phi_in_sin_pow2.
+ * Matches Python expansions.phi_in_sin_pow2.
  *
  * Note, this series has poor convergence and is only implemented to demonstrate
  * this. It should not be used in practice.
@@ -68,7 +68,7 @@ inline T phi_in_sin_pow2(int N, int K,
 
 /** Series expansion of (phi - psi) in sin multiples.
  *
- * Matches Python fourier_series.phi_in_sin_mul.
+ * Matches Python expansions.phi_in_sin_mul.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin multiple series truncation order.
@@ -95,7 +95,7 @@ inline T phi_in_sin_mul(int N, int K, int L,
 
 /** Series expansion of sin(phi) / sin(psi) - 1 in sin-powers.
  *
- * Matches Python fourier_series.sin_phi_in_sin_pow.
+ * Matches Python expansions.sin_phi_in_sin_pow.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin power series truncation order.
@@ -122,7 +122,7 @@ inline T sin_phi_in_sin_pow(int N, int K,
 
 /** Series expansion of sin(phi) / sin(psi) - 1 in cos multiples.
  *
- * Matches Python fourier_series.sin_phi_in_cos_mul.
+ * Matches Python expansions.sin_phi_in_cos_mul.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin multiple series truncation order.
@@ -149,7 +149,7 @@ inline T sin_phi_in_cos_mul(int N, int K, int L,
 
 /** Series expansion of cos(phi) / cos(psi) - 1 in sin-powers.
  *
- * Matches Python fourier_series.cos_phi_in_sin_pow.
+ * Matches Python expansions.cos_phi_in_sin_pow.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin power series truncation order.
@@ -176,7 +176,7 @@ inline T cos_phi_in_sin_pow(int N, int K,
 
 /** Series expansion of cos(phi) / cos(psi) - 1 in cos multiples.
  *
- * Matches Python fourier_series.cos_phi_in_cos_mul.
+ * Matches Python expansions.cos_phi_in_cos_mul.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin multiple series truncation order.
@@ -203,7 +203,7 @@ inline T cos_phi_in_cos_mul(int N, int K, int L,
 
 /** Series expansion of (h + a - rho) / a in sin-powers.
  *
- * Matches Python fourier_series.h_in_sin_pow.
+ * Matches Python expansions.h_in_sin_pow.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin power series truncation order.
@@ -229,7 +229,7 @@ inline T h_in_sin_pow(int N, int K,
 
 /** Series expansion of (h + a - rho) / a in cos multiples.
  *
- * Matches Python fourier_series.h_in_cos_mul.
+ * Matches Python expansions.h_in_cos_mul.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param N     sin multiples series truncation order.

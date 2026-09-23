@@ -33,7 +33,7 @@
 #include <mpreal.h>
 
 #include "ellipse/ellipse.hpp"
-#include "fourier_series_accum.hpp"
+#include "expansions_accum.hpp"
 #include "series_traits/series_traits_mpfr.hpp"
 
 using mpfr::mpreal;
@@ -100,7 +100,7 @@ int main() {
 	// 30x91x50 took 374s
 	// with new series
 	// 30x360x50 took 290s
-    // After updated Bell-limits it took 129s.
+	// After updated Bell-limits it took 129s.
 	// Return early on a_nkl_C and it takes 84s
 	// 35x360x50 took 172s
 	const int MAX_ORDER = 35;   // N = K = 1 .. MAX_ORDER

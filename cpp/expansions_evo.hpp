@@ -4,14 +4,14 @@
  * Symbolic inside-evolute series expansions for the point-to-ellipse relation.
  */
 
-#include "fourier_series.hpp"
+#include "expansions.hpp"
 #include "coefficients_evo.hpp"
 
 namespace point_to_ellipse_series {
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (sparse).
  *
- * Matches Python fourier_series.phi_evo_sparse.
+ * Matches Python expansions_evo.phi_evo_sparse.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
@@ -39,7 +39,7 @@ inline T phi_evo_sparse(int L, int K,
 
 /** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
  *
- * Matches Python fourier_series.phi_evo_dense.
+ * Matches Python expansions_evo.phi_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param K     rho_ae2 power series truncation order.
@@ -75,7 +75,7 @@ inline T phi_evo_dense(int K,
 
 /** Inside-evolute series for sin(phi) in sin-powers (sparse).
  *
- * Matches Python fourier_series.sin_phi_evo_sparse.
+ * Matches Python expansions_evo.sin_phi_evo_sparse.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
@@ -104,7 +104,7 @@ inline T sin_phi_evo_sparse(int L, int K,
 
 /** Inside-evolute series for sin(phi) in sin-powers (dense).
  *
- * Matches Python fourier_series.sin_phi_evo_dense.
+ * Matches Python expansions_evo.sin_phi_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param K     rho_ae2 power series truncation order.
@@ -139,7 +139,7 @@ inline T sin_phi_evo_dense(int K,
 
 /** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (sparse).
  *
- * Matches Python fourier_series.cos_phi_evo_sparse.
+ * Matches Python expansions_evo.cos_phi_evo_sparse.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
@@ -168,7 +168,7 @@ inline T cos_phi_evo_sparse(int L, int K,
 
 /** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (dense).
  *
- * Matches Python fourier_series.cos_phi_evo_dense.
+ * Matches Python expansions_evo.cos_phi_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param K     rho_ae2 power series truncation order.
@@ -204,7 +204,7 @@ inline T cos_phi_evo_dense(int K,
 
 /** Inside-evolute series for h/a - rho/a*sin(psi) in sin-powers.
  *
- * Matches Python fourier_series.h_evo_sparse.
+ * Matches Python expansions_evo.h_evo_sparse.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
@@ -232,7 +232,7 @@ inline T h_evo_sparse(int L, int K,
 
 /** Inside-evolute series for (h + b - rho * |sin(psi)|) / a in sin-powers (dense).
  *
- * Matches Python fourier_series.h_evo_dense.
+ * Matches Python expansions_evo.h_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param K     rho_ae2 power series truncation order.

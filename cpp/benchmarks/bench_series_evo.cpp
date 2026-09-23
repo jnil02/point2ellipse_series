@@ -31,11 +31,11 @@
 #include <iostream>
 #include <string>
 
-// mpreal.h must come before fourier_series_evo.hpp, which pulls in series_traits.hpp
+// mpreal.h must come before expansions_evo.hpp, which pulls in series_traits.hpp
 // that defines the mpreal specialisations.
 #include <mpreal.h>
 
-#include "fourier_series_evo.hpp"
+#include "expansions_evo.hpp"
 #include "series_traits/series_traits_mpfr.hpp"
 
 using point_to_ellipse_series::phi_evo_sparse;

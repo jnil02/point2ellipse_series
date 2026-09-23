@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
 #include <symengine/symbol.h>
 #include <symengine/real_mpfr.h>
 
-#include "fourier_series_evo_se.hpp"
+#include "expansions_evo_se.hpp"
 #include "ellipse/ellipse.hpp"
 
 using mpfr::mpreal;

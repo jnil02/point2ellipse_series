@@ -1,7 +1,7 @@
 #pragma once
 
-#include "fourier_series_evo.hpp"
-#include "fourier_series_se.hpp"
+#include "expansions_evo.hpp"
+#include "expansions_se.hpp"
 
 using point_to_ellipse_series::phi_evo_sparse;
 using point_to_ellipse_series::phi_evo_dense;
