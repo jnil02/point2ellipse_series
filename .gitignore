@@ -7,3 +7,5 @@ cpp/dev/
 test_data/
 .claude/
 cpp/build/
+__pycache__/
+*.pyc
