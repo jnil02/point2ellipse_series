@@ -27,7 +27,7 @@ from ellipse import mp_ellipse_to_cartesian, mp_e2, mp_a
 from symbols import varrho, psi, sin_psi, cos_psi, e2
 
 # The actual series.
-import fourier_series
+import expansions
 
 
 if __name__ == "__main__":
@@ -67,16 +67,16 @@ if __name__ == "__main__":
 
     print("phi - psi (ref/sin-mul/sin-pow):")
     print(mp_phi-mp_psi)
-    expr = fourier_series.phi_in_sin_pow(max_order, max_order) * sin_psi * cos_psi
+    expr = expansions.phi_in_sin_pow(max_order, max_order) * sin_psi * cos_psi
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(cos_psi, mp.cos(mp_psi))
           .subs(varrho, mp_varrho))
-    expr = fourier_series.phi_in_sin_mul(max_order, max_order, max_order)
+    expr = expansions.phi_in_sin_mul(max_order, max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(psi, mp_psi)
           .subs(varrho, mp_varrho))
-    expr = fourier_series.phi_in_sin_pow2(max_order, max_order)
+    expr = expansions.phi_in_sin_pow2(max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(cos_psi, mp.cos(mp_psi))
@@ -87,49 +87,49 @@ if __name__ == "__main__":
         print(mp.sin(mp_phi) / mp.sin(mp_psi))
     else:
         print("NaN")
-    expr = fourier_series.sin_phi_in_sin_pow(max_order, max_order)
+    expr = expansions.sin_phi_in_sin_pow(max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(varrho, mp_varrho) + 1)
-    expr = fourier_series.sin_phi_in_cos_mul(max_order, max_order, max_order)
+    expr = expansions.sin_phi_in_cos_mul(max_order, max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(psi, mp_psi)
           .subs(varrho, mp_varrho) + 1)
-    expr = fourier_series.sin_phi_in_sin_pow2(max_order, max_order, max_order)
+    expr = expansions.sin_phi_in_sin_pow2(max_order, max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(varrho, mp_varrho))
 
     print("cos(phi)/cos(psi) (ref/cos-mul/sin-pow):")
     print(mp.cos(mp_phi) / mp.cos(mp_psi))
-    expr = fourier_series.cos_phi_in_sin_pow(max_order, max_order)
+    expr = expansions.cos_phi_in_sin_pow(max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(cos_psi, mp.cos(mp_psi))
           .subs(varrho, mp_varrho) + 1)
-    expr = fourier_series.cos_phi_in_cos_mul(max_order, max_order, max_order)
+    expr = expansions.cos_phi_in_cos_mul(max_order, max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(psi, mp_psi)
           .subs(varrho, mp_varrho) + 1)
-    expr = fourier_series.cos_phi_in_sin_pow2(max_order, max_order, max_order)
+    expr = expansions.cos_phi_in_sin_pow2(max_order, max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(varrho, mp_varrho))
 
     print("(h+a-rho)/a (ref/cos-mul/sin-pow):")
     print((mp_h + mp_a - mp.sqrt(mp_x * mp_x + mp_y * mp_y)) / mp_a)
-    expr = fourier_series.h_in_sin_pow(max_order, max_order)
+    expr = expansions.h_in_sin_pow(max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(varrho, mp_varrho))
-    expr = fourier_series.h_in_cos_mul(max_order, max_order, max_order)
+    expr = expansions.h_in_cos_mul(max_order, max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(psi, mp_psi)
           .subs(varrho, mp_varrho))
 
     print("h:  (ref/sin-pow)")
     print(mp_h)
-    expr = fourier_series.h_in_sin_pow(max_order, max_order)
+    expr = expansions.h_in_sin_pow(max_order, max_order)
     print(expr.subs(e2, mp_e2)
           .subs(sin_psi, mp.sin(mp_psi))
           .subs(varrho, mp_varrho) * mp_a + mp_rho - mp_a)

@@ -13,7 +13,7 @@ import pytest
 from pytest_util import assert_close
 from ellipse import mp_polar_to_cartesian, mp_cartesian_to_ellipse, mp_e2, mp_a
 from symbols import sin_psi, rho_ae2, b_a, rho
-import fourier_series
+import expansions_evo
 
 # Order of the tested series.
 MAX_ORDER_EVO = 11
@@ -66,7 +66,7 @@ def ev_evo(expr, ref):
 def test_phi_evo_dense_m(ref_evo):
     expected = ((ref_evo["phi"] - ref_evo["sgn"] * mp.pi / 2)
                 / (ref_evo["sgn"] * ref_evo["abs_cos_psi"]))
-    result = ev_evo(fourier_series.phi_evo_dense(MAX_ORDER_EVO), ref_evo)
+    result = ev_evo(expansions_evo.phi_evo_dense(MAX_ORDER_EVO), ref_evo)
     assert_close("(phi - sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense", expected, result, TOL_EVO)
 
 
@@ -76,7 +76,7 @@ def test_phi_evo_dense_m(ref_evo):
 
 def test_sin_phi_evo_dense(ref_evo):
     expected = (mp.sin(ref_evo["phi"]) - ref_evo["sgn"]) / ref_evo["sgn"]
-    result = ev_evo(fourier_series.sin_phi_evo_dense(MAX_ORDER_EVO), ref_evo)
+    result = ev_evo(expansions_evo.sin_phi_evo_dense(MAX_ORDER_EVO), ref_evo)
     assert_close("(sin(phi) - sgn)/sgn  evo_dense", expected, result, TOL_EVO)
 
 
@@ -86,7 +86,7 @@ def test_sin_phi_evo_dense(ref_evo):
 
 def test_cos_phi_evo_dense(ref_evo):
     expected = mp.cos(ref_evo["phi"]) / ref_evo["abs_cos_psi"]
-    result = ev_evo(fourier_series.cos_phi_evo_dense(MAX_ORDER_EVO), ref_evo)
+    result = ev_evo(expansions_evo.cos_phi_evo_dense(MAX_ORDER_EVO), ref_evo)
     assert_close("cos(phi)/|cos(psi)|  evo_dense", expected, result, TOL_EVO)
 
 
@@ -96,11 +96,11 @@ def test_cos_phi_evo_dense(ref_evo):
 
 def test_h_evo(ref_evo):
     expected = ref_evo["h"]
-    result = ev_evo(fourier_series.h_evo_sparse(MAX_ORDER_EVO, MAX_ORDER_EVO) + rho * sin_psi / mp_a, ref_evo) * mp_a
+    result = ev_evo(expansions_evo.h_evo_sparse(MAX_ORDER_EVO, MAX_ORDER_EVO) + rho * sin_psi / mp_a, ref_evo) * mp_a
     assert_close("h [m]  evo", expected, result, TOL_EVO * mp_a)
 
 
 def test_h_evo_dense(ref_evo):
     expected = ref_evo["h"]
-    result = ev_evo(fourier_series.h_evo_dense(MAX_ORDER_EVO) - b_a + rho * sin_psi / mp_a, ref_evo) * mp_a
+    result = ev_evo(expansions_evo.h_evo_dense(MAX_ORDER_EVO) - b_a + rho * sin_psi / mp_a, ref_evo) * mp_a
     assert_close("h [m]  evo_dense", expected, result, TOL_EVO * mp_a)

@@ -15,7 +15,7 @@ from pytest_util import assert_close
 import ellipse
 from ellipse import mp_ellipse_to_cartesian, mp_e2, mp_a
 from symbols import varrho, psi, sin_psi, cos_psi, e2
-import fourier_series
+import expansions
 
 # Order of the tested series. The convergence appear to have geometric convergence.
 MAX_ORDER = 7
@@ -67,19 +67,19 @@ def test_cartesian_to_ellipse_roundtrip(ref):
 
 def test_phi_minus_psi_sin_pow(ref):
     expected = ref["phi"] - ref["psi"]
-    result = ev(fourier_series.phi_in_sin_pow(MAX_ORDER, MAX_ORDER) * sin_psi * cos_psi, ref)
+    result = ev(expansions.phi_in_sin_pow(MAX_ORDER, MAX_ORDER) * sin_psi * cos_psi, ref)
     assert_close("phi-psi  sin_pow", expected, result, TOL)
 
 
 def test_phi_minus_psi_sin_mul(ref):
     expected = ref["phi"] - ref["psi"]
-    result = ev(fourier_series.phi_in_sin_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
+    result = ev(expansions.phi_in_sin_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
     assert_close("phi-psi  sin_mul", expected, result, TOL)
 
 
 def test_phi_minus_psi_sin_pow2(ref):
     expected = ref["phi"] - ref["psi"]
-    result = ev(fourier_series.phi_in_sin_pow2(MAX_ORDER, MAX_ORDER), ref)
+    result = ev(expansions.phi_in_sin_pow2(MAX_ORDER, MAX_ORDER), ref)
     # phi_in_sin_pow2 has worse convergence by design (see docstring); ~2e-7 at order 7.
     assert_close("phi-psi  sin_pow2", expected, result, mp.mpf("1e-5"))
 
@@ -90,19 +90,19 @@ def test_phi_minus_psi_sin_pow2(ref):
 
 def test_sin_phi_over_sin_psi_sin_pow(ref):
     expected = mp.sin(ref["phi"]) / mp.sin(ref["psi"])
-    result = ev(fourier_series.sin_phi_in_sin_pow(MAX_ORDER, MAX_ORDER), ref) + 1
+    result = ev(expansions.sin_phi_in_sin_pow(MAX_ORDER, MAX_ORDER), ref) + 1
     assert_close("sin(phi)/sin(psi)  sin_pow", expected, result, TOL)
 
 
 def test_sin_phi_over_sin_psi_cos_mul(ref):
     expected = mp.sin(ref["phi"]) / mp.sin(ref["psi"])
-    result = ev(fourier_series.sin_phi_in_cos_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref) + 1
+    result = ev(expansions.sin_phi_in_cos_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref) + 1
     assert_close("sin(phi)/sin(psi)  cos_mul", expected, result, TOL)
 
 
 def test_sin_phi_over_sin_psi_sin_pow2(ref):
     expected = mp.sin(ref["phi"]) / mp.sin(ref["psi"])
-    result = ev(fourier_series.sin_phi_in_sin_pow2(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
+    result = ev(expansions.sin_phi_in_sin_pow2(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
     assert_close("sin(phi)/sin(psi)  sin_pow2", expected, result, TOL)
 
 
@@ -112,19 +112,19 @@ def test_sin_phi_over_sin_psi_sin_pow2(ref):
 
 def test_cos_phi_over_cos_psi_sin_pow(ref):
     expected = mp.cos(ref["phi"]) / mp.cos(ref["psi"])
-    result = ev(fourier_series.cos_phi_in_sin_pow(MAX_ORDER, MAX_ORDER), ref) + 1
+    result = ev(expansions.cos_phi_in_sin_pow(MAX_ORDER, MAX_ORDER), ref) + 1
     assert_close("cos(phi)/cos(psi)  sin_pow", expected, result, TOL)
 
 
 def test_cos_phi_over_cos_psi_cos_mul(ref):
     expected = mp.cos(ref["phi"]) / mp.cos(ref["psi"])
-    result = ev(fourier_series.cos_phi_in_cos_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref) + 1
+    result = ev(expansions.cos_phi_in_cos_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref) + 1
     assert_close("cos(phi)/cos(psi)  cos_mul", expected, result, TOL)
 
 
 def test_cos_phi_over_cos_psi_sin_pow2(ref):
     expected = mp.cos(ref["phi"]) / mp.cos(ref["psi"])
-    result = ev(fourier_series.cos_phi_in_sin_pow2(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
+    result = ev(expansions.cos_phi_in_sin_pow2(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
     assert_close("cos(phi)/cos(psi)  sin_pow2", expected, result, TOL)
 
 
@@ -134,13 +134,13 @@ def test_cos_phi_over_cos_psi_sin_pow2(ref):
 
 def test_h_a_sin_pow(ref):
     expected = (ref["h"] + mp_a - ref["rho"]) / mp_a
-    result = ev(fourier_series.h_in_sin_pow(MAX_ORDER, MAX_ORDER), ref)
+    result = ev(expansions.h_in_sin_pow(MAX_ORDER, MAX_ORDER), ref)
     assert_close("(h+a-rho)/a  sin_pow", expected, result, TOL)
 
 
 def test_h_a_cos_mul(ref):
     expected = (ref["h"] + mp_a - ref["rho"]) / mp_a
-    result = ev(fourier_series.h_in_cos_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
+    result = ev(expansions.h_in_cos_mul(MAX_ORDER, MAX_ORDER, MAX_ORDER), ref)
     assert_close("(h+a-rho)/a  cos_mul", expected, result, TOL)
 
 
@@ -149,5 +149,5 @@ def test_h_a_cos_mul(ref):
 # ---------------------------------------------------------------------------
 
 def test_h_metres_sin_pow(ref):
-    result = ev(fourier_series.h_in_sin_pow(MAX_ORDER, MAX_ORDER), ref) * mp_a + ref["rho"] - mp_a
+    result = ev(expansions.h_in_sin_pow(MAX_ORDER, MAX_ORDER), ref) * mp_a + ref["rho"] - mp_a
     assert_close("h [m]  sin_pow", ref["h"], result, TOL)
