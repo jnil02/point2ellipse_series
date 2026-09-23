@@ -11,15 +11,18 @@ import cache
 
 
 def sin_pow_to_cos_mul(n: int, k: int, l: int, n_min: int, k_pp: int, d_nkl: Callable[[int, int, int], sp.core.Expr]) -> sp.core.Rational:
-    """Fourier multiple-angle cos series coefficient from sin-power series.
+    """Fourier cos multiple-angle series coefficient from a sin-power series.
 
-    :param n: sin-multiple.
-    :param k: rho power.
+    Converts the sin-power coefficients d_nkl into the coefficient of the
+    cos(2n·ψ) multiple-angle (Fourier) series.
+
+    :param n: Fourier cos-multiple index.
+    :param k: ϱ power.
     :param l: e² power.
-    :param d_nkl: Sin-power series coefficients.
-    :param n_min: Lowest sin-power.
-    :param k_pp: Maximum e² power offset in sin-power series.
-    :return: Fourier multiple-angle cos series coefficient of
+    :param n_min: lowest sin-power in the input series.
+    :param k_pp: maximum e² power offset in the input series.
+    :param d_nkl: sin-power series coefficient callback d_nkl(n, k, l).
+    :return: Fourier cos multiple-angle series coefficient.
     """
     c_nkl = sp.Integer(0)
     for i in range(max(max(n, n_min), l - k - k_pp), l + 1):

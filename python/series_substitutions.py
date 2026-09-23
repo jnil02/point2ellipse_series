@@ -70,10 +70,12 @@ def poly_bell_substitution(p: sp.core.Expr,
 
 @cache.ints_cache
 def double_series_power_coeff(n: int, i: int) -> series.SeriesBase:
-    """Coefficient of the power of a double power series where the first series start from 0 and the second starts from 1.
+    """Coefficient of a power of a double power series (outer index from 0, inner from 1).
 
-    :param n: First index of resulting series coefficients.
-    :param i: The power of the double power series.
+    Far-field counterpart of double_series_power_coeff_evo.
+
+    :param n: first index of the resulting series coefficients.
+    :param i: power of the double power series.
     :return: Series representing the coefficient.
     """
     # Polynomial for b_{n,i} in terms of {a_0,...,a_n}.
@@ -99,14 +101,16 @@ def double_series_power_coeff_evo(l: int, i: int) -> series.SeriesBase:
     return poly_bell_substitution(b_li, start=lambda l: l + 1)
 
 def a_nk_ser(n: int, k: int, n_offset: int, d_nkl: Callable[[int, int, int], sp.core.Expr], e2: sp.core.Symbol) -> sp.core.Expr:
-    """Specific finite a_{n,k} series from max(k, n+offsetI to n+k.
+    """Far-field generator a_{n,k}: the finite e²-series sum_l d_nkl(n,k,l)*e2^l.
 
-    :param n: n index
-    :param k: k index
-    :param n_offset: offset
-    :param d_nkl: tripple sum coefficient.
-    :param e2 series base variable.
-    :return: expression for finite series.
+    Far-field counterpart of a_nk_C; l runs over max(k, n+n_offset) .. n+k.
+
+    :param n: sin(ψ) power (generator index).
+    :param k: ϱ power.
+    :param n_offset: offset setting the lowest e² power l.
+    :param d_nkl: coefficient callback d_nkl(n, k, l).
+    :param e2: series base variable (e²).
+    :return: Finite series expression.
     """
     a_nk = sp.S.Zero
     for l in range(max(k, n + n_offset), n + k + 1):
