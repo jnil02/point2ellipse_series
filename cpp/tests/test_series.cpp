@@ -59,18 +59,18 @@ static void assert_close(const std::string& title,
 }
 
 // ---------------------------------------------------------------------------
-// Fixture: reference values + substitution map
+// Fixture: reference values + substitution map for one geodetic test point
 // ---------------------------------------------------------------------------
 
 struct Ref {
 	mpreal phi, h, x, y, psi, rho, varrho, mp_sin_psi, mp_cos_psi;
 	SymEngine::map_basic_basic subs;
 
-	Ref() {
+	explicit Ref(const std::string& phi_deg) {
 		set_precision_bits(BITS);
 		std::cout << std::setprecision(50) << std::fixed;
 
-		phi = mpreal("43.1") / mpreal("180.0") * mpfr::const_pi();
+		phi = mpreal(phi_deg) / mpreal("180.0") * mpfr::const_pi();
 		h   = mpreal("10000.0");
 
 		auto pair = mp_ellipse_to_cartesian(phi, h);
@@ -92,103 +92,59 @@ struct Ref {
 };
 
 // ---------------------------------------------------------------------------
-// Round-trip
+// Far-field series, one geodetic test point per quadrant. phi (the normal
+// direction / geodetic latitude) is defined in (-180, 180] deg; |phi| > 90
+// places the point at x < 0 (the 2nd / 3rd quadrants), which exercises the
+// full-circle Vermeille reference in mp_cartesian_to_ellipse.
 // ---------------------------------------------------------------------------
 
-TEST_CASE_METHOD(Ref, "roundtrip cartesian to ellipse", "[series]") {
-	const auto [phi2, h2] = mp_cartesian_to_ellipse(x, y);
-	assert_close("roundtrip phi [rad]", phi, phi2, mpreal("1e-40", BITS));
-	assert_close("roundtrip h [m]",     h,   h2,   mpreal("1e-40", BITS));
-}
+TEST_CASE("far-field series (all quadrants)", "[series]") {
+	const std::string phi_deg = GENERATE(std::string("43.1"), std::string("136.9"),
+										 std::string("-136.9"), std::string("-43.1"));
+	const Ref r(phi_deg);
+	INFO("phi = " << phi_deg << " deg");
 
-// ---------------------------------------------------------------------------
-// phi - psi
-// ---------------------------------------------------------------------------
+	// Cartesian <-> ellipse round-trip.
+	{
+		const auto [phi2, h2] = mp_cartesian_to_ellipse(r.x, r.y);
+		assert_close("roundtrip phi [rad]", r.phi, phi2, mpreal("1e-40", BITS));
+		assert_close("roundtrip h [m]",     r.h,   h2,   mpreal("1e-40", BITS));
+	}
 
-TEST_CASE_METHOD(Ref, "phi minus psi sin_pow", "[series]") {
-	const mpreal expected = phi - psi;
-	const mpreal result   = ev(phi_in_sin_pow(MAX_ORD, MAX_ORD) * sin_psi * cos_psi, subs);
-	assert_close("phi-psi  sin_pow", expected, result, TOL);
-}
+	// phi - psi
+	assert_close("phi-psi  sin_pow", r.phi - r.psi,
+				 ev(phi_in_sin_pow(MAX_ORD, MAX_ORD) * sin_psi * cos_psi, r.subs), TOL);
+	assert_close("phi-psi  sin_mul", r.phi - r.psi,
+				 ev(phi_in_sin_mul(MAX_ORD, MAX_ORD, MAX_ORD), r.subs), TOL);
+	// phi_in_sin_pow2 absorbs cos(psi) as its positive root sqrt(1-sin^2), so it
+	// only represents the right half-plane (cos(psi) >= 0).
+	if (r.mp_cos_psi >= 0)
+		assert_close("phi-psi  sin_pow2", r.phi - r.psi,
+					 ev(phi_in_sin_pow2(MAX_ORD, MAX_ORD), r.subs), mpreal("1e-5", BITS));
 
-TEST_CASE_METHOD(Ref, "phi minus psi sin_mul", "[series]") {
-	const mpreal expected = phi - psi;
-	const mpreal result   = ev(phi_in_sin_mul(MAX_ORD, MAX_ORD, MAX_ORD), subs);
-	assert_close("phi-psi  sin_mul", expected, result, TOL);
-}
+	// sin(phi) / sin(psi)
+	assert_close("sin(phi)/sin(psi)  sin_pow", mpfr::sin(r.phi) / r.mp_sin_psi,
+				 ev(sin_phi_in_sin_pow(MAX_ORD, MAX_ORD), r.subs) + mpreal(1), TOL);
+	assert_close("sin(phi)/sin(psi)  cos_mul", mpfr::sin(r.phi) / r.mp_sin_psi,
+				 ev(sin_phi_in_cos_mul(MAX_ORD, MAX_ORD, MAX_ORD), r.subs) + mpreal(1), TOL);
+	assert_close("sin(phi)/sin(psi)  sin_pow2", mpfr::sin(r.phi) / r.mp_sin_psi,
+				 ev(sin_phi_in_sin_pow2(MAX_ORD, MAX_ORD, MAX_ORD), r.subs), TOL);
 
-TEST_CASE_METHOD(Ref, "phi minus psi sin_pow2", "[series]") {
-	const mpreal expected = phi - psi;
-	const mpreal result   = ev(phi_in_sin_pow2(MAX_ORD, MAX_ORD), subs);
-	// phi_in_sin_pow2 has worse convergence by design; ~2e-7 at order 7.
-	assert_close("phi-psi  sin_pow2", expected, result, mpreal("1e-5", BITS));
-}
+	// cos(phi) / cos(psi)
+	assert_close("cos(phi)/cos(psi)  sin_pow", mpfr::cos(r.phi) / r.mp_cos_psi,
+				 ev(cos_phi_in_sin_pow(MAX_ORD, MAX_ORD), r.subs) + mpreal(1), TOL);
+	assert_close("cos(phi)/cos(psi)  cos_mul", mpfr::cos(r.phi) / r.mp_cos_psi,
+				 ev(cos_phi_in_cos_mul(MAX_ORD, MAX_ORD, MAX_ORD), r.subs) + mpreal(1), TOL);
+	assert_close("cos(phi)/cos(psi)  sin_pow2", mpfr::cos(r.phi) / r.mp_cos_psi,
+				 ev(cos_phi_in_sin_pow2(MAX_ORD, MAX_ORD, MAX_ORD), r.subs), TOL);
 
-// ---------------------------------------------------------------------------
-// sin(phi) / sin(psi)
-// ---------------------------------------------------------------------------
+	// (h + a - rho) / a
+	assert_close("(h+a-rho)/a  sin_pow", (r.h + mp_a() - r.rho) / mp_a(),
+				 ev(h_in_sin_pow(MAX_ORD, MAX_ORD), r.subs), TOL);
+	assert_close("(h+a-rho)/a  cos_mul", (r.h + mp_a() - r.rho) / mp_a(),
+				 ev(h_in_cos_mul(MAX_ORD, MAX_ORD, MAX_ORD), r.subs), TOL);
 
-TEST_CASE_METHOD(Ref, "sin(phi)/sin(psi) sin_pow", "[series]") {
-	const mpreal expected = mpfr::sin(phi) / mp_sin_psi;
-	const mpreal result   = ev(sin_phi_in_sin_pow(MAX_ORD, MAX_ORD), subs) + mpreal(1);
-	assert_close("sin(phi)/sin(psi)  sin_pow", expected, result, TOL);
-}
-
-TEST_CASE_METHOD(Ref, "sin(phi)/sin(psi) cos_mul", "[series]") {
-	const mpreal expected = mpfr::sin(phi) / mp_sin_psi;
-	const mpreal result   = ev(sin_phi_in_cos_mul(MAX_ORD, MAX_ORD, MAX_ORD), subs) + mpreal(1);
-	assert_close("sin(phi)/sin(psi)  cos_mul", expected, result, TOL);
-}
-
-TEST_CASE_METHOD(Ref, "sin(phi)/sin(psi) sin_pow2", "[series]") {
-	const mpreal expected = mpfr::sin(phi) / mp_sin_psi;
-	const mpreal result   = ev(sin_phi_in_sin_pow2(MAX_ORD, MAX_ORD, MAX_ORD), subs);
-	assert_close("sin(phi)/sin(psi)  sin_pow2", expected, result, TOL);
-}
-
-// ---------------------------------------------------------------------------
-// cos(phi) / cos(psi)
-// ---------------------------------------------------------------------------
-
-TEST_CASE_METHOD(Ref, "cos(phi)/cos(psi) sin_pow", "[series]") {
-	const mpreal expected = mpfr::cos(phi) / mp_cos_psi;
-	const mpreal result   = ev(cos_phi_in_sin_pow(MAX_ORD, MAX_ORD), subs) + mpreal(1);
-	assert_close("cos(phi)/cos(psi)  sin_pow", expected, result, TOL);
-}
-
-TEST_CASE_METHOD(Ref, "cos(phi)/cos(psi) cos_mul", "[series]") {
-	const mpreal expected = mpfr::cos(phi) / mp_cos_psi;
-	const mpreal result   = ev(cos_phi_in_cos_mul(MAX_ORD, MAX_ORD, MAX_ORD), subs) + mpreal(1);
-	assert_close("cos(phi)/cos(psi)  cos_mul", expected, result, TOL);
-}
-
-TEST_CASE_METHOD(Ref, "cos(phi)/cos(psi) sin_pow2", "[series]") {
-	const mpreal expected = mpfr::cos(phi) / mp_cos_psi;
-	const mpreal result   = ev(cos_phi_in_sin_pow2(MAX_ORD, MAX_ORD, MAX_ORD), subs);
-	assert_close("cos(phi)/cos(psi)  sin_pow2", expected, result, TOL);
-}
-
-// ---------------------------------------------------------------------------
-// (h + a - rho) / a
-// ---------------------------------------------------------------------------
-
-TEST_CASE_METHOD(Ref, "(h+a-rho)/a sin_pow", "[series]") {
-	const mpreal expected = (h + mp_a() - rho) / mp_a();
-	const mpreal result   = ev(h_in_sin_pow(MAX_ORD, MAX_ORD), subs);
-	assert_close("(h+a-rho)/a  sin_pow", expected, result, TOL);
-}
-
-TEST_CASE_METHOD(Ref, "(h+a-rho)/a cos_mul", "[series]") {
-	const mpreal expected = (h + mp_a() - rho) / mp_a();
-	const mpreal result   = ev(h_in_cos_mul(MAX_ORD, MAX_ORD, MAX_ORD), subs);
-	assert_close("(h+a-rho)/a  cos_mul", expected, result, TOL);
-}
-
-// ---------------------------------------------------------------------------
-// h in metres (recovered from the h/a series)
-// ---------------------------------------------------------------------------
-
-TEST_CASE_METHOD(Ref, "h metres sin_pow", "[series]") {
-	const mpreal result = ev(h_in_sin_pow(MAX_ORD, MAX_ORD), subs) * mp_a() + rho - mp_a();
-	assert_close("h [m]  sin_pow", h, result, TOL);
+	// h in metres (recovered from the h/a series).
+	assert_close("h [m]  sin_pow", r.h,
+				 ev(h_in_sin_pow(MAX_ORD, MAX_ORD), r.subs) * mp_a() + r.rho - mp_a(), TOL);
 }

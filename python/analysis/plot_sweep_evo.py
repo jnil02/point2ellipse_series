@@ -23,8 +23,8 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "sweep_evo_m.csv")
-OUT_DIR  = os.path.join(os.path.dirname(__file__), "..", "test_data")
+CSV_PATH = os.path.join(os.path.dirname(__file__), "../..", "test_data", "sweep_evo_m.csv")
+OUT_DIR  = os.path.join(os.path.dirname(__file__), "../..", "test_data")
 
 PSI_PLOT  = 85  # which psi angle (degrees) to inspect
 N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)

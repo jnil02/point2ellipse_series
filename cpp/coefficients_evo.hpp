@@ -14,9 +14,9 @@ mpq_class c_phi_evo(int k, int l, int n);
 mpq_class d_phi_evo(int k, int l, int n);
 /// Sparse (φ−π/2)^i coefficient.
 mpq_class c_phi_pow_evo(int k, int l, int n, int i);
-/// Sparse cos(φ)/|cos(ψ)| coefficient.
+/// Sparse cos(φ)/cos(ψ) coefficient.
 mpq_class c_cos_phi_evo(int k, int l, int n);
-/// Dense cos(φ)/|cos(ψ)| coefficient.
+/// Dense cos(φ)/cos(ψ) coefficient.
 mpq_class d_cos_phi_evo(int k, int l, int n);
 /// Sparse sin(φ) coefficient.
 mpq_class c_sin_phi_evo(int k, int l, int n);

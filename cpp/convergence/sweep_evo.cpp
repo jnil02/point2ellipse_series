@@ -124,7 +124,7 @@ int main() {
 		const mpreal psi     = psi_deg / mpreal(180) * pi;
 		const mpreal sin_psi     = mpfr::sin(psi);
 		const mpreal abs_sin_psi = mpfr::abs(sin_psi);
-		const mpreal abs_cos_psi = mpfr::abs(mpfr::cos(psi));
+		const mpreal cos_psi     = mpfr::cos(psi);
 		// sgn = sign of sin(psi) = sign of y: phi is odd in y, so the series
 		// magnitude is reflected back to the correct quadrant with this sign.
 		const mpreal sgn         = (sin_psi < 0) ? mpreal(-1) : mpreal(1);
@@ -153,9 +153,9 @@ int main() {
 				h_acc.addOrder(N);
 
 				// phi via phi_evo_dense (incremental):
-				//   series = (phi - sgn*pi/2) / (sgn*|cos(psi)|)
-				//   phi    = sgn*pi/2 + sgn*|cos(psi)| * series
-				const mpreal phi_approx = sgn * pi / 2 + sgn * abs_cos_psi * phi_acc.value();
+				//   series = (phi - sgn*pi/2) / (sgn*cos(psi))
+				//   phi    = sgn*pi/2 + sgn*cos(psi) * series
+				const mpreal phi_approx = sgn * pi / 2 + sgn * cos_psi * phi_acc.value();
 
 				// h via h_evo_dense (incremental):
 				//   series = (h + b - rho*|sin(psi)|) / a

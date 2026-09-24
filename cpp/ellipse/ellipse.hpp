@@ -69,6 +69,7 @@ mp_cartesian_to_ellipse(const mpfr::mpreal& x, const mpfr::mpreal& z) {
 	const mpreal r38 = r * r * r * mpreal(8);
 	const mpreal ev  = r38 + e4 * p * q;
 
+	mpreal lat, h;
 	if (ev > 0) {
 		const mpreal s = e2b_over_a3 * abs(z) * t;
 		const mpreal sqrt_ev = sqrt(ev);
@@ -82,9 +83,8 @@ mp_cartesian_to_ellipse(const mpfr::mpreal& x, const mpfr::mpreal& z) {
 		const mpreal D = k / (k + mp_e2()) * t;
 		const mpreal d = sqrt(D * D + z * z);
 
-		const mpreal h   = (k - b2oa2) * d / k;
-		const mpreal lat = mpreal(2) * atan(z / (d + D));
-		return {lat, h};
+		h   = (k - b2oa2) * d / k;
+		lat = mpreal(2) * atan(z / (d + D));
 	} else if (q != 0) {
 		const mpreal s  = e2b_over_a3 * abs(z) * t;
 		const mpreal up = two_thirds * atan(s / (sqrt(-ev) + sqrt(-r38)));
@@ -96,12 +96,21 @@ mp_cartesian_to_ellipse(const mpfr::mpreal& x, const mpfr::mpreal& z) {
 		const mpreal D = k * t / (k + mp_e2());
 		const mpreal d = sqrt(D * D + z * z);
 
-		const mpreal h   = (k - b2oa2) * d / k;
-		const mpreal lat = mpreal(2) * atan(z / (d + D));
-		return {lat, h};
+		h   = (k - b2oa2) * d / k;
+		lat = mpreal(2) * atan(z / (d + D));
 	} else {
-		const mpreal h   = -b_over_e * sqrt(mp_e2() - p);
-		const mpreal lat = mpreal(2) * atan(sqrt(e4 - p) / (-e2_over_b * h + b_over_a * sqrt(p)) );
-		return {lat, h};
+		h   = -b_over_e * sqrt(mp_e2() - p);
+		lat = mpreal(2) * atan(sqrt(e4 - p) / (-e2_over_b * h + b_over_a * sqrt(p)) );
 	}
+
+	// Vermeille solves for |x| (its t = sqrt(x*x)), so `lat` is the right-half-
+	// plane latitude in [-pi/2, pi/2]. Reflect across the minor axis when x < 0
+	// to give the true 2-D normal direction in (-pi, pi]. h is symmetric in x
+	// and therefore unchanged.
+	if (x < 0) {
+		lat = const_pi() - lat;
+		if (lat > const_pi())
+			lat -= mpreal(2) * const_pi();
+	}
+	return {lat, h};
 }
