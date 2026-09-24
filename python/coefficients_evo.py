@@ -146,10 +146,10 @@ def d_sin_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def c_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
-    """Sparse cos(φ)/|cos(ψ)| coefficient.
+    """Sparse cos(φ)/cos(ψ) coefficient.
 
     Coefficient of the series for cos(φ), the horizontal normal component, with
-    the |cos(ψ)| factor extracted so the expansion stays regular at ψ = ±π/2.
+    the cos(ψ) factor extracted so the expansion stays regular at ψ = ±π/2.
 
     :param k: σ (= ρ/(a·e²)) power.
     :param l: sin(ψ) power.
@@ -170,9 +170,9 @@ def c_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
 
 @cache.ints_cache
 def d_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
-    """Dense cos(φ)/|cos(ψ)| coefficient.
+    """Dense cos(φ)/cos(ψ) coefficient.
 
-    Dense-form coefficient of the cos(φ)/|cos(ψ)| series (see c_cos_phi_evo).
+    Dense-form coefficient of the cos(φ)/cos(ψ) series (see c_cos_phi_evo).
 
     :param k: σ (= ρ/(a·e²)) power.
     :param l: sin(ψ) power.
@@ -181,8 +181,7 @@ def d_cos_phi_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     """
     assert l >= 0 and k >= 1 and n >= (k - 1) % 2 and l <= (k - 1) // 2 and n <= k // 2, \
         f"d_cos_phi_evo indices out of range. k: {k} l: {l} n: {n}"
-    p = (k - 1) % 2
-    return c_cos_phi_evo(k, p + 2 * l, 2 * n + 1 - p)
+    return c_cos_phi_evo(k, 2 * l + (k - 1) % 2, 2 * n + k % 2)
 
 
 @cache.ints_cache

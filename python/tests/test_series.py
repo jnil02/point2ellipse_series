@@ -22,18 +22,21 @@ MAX_ORDER = 7
 # Truncated-series tolerance: e2 ≈ 0.007, so e2^8 ≈ 6e-17; 1e-10 is generous.
 TOL = mp.mpf("1e-10")
 
-# Test point.
-_PHI = mp.mpf("43.1") / mp.mpf("180.") * mp.pi
+# One test point per quadrant. phi (the normal direction / geodetic latitude)
+# is defined in (-180, 180] deg; |phi| > 90 places the point at x < 0 (the 2nd
+# and 3rd quadrants), which exercises the full-circle Vermeille reference.
+_PHI_DEG = ["43.1", "136.9", "-136.9", "-43.1"]   # Q1, Q2, Q3, Q4
 _H   = mp.mpf("10000.")
 
-# Reference values for the tests.
-@pytest.fixture(scope="module")
-def ref():
-    x, y = mp_ellipse_to_cartesian(_PHI, _H)
+# Reference values for the tests, one parametrization per quadrant.
+@pytest.fixture(scope="module", params=_PHI_DEG, ids=[f"phi={d}" for d in _PHI_DEG])
+def ref(request):
+    phi = mp.mpf(request.param) / mp.mpf("180.") * mp.pi
+    x, y = mp_ellipse_to_cartesian(phi, _H)
     rho      = mp.sqrt(x*x + y*y)
     psi_val  = mp.atan2(y, x)
     varrho_v = mp_a / rho
-    return dict(phi=_PHI, h=_H, x=x, y=y, psi=psi_val, rho=rho, varrho=varrho_v)
+    return dict(phi=phi, h=_H, x=x, y=y, psi=psi_val, rho=rho, varrho=varrho_v)
 
 
 def ev(expr, ref):
@@ -78,6 +81,10 @@ def test_phi_minus_psi_sin_mul(ref):
 
 
 def test_phi_minus_psi_sin_pow2(ref):
+    # phi_in_sin_pow2 absorbs cos(psi) as its positive square root sqrt(1-sin^2),
+    # so it only represents the right half-plane (cos(psi) >= 0).
+    if mp.cos(ref["psi"]) < 0:
+        pytest.skip("phi_in_sin_pow2 is valid only for cos(psi) >= 0")
     expected = ref["phi"] - ref["psi"]
     result = ev(expansions.phi_in_sin_pow2(MAX_ORDER, MAX_ORDER), ref)
     # phi_in_sin_pow2 has worse convergence by design (see docstring); ~2e-7 at order 7.

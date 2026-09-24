@@ -21,24 +21,27 @@ MAX_ORDER_EVO = 11
 # convergence parameter rho_ae2 = rho/(a*e2) ≈ 0.117, so rho_ae2^12 ≈ 5e-12.
 TOL_EVO = mp.mpf("1e-9")
 
-# Test point: polar coords inside the ellipse evolute.
-_PSI_EVO = mp.mpf("138.") / mp.mpf("180.") * mp.pi
+# One test point per quadrant, in polar coords inside the ellipse evolute. psi
+# (the polar angle) is defined in (-180, 180] deg, so sign(psi) == sign(sin psi)
+# and the quadrant sign `sgn` below is valid.
+_PSI_DEG = ["42.", "138.", "-138.", "-42."]   # Q1, Q2, Q3, Q4
 _RHO_EVO = mp.mpf("5000.")
 
 
-@pytest.fixture(scope="module")
-def ref_evo():
-    cx, cy = mp_polar_to_cartesian(_PSI_EVO, _RHO_EVO)
+@pytest.fixture(scope="module", params=_PSI_DEG, ids=[f"psi={d}" for d in _PSI_DEG])
+def ref_evo(request):
+    psi = mp.mpf(request.param) / mp.mpf("180.") * mp.pi
+    cx, cy = mp_polar_to_cartesian(psi, _RHO_EVO)
     phi, h = mp_cartesian_to_ellipse(cx, cy)
-    sgn = mp.mpf("1") if _PSI_EVO > 0 else mp.mpf("-1")
+    sgn = mp.mpf("1") if psi > 0 else mp.mpf("-1")
     return dict(
-        psi         = _PSI_EVO,
+        psi         = psi,
         rho         = _RHO_EVO,
         phi         = phi,
         h           = h,
         sgn         = sgn,
-        abs_sin_psi = abs(mp.sin(_PSI_EVO)),
-        abs_cos_psi = abs(mp.cos(_PSI_EVO)),
+        abs_sin_psi = abs(mp.sin(psi)),
+        cos_psi     = mp.cos(psi),
         rho_ae2_val = _RHO_EVO / (mp_a * mp_e2),
         b_a_val     = mp.sqrt(mp.mpf(1) - mp_e2),
     )
@@ -60,14 +63,14 @@ def ev_evo(expr, ref):
 
 
 # ---------------------------------------------------------------------------
-# (phi - sgn*pi/2) / (sgn * |cos(psi)|)
+# (phi - sgn*pi/2) / (sgn * cos(psi))
 # ---------------------------------------------------------------------------
 
 def test_phi_evo_dense_m(ref_evo):
     expected = ((ref_evo["phi"] - ref_evo["sgn"] * mp.pi / 2)
-                / (ref_evo["sgn"] * ref_evo["abs_cos_psi"]))
+                / (ref_evo["sgn"] * ref_evo["cos_psi"]))
     result = ev_evo(expansions_evo.phi_evo_dense(MAX_ORDER_EVO), ref_evo)
-    assert_close("(phi - sgn*pi/2)/(sgn*|cos(psi)|)  evo_dense", expected, result, TOL_EVO)
+    assert_close("phi evo_dense", expected, result, TOL_EVO)
 
 
 # ---------------------------------------------------------------------------
@@ -81,13 +84,12 @@ def test_sin_phi_evo_dense(ref_evo):
 
 
 # ---------------------------------------------------------------------------
-# cos(phi) / |cos(psi)|
+# cos(phi) / cos(psi)
 # ---------------------------------------------------------------------------
 
 def test_cos_phi_evo_dense(ref_evo):
-    expected = mp.cos(ref_evo["phi"]) / ref_evo["abs_cos_psi"]
-    result = ev_evo(expansions_evo.cos_phi_evo_dense(MAX_ORDER_EVO), ref_evo)
-    assert_close("cos(phi)/|cos(psi)|  evo_dense", expected, result, TOL_EVO)
+    result = ref_evo["cos_psi"] * ev_evo(expansions_evo.cos_phi_evo_dense(MAX_ORDER_EVO), ref_evo)
+    assert_close("cos(phi)  evo_dense", mp.cos(ref_evo["phi"]), result, TOL_EVO)
 
 
 # ---------------------------------------------------------------------------

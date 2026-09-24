@@ -1,4 +1,3 @@
-
 """Ellipse parameters and Ellipse to Cartesian coordinate transformation.
 """
 import typing
@@ -13,6 +12,7 @@ mp_f = mp.mpf(1.0) / mp.mpf("298.257223563")  # Flattening. f = (a - b) / a
 mp_b = mp_a - mp_f * mp_a  # Semi-minor axis / Earth polar radius.
 mp_e2 = mp.mpf(1) - (mp_b * mp_b) / (mp_a * mp_a)  # First eccentricity squared.
 
+
 def mp_ellipse_to_cartesian(phi: mp.mpf, h: mp.mpf) -> typing.Tuple[mp.mpf, mp.mpf]:
     """Multi-precision elliptical to Cartesian coordinate transformation.
 
@@ -26,6 +26,7 @@ def mp_ellipse_to_cartesian(phi: mp.mpf, h: mp.mpf) -> typing.Tuple[mp.mpf, mp.m
     y = ((mp.mpf(1) - mp_e2) * N + h) * sin_lat
     return x, y
 
+
 def mp_polar_to_cartesian(psi: mp.mpf, rho: mp.mpf) -> typing.Tuple[mp.mpf, mp.mpf]:
     """ Conversion from polar to cartesian coordinates.
 
@@ -34,6 +35,7 @@ def mp_polar_to_cartesian(psi: mp.mpf, rho: mp.mpf) -> typing.Tuple[mp.mpf, mp.m
     :return: Cartesian coordinate (x,y)
     """
     return rho * mp.cos(psi), rho * mp.sin(psi)
+
 
 # Constants for transformation function below.
 a2 = mp_a * mp_a
@@ -53,6 +55,7 @@ bam1 = mp_b / mp_a  # = 1 - f
 bem1 = mp_b / mp.sqrt(mp_e2)
 e2bm1 = mp_e2 / mp_b
 
+
 def mp_cartesian_to_ellipse(x, z):
     """Multiprecision Cartesian (ECEF) to geodetic (ellipse) coordinate transformation by Vermeille.
 
@@ -62,7 +65,7 @@ def mp_cartesian_to_ellipse(x, z):
 
     :param x: Cartesian x coordinate.
     :param z: Cartesian z coordinate.
-    :return: Tuple of latitude and altitude.
+    :return: Tuple of latitude (in (-pi, pi]) and altitude.
     """
     t2 = x * x
     t = mp.sqrt(t2)
@@ -71,7 +74,7 @@ def mp_cartesian_to_ellipse(x, z):
     r = (p + q - e4) * inv_6
     r38 = r * r * r * mp.mpf(8.)
     ev = r38 + e4 * p * q
-    
+
     if (ev > 0):
         # Outside evolute.
         s = e2bam3 * mp.fabs(z) * t  # std::sqrt(e4*p*q)
@@ -88,7 +91,6 @@ def mp_cartesian_to_ellipse(x, z):
 
         h = (k - b2am2) * d / k
         lat = 2. * mp.atan(z / (d + D))
-        return lat, h
     elif (q != 0):
         # On or inside evolute and not on singular disc.
         s = e2bam3 * mp.fabs(z) * t  # std::sqrt(e4*p*q)
@@ -103,10 +105,18 @@ def mp_cartesian_to_ellipse(x, z):
 
         h = (k - b2am2) * d / k
         lat = 2. * mp.atan(z / (d + D))
-        return lat, h
     else:
         # On the singular disc (including center of earth).
         # Values are taken to have positive latitude.
         h = -bem1 * mp.sqrt(mp_e2 - p)
         lat = mp.mpf(2.) * mp.atan(mp.sqrt(e4 - p) / (-e2bm1 * h + bam1 * mp.sqrt(p)))
-        return lat, h
+
+    # Vermeille solves for |x| (its t = sqrt(x*x)), so `lat` is the right-half-
+    # plane latitude in [-pi/2, pi/2]. Reflect across the minor axis when x < 0
+    # to give the true 2-D normal direction in (-pi, pi]. h is symmetric in x
+    # and therefore unchanged.
+    if x < 0:
+        lat = mp.pi - lat
+        if lat > mp.pi:
+            lat -= mp.mpf(2) * mp.pi
+    return lat, h
