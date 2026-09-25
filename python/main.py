@@ -1,6 +1,6 @@
 
 
-"""Example of evaluation of point-to-ellipse Fourier series.
+"""Example of evaluation of the point-to-ellipse series.
 
 The earth ellipse is used as an example.
 All non-integer evaluations are done with multi-precision arithmetics.

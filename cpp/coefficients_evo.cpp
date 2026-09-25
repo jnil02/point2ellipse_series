@@ -108,55 +108,6 @@ mpq_class d_phi_evo(int k, int l, int n) {
 	return cache.insert(ret, (uint) k, (uint) l, (uint) n);
 }
 
-// Old implementation
-//mpq_class c_phi_evo(int n, int k, int l) {
-//	assert(n >= 0 && k >= n + 1 && l >= 1 && l <= k);
-//
-//	// Parity constraints — coefficient is zero unless both hold.
-//	if ((k - n - 1) % 2 != 0 || (l - k) % 2 != 0)
-//		return {0};
-//
-//	static UintsCache<mpq_class> cache;
-//	if (auto *ret = cache.get((uint) n, (uint) k, (uint) l))
-//		return *ret;
-//
-//	// Outer binomial factor: binomial(k/2, (k-l)/2) / k.
-//	// (k-l)/2 >= 0 since (l-k)%2==0 and valid range has l <= k.
-//	const long kl_2 = (long) ((k - l) / 2);
-//	mpq_class outer = binomial_rational(mpq_class(k, 2), kl_2)
-//					  / mpq_class(mpz_class(k));
-//
-//	mpq_class c(0);
-//	for (int j = 0; j <= (l - 1) / 2; ++j) {
-//
-//		// Inner sum for b.
-//		mpq_class b(0);
-//		const int i_max = std::min(j, (n + 1 - l + 2 * j) / 2);
-//		for (int i = 0; i <= i_max; ++i) {
-//			const int ka = (n - l + 1 + 2 * j - 2 * i) / 2;
-//			mpz_class bj_i;
-//			mpz_bin_uiui(bj_i.get_mpz_t(), (unsigned long) j, (unsigned long) i);
-//			b += mpq_class(mpz_class(powm1(ka)) * bj_i)
-//				 * int_bin(j - i + (k - l) / 2, ka);
-//		}
-//
-//		// Inner sum for s.
-//		mpq_class s(0);
-//		for (int q = 2 * j; q <= l - 1; ++q) {
-//			mpz_class shift_val;
-//			mpz_ui_pow_ui(shift_val.get_mpz_t(), 2, (unsigned long) (q - 2 * j));
-//			mpz_class bqj_j;
-//			mpz_bin_uiui(bqj_j.get_mpz_t(), (unsigned long) (q - j), (unsigned long) j);
-//			s += mpq_class(shift_val * bqj_j) * int_bin(k - 2 - q, l - 1 - q);
-//		}
-//
-//		c += outer * mpq_class(mpz_class(powm1(l - j))) * s * b;
-//	}
-//
-//	mpq_class ret = c;
-//	return cache.insert(ret, (uint) n, (uint) k, (uint) l);
-//}
-
 mpq_class c_phi_evo(int k, int l, int n) {
 	assert(l >= 0 && k >= l + 1 && n >= 1 && n <= k);
 

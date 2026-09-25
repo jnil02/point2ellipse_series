@@ -1,9 +1,9 @@
-"""Pytest tests for point-to-ellipse Fourier series evaluation.
+"""Pytest tests for the far-field point-to-ellipse series evaluation.
 
-Uses the WGS84 Earth ellipse with a fixed test point (lat 43.1°, alt 10 000 m).
-All assertions compare a truncated series (order MAX_ORDER) against the
-multi-precision reference value, so the tolerance reflects truncation error,
-not floating-point noise.
+Uses the WGS84 Earth ellipse with one test point per quadrant (lat
++-43.1 / +-136.9 deg, alt 10 000 m). All assertions compare a truncated
+series (order MAX_ORDER) against the multi-precision reference value, so the
+tolerance reflects truncation error, not floating-point noise.
 """
 
 from mpmath import mp

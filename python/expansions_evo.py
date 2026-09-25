@@ -10,7 +10,7 @@ from coefficients_evo import c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_
 
 
 def phi_evo_sparse(L, K):
-    """Double series for (phi - pi/2) / cos(phi) inside evolute
+    """Double series for (phi - pi/2) / cos(psi) inside evolute
 
     The series are in rho / (ae^2) and abs(sin(psi)).
     Every other coefficient in the series are zero, i.e. sparse.
@@ -30,7 +30,7 @@ def phi_evo_sparse(L, K):
 def phi_evo_dense(K):
     """Series for (phi - pi/2) / cos(psi) inside evolute
 
-    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
+    Series in rho / (ae^2). All coefficients are non-zero, i.e. dense.
 
     :param K: maximum rho_ae2 power (the single truncation parameter).
     :return: symbolic series.
@@ -89,9 +89,8 @@ def sin_phi_evo_sparse(L, K):
 def sin_phi_evo_dense(K):
     """Series for sin(phi) - 1 inside evolute.
 
-    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
+    Series in rho / (ae^2). All coefficients are non-zero, i.e. dense.
 
-    :param N: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
@@ -125,9 +124,8 @@ def cos_phi_evo_sparse(L, K):
 def cos_phi_evo_dense(K):
     """Series for cos(phi)/cos(psi) inside evolute
 
-    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
+    Series in rho / (ae^2). All coefficients are non-zero, i.e. dense.
 
-    :param N: sin power limit.
     :param K: rho power limit.
     :return: Symbolic series.
     """
@@ -240,7 +238,7 @@ def h_evo_sparse(L, K):
 def h_evo_dense(K):
     """Series for (h + b - rho * sin(psi)) / a inside evolute
 
-    Series in rho / (ae^2). All coefficients a re non-zero, i.e. dense.
+    Series in rho / (ae^2). All coefficients are non-zero, i.e. dense.
 
     :param K: rho power limit.
     :return: Symbolic series.

@@ -1,8 +1,9 @@
-"""Pytest tests for the inside-evolute point-to-ellipse Fourier series.
+"""Pytest tests for the inside-evolute point-to-ellipse series.
 
-Uses the WGS84 Earth ellipse with a fixed test point inside the evolute
-(polar angle 138°, radius 5000 m). All assertions compare a truncated
-series (order MAX_ORDER_EVO) against the multi-precision reference value.
+Uses the WGS84 Earth ellipse with one test point per quadrant inside the
+evolute (polar angle +-42 / +-138 deg, radius 5000 m). All assertions compare
+a truncated series (order MAX_ORDER_EVO) against the multi-precision reference
+value.
 """
 
 from mpmath import mp
