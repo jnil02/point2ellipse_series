@@ -221,7 +221,7 @@ def R(k: int, l: int, n: int, i: int) -> sp.core.numbers.Rational:
     assert l >= 0 and k >= l and n >= 0 and n <= k and i >= 0 and i <= n // 2, \
         f"R indices out of range. k: {k} l: {l} n: {n} i: {i}"
     s = sp.S.Zero
-    for j in range(max(0, ceil((l + 2 * i - k) / 2.)), l // 2 + 1):
+    for j in range(max(0, ceil((l + 2 * i - k) / 2.)), min(i, l // 2) + 1):
         s += (-1) ** (j) * sp.binomial(i, j) * c_phi_pow_evo(k, l - 2 * j, n, 2 * i)
     return s
 

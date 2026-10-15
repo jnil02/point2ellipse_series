@@ -388,7 +388,7 @@ mpq_class R(int k, int l, int n, int i) {
 	mpq_class s(0);
 
 	const int j_min = std::max(0, (l + 2 * i - k + 1) / 2);
-	const int j_max = l / 2;
+	const int j_max = std::min(i, l / 2);
 
 	for (int j = j_min; j <= j_max; ++j) {
 		mpz_class binom;
