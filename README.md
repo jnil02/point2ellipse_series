@@ -8,7 +8,8 @@ Nilsson, J.-O. *Point-to-ellipse Fourier series.*
 arXiv: [2507.08807](https://doi.org/10.48550/arXiv.2507.08807) \[math.GM]
 (a copy is included: [2507.08807v1.pdf](2507.08807v1.pdf)).
 
-**Part II — expansion about the center (inside-evolute series):** *in preparation.*
+**Part II — expansion about the center (inside-evolute series):** *in 
+preparation.* (preliminary version [point2ellipse_inverse_v0.pdf](point2ellipse_inverse_v0.pdf))
 
 ## Introduction
 
