@@ -264,14 +264,13 @@ def cp_evo(k: int, l: int, n: int) -> sp.core.Rational:
         f"cp_evo indices out of range. k: {k} l: {l} n: {n}"
     if (l - k) % 2 != 0 or (k + 1 - n) % 2 != 0:
         return sp.S.Zero
-    if n <= 2 and n <= k - 1:
-        # k = 0, l=0, n = 2
+    if 2 <= n <= min(3, k - 1):
         return c_sin_phi_inv_evo(k - 1, l - 1, n)
-    if 3 <= n and n <= k - 1:
+    if 4 <= n <= k - 1:
         return c_sin_phi_inv_evo(k - 1, l - 1, n) - c_sin_phi_inv_evo(k - 1, l - 1, n - 2)
-    if 3 <= n and n <= k + 1:
+    if max(4, k) <= n <= k + 1:
         return -c_sin_phi_inv_evo(k - 1, l - 1, n - 2)
-    # This will happen for e.g. 1,1,2.
+    # Otherwise zero, e.g. n = 1 or (k, l, n) = (1, 1, 2).
     return sp.S.Zero
 
 

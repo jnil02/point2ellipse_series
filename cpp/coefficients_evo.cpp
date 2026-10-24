@@ -273,7 +273,7 @@ mpq_class c_cos_phi_evo(int k, int l, int n) {
 }
 
 mpq_class c_sin_phi_inv_evo(int k, int l, int n) {
-	assert(l >= 0 && k >= l && n >= 0 && n <= k);
+	assert(l >= 0 && k >= l && n >= 2 && n <= k);
 
 	// Parity constraints — same as d_sin_phi_evo.
 	if ((l - k) % 2 != 0 || (l - n) % 2 != 0)
@@ -440,14 +440,13 @@ mpq_class cp_evo(int k, int l, int n) {
 
 	mpq_class ret(0);
 
-	if (n <= 2 && n <= k-1)
-		// k = 0, l=0, n = 2
+	if (2 <= n && n <= std::min(3, k - 1))
 		ret = c_sin_phi_inv_evo(k - 1, l - 1, n);
-	else if (3 <= n && n <= k-1)
+	else if (4 <= n && n <= k - 1)
 		ret = c_sin_phi_inv_evo(k - 1, l - 1, n) - c_sin_phi_inv_evo(k - 1, l - 1, n - 2);
-	else if (3 <= n && n <= k+1)
+	else if (std::max(4, k) <= n && n <= k + 1)
 		ret = -c_sin_phi_inv_evo(k - 1, l - 1, n - 2);
-	// else (ret = 0) will happen for e.g. 1,1,2.
+	// else ret = 0, e.g. n = 1 or (k, l, n) = (1, 1, 2).
 
 	return cache.insert(ret, (uint) l, (uint) k, (uint) n);
 }
