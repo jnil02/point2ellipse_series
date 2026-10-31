@@ -40,6 +40,14 @@ point-to-ellipse relations from the truncated series (multi-precision).
 
 The Python code is a readable reference (practical to ~order 15).
 
+Run the tests from the repository root using your Python environment:
+
+```bash
+PYTHONPATH=python python3 -m pytest python/tests
+```
+
+`PYTHONPATH=python` makes the reference modules available outside an IDE.
+
 ## C++ (fast implementation)
 
 `cpp/` mirrors the Python coefficients and series — checked against the Python
@@ -66,8 +74,8 @@ With the Python dependencies installed, run these commands from the repository
 root (using your Python environment):
 
 ```bash
-PYTHONPATH=python python python/tests/generate_test_data.py
-PYTHONPATH=python python python/tests/generate_series_test_data.py
+PYTHONPATH=python python3 python/tests/generate_test_data.py
+PYTHONPATH=python python3 python/tests/generate_series_test_data.py
 cmake -S cpp -B cpp/build
 cmake --build cpp/build
 ctest --test-dir cpp/build --output-on-failure
@@ -79,8 +87,17 @@ outside an IDE. Both generators write their CSV files to the repository-root
 
 ## Dependencies
 
-- **Python:** sympy, mpmath (matplotlib, numpy for the analysis plots).
-- **C++:** a C++20 compiler, CMake ≥ 3.15, GMP/gmpxx, MPFR, SymEngine.
+- **Python reference and fixture generators:** Python 3, SymPy, mpmath.
+- **Python tests:** pytest, in addition to the reference dependencies.
+- **Python analysis plots:** matplotlib and NumPy, in addition to the reference
+  dependencies.
+- **C++:** a C++20 compiler, CMake ≥ 3.15, GMP (including its `gmpxx` C++
+  interface), MPFR, MPFR C++ (`mpreal.h`), and SymEngine built with MPFR support.
+  Install the development headers as well as the libraries. MPFR C++ is a
+  separate wrapper; MPFR alone does not provide `mpreal.h`.
+- **C++ tests:** Catch2 v2, with its single header available as `<catch.hpp>`
+  on the compiler's include path. The current default build includes the tests,
+  so this dependency is needed for the build command above.
 
 ## License
 
