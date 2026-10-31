@@ -1,10 +1,11 @@
 """Generate test data for C++ consistency checks.
 
-Outputs CSV files to test_data/ with columns: n,k,l,num,den
+Outputs CSV files to the repository-root test_data/ directory with columns:
+n,k,l,num,den, independently of the working directory.
 """
 
-import os
 import csv
+from pathlib import Path
 
 from dataclasses import dataclass
 from typing import Callable, Optional, Sequence, Tuple
@@ -18,14 +19,14 @@ from coefficients_evo import (d_phi_evo, c_phi_evo, c_phi_pow_evo, c_sin_phi_evo
 M  = 5  # Max index
 MP = 3  # Max index for power index. Lowever due to computational cost.
 
-# Where to place the test data.
-TEST_DATA_DIR = os.path.join(os.path.dirname(__file__), '..', 'test_data')
+# Anchor to this file (repo/python/tests/), not the process working directory.
+TEST_DATA_DIR = (Path(__file__).resolve().parent / '../../test_data').resolve()
 
 
 def write_csv(filename, rows, header):
     """Write rows to a CSV file in TEST_DATA_DIR."""
-    os.makedirs(TEST_DATA_DIR, exist_ok=True)
-    path = os.path.join(TEST_DATA_DIR, filename)
+    TEST_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    path = TEST_DATA_DIR / filename
     with open(path, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(header)
