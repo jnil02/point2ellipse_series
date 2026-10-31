@@ -1,0 +1,76 @@
+\documentclass[crop,tikz]{standalone}% 'crop' is the default for v1.0, before it was 'preview'
+%\usetikzlibrary{...}% tikz package already loaded by 'tikz' option
+
+\usepackage{amsmath}
+
+\usetikzlibrary{math, calc, decorations.pathreplacing}
+
+\begin{document}
+
+\tikzmath{
+	% Ellipse properties.
+	\a = 4;  % Semi-major axis.
+	\b = 1.75;  % Semi-minor axis.
+	\e2 = 1 - \b * \b / (\a * \a);  % Eccentricity squared.
+	% The point.
+	\px = 3.5;
+	\py = 2.1;
+	\phiDeg = atan2(\py, \px);
+	\phiRad = rad(\phiDeg);
+    \rhoJO = sqrt(\px * \px + \py * \py) / \a;
+    \rhoInv = 1 / \rhoJO;
+    \cosPhi = cos(\phiDeg);
+    \sinPhi = sin(\phiDeg);
+    \psiRad = \cosPhi*(3003*\e2^5*\rhoInv^5*\sinPhi^9/40 - 3003*\e2^5*\rhoInv^5*\sinPhi^7/20 + 3843*\e2^5*\rhoInv^5*\sinPhi^5/40 - 21*\e2^5*\rhoInv^5*\sinPhi^3 + \e2^5*\rhoInv^5*\sinPhi - 80*\e2^5*\rhoInv^4*\sinPhi^9 + 140*\e2^5*\rhoInv^4*\sinPhi^7 - 72*\e2^5*\rhoInv^4*\sinPhi^5 + 10*\e2^5*\rhoInv^4*\sinPhi^3 + 495*\e2^5*\rhoInv^3*\sinPhi^9/16 - 675*\e2^5*\rhoInv^3*\sinPhi^7/16 + 105*\e2^5*\rhoInv^3*\sinPhi^5/8 - 5*\e2^5*\rhoInv^2*\sinPhi^9 + 4*\e2^5*\rhoInv^2*\sinPhi^7 + 35*\e2^5*\rhoInv*\sinPhi^9/128 - 20*\e2^4*\rhoInv^4*\sinPhi^7 + 30*\e2^4*\rhoInv^4*\sinPhi^5 - 12*\e2^4*\rhoInv^4*\sinPhi^3 + \e2^4*\rhoInv^4*\sinPhi + 63*\e2^4*\rhoInv^3*\sinPhi^7/4 - 77*\e2^4*\rhoInv^3*\sinPhi^5/4 + 5*\e2^4*\rhoInv^3*\sinPhi^3 - 4*\e2^4*\rhoInv^2*\sinPhi^7 + 3*\e2^4*\rhoInv^2*\sinPhi^5 + 5*\e2^4*\rhoInv*\sinPhi^7/16 + 35*\e2^3*\rhoInv^3*\sinPhi^5/6 - 35*\e2^3*\rhoInv^3*\sinPhi^3/6 + \e2^3*\rhoInv^3*\sinPhi - 3*\e2^3*\rhoInv^2*\sinPhi^5 + 2*\e2^3*\rhoInv^2*\sinPhi^3 + 3*\e2^3*\rhoInv*\sinPhi^5/8 - 2*\e2^2*\rhoInv^2*\sinPhi^3 + \e2^2*\rhoInv^2*\sinPhi + \e2^2*\rhoInv*\sinPhi^3/2 + \e2*\rhoInv*\sinPhi) + \phiRad;
+    \psiDeg = deg(\psiRad);
+    \sinPsi = sin(\psiDeg);
+    \cosPsi = cos(\psiDeg);
+    \alt = (21*\cosPhi^12*\e2^6/1024 + \cosPhi^12*(-429*\e2^6*\rhoInv^5/16 + 35*\e2^6*\rhoInv^4 - 143*\e2^6*\rhoInv^3/8 + 35*\e2^6*\rhoInv^2/8 - \e2^6*\rhoInv/2) + \cosPhi^10*(-63*\e2^6/512 - 7*\e2^5/256) + \cosPhi^10*(1287*\e2^6*\rhoInv^5/16 + \rhoInv^4*(-115*\e2^6 - 8*\e2^5) + \rhoInv^3*(66*\e2^6 + 33*\e2^5/4) + \rhoInv^2*(-595*\e2^6/32 - 25*\e2^5/8) + \rhoInv*(5*\e2^6/2 + \e2^5/2)) + \cosPhi^8*(315*\e2^6/1024 + 35*\e2^5/256 + 5*\e2^4/128) + \cosPhi^8*(-1419*\e2^6*\rhoInv^5/16 + \rhoInv^4*(1125*\e2^6/8 + 20*\e2^5) + \rhoInv^3*(-369*\e2^6/4 - 93*\e2^5/4 - 21*\e2^4/8) + \rhoInv^2*(245*\e2^6/8 + 165*\e2^5/16 + 2*\e2^4) + \rhoInv*(-5*\e2^6 - 2*\e2^5 - \e2^4/2)) + \cosPhi^6*(-105*\e2^6/256 - 35*\e2^5/128 - 5*\e2^4/32 - \e2^3/16) + \cosPhi^6*(693*\e2^6*\rhoInv^5/16 + \rhoInv^4*(-155*\e2^6/2 - 17*\e2^5) + \rhoInv^3*(119*\e2^6/2 + 91*\e2^5/4 + 21*\e2^4/4) + \rhoInv^2*(-385*\e2^6/16 - 195*\e2^5/16 - 19*\e2^4/4 - \e2^3) + \rhoInv*(5*\e2^6 + 3*\e2^5 + 3*\e2^4/2 + \e2^3/2)) + \cosPhi^4*(315*\e2^6/1024 + 35*\e2^5/128 + 15*\e2^4/64 + 3*\e2^3/16 + \e2^2/8) + \cosPhi^4*(-35*\e2^6*\rhoInv^5/4 + \rhoInv^4*(145*\e2^6/8 + 11*\e2^5/2) + \rhoInv^3*(-135*\e2^6/8 - 35*\e2^5/4 - 25*\e2^4/8) + \rhoInv^2*(35*\e2^6/4 + 95*\e2^5/16 + 7*\e2^4/2 + 3*\e2^3/2) + \rhoInv*(-5*\e2^6/2 - 2*\e2^5 - 3*\e2^4/2 - \e2^3 - \e2^2/2)) + \cosPhi^2*(\e2^6*\rhoInv^5/2 + \rhoInv^4*(-5*\e2^6/4 - \e2^5/2) + \rhoInv^3*(3*\e2^6/2 + \e2^5 + \e2^4/2) + \rhoInv^2*(-35*\e2^6/32 - 15*\e2^5/16 - 3*\e2^4/4 - \e2^3/2) + \rhoInv*(\e2^6/2 + \e2^5/2 + \e2^4/2 + \e2^3/2 + \e2^2/2)) + \cosPhi^2*(-63*\e2^6/512 - 35*\e2^5/256 - 5*\e2^4/32 - 3*\e2^3/16 - \e2^2/4 - \e2/2) + 21*\e2^6/1024 + 7*\e2^5/256 + 5*\e2^4/128 + \e2^3/16 + \e2^2/8 + \e2/2 - 1 + 1/\rhoInv)*\a;
+    %\alt = (-\cosPhi^2*\e2/2 + \e2/2 - 1 + \rhoJO) * \a;
+    coordinate \footpoint;
+    \footpoint = ({\px - (\alt+0.02) * \cosPsi}, {\py - (\alt+0.02) *\sinPsi});
+    coordinate \axispoint;
+    \axispoint = ({\px - \py / tan(\psiDeg)}, 0);
+}
+    
+%\tikzmath{
+%	\rho = 1;
+%	\sin_phi = \rho * sin(60);
+%	\cos_phi = \rho * cos(60);
+%}
+
+\begin{tikzpicture}[line width=0.25mm,
+brc/.style = {decorate, thin, decoration={brace,raise=0.75mm, amplitude=1mm}},
+shorten <>/.style = {shorten >=#1pt, shorten <=#1pt}
+]
+\coordinate (O) at (0,0);
+\coordinate (p) at (\px cm,\py cm);
+% Coordinate systems.
+\draw[->, line width=0.2mm] (-\a cm -1cm,0) -- (\a cm+1cm,0);% node[anchor=north west,xshift=-1mm] {$x$};
+\draw[->, line width=0.2mm] (0,-\b cm - 0.7cm) -- (0,\b cm +0.7cm);% node[anchor=south west,yshift=-1mm] {$y$};
+% Ellipse.
+\draw (O) ellipse ({\a cm} and {\b cm});
+\draw[brc] (\a cm - 0.4 mm,0) -- (0.4mm, 0) node[midway, below=1.5mm] {$a$};
+\draw[brc] (0, 0.4mm) -- (0, \b cm - 0.4mm) node[midway, left=1.5mm] {$b$};
+\node at (-\a*0.5 cm + 0.5cm,-\b*0.5 cm+0.1cm) {$e^2 = 1 - b^2/a^2$};
+\node (ellipse_text) at (-\a cm + 1cm, \b cm + 0.25cm) {$\dfrac{x^2}{a^2} + \dfrac{y^2}{b^2}=1$};
+\draw[->] ($(ellipse_text) + (0.35cm, -0.35cm)$) -- +(0.25cm,-0.25cm);
+% Point, foot point and axis point.
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (p) {};
+\node[anchor=west] at (p) {$(u,v)$};
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (O) {};
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (\axispoint) {};
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (\footpoint) {};
+\draw (p) -- (\footpoint) -- (\axispoint);
+\draw [brc] (p) -- ($(\footpoint) + (\psiDeg:0.3mm)$) node[midway, yshift=-\cosPsi*3.5mm, xshift=\sinPsi*3.5mm] {$h$};
+% Lines and annotations.
+\draw[brc] (O) -- (p) node[midway, yshift=\cosPhi*3.3mm, xshift=-\sinPhi*3.3mm] {$\rho$};
+\draw (O) -- (p);
+\draw[thin] ($(O) + (0.5cm, 0)$) arc (0:\phiDeg:0.5cm);
+\node at ($(O) + (\phiDeg/2:0.8cm)$) {$\psi$};
+\draw[thin] ($(\axispoint) + (0.5cm, 0)$) arc (0:\psiDeg:0.5cm);
+\node at ($(\axispoint) + (\psiDeg/2:0.8cm)$) {$\phi$};
+\draw ($(\footpoint) + (\psiDeg:2mm)$) -- ++(\psiDeg+90:2mm) -- ++(\psiDeg+180:2mm);
+\end{tikzpicture}
+
+\end{document}

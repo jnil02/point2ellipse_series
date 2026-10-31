@@ -1,0 +1,316 @@
+\documentclass[crop,tikz]{standalone}% 'crop' is the default for v1.0, before it was 'preview'
+%\usetikzlibrary{...}% tikz package already loaded by 'tikz' option
+
+\usepackage{amsmath}
+
+\usetikzlibrary{math, calc, decorations.pathreplacing}
+\usetikzlibrary{shadings}
+\usetikzlibrary{patterns}
+
+\begin{document}
+
+\tikzmath{
+	% Ellipse properties.
+	\a = 4;  % Semi-major axis.
+	\b = 1.9;  % Semi-minor axis.
+	\e2 = 1 - \b * \b / (\a * \a);  % Eccentricity squared.
+	%\e = sqrt(\e2);
+%	\a2 = \a * \a;  % This kills the whole compilation.
+	% The point.
+	\px = 1.0;
+	\py = 0.7;
+	\psiDeg = atan2(\py, \px);
+	\psiRad = rad(\psiDeg);
+    \rhoJO = sqrt(\px * \px + \py * \py) / \a;
+    \rhoInv = 1 / \rhoJO;
+    \cospsi = cos(\psiDeg);
+    \sinpsi = sin(\psiDeg);
+% Vermeille Cartesian -> geodetic, complete version
+\eVal = sqrt(\e2);
+\eFourVal = \e2*\e2;
+\aSqVal = \a*\a;
+\bSqVal = \b*\b;
+\invASqVal = 1/\aSqVal;
+\bSqOverAFourVal = \bSqVal/(\aSqVal*\aSqVal);
+\invSixVal = 1/6;
+\eTwoBOverACubedVal = \e2*\b/(\aSqVal*\a);
+\eTwoHalfVal = \e2/2;
+\bSqOverASqVal = \bSqVal/\aSqVal;
+\bOverEVal = \b/\eVal;
+\eTwoOverBVal = \e2/\b;
+\bOverAVal = \b/\a;
+\tSqVal = \px*\px;
+\tVal = sqrt(\tSqVal);
+\pVal = \tSqVal*\invASqVal;
+\qVal = \py*\py*\bSqOverAFourVal;
+\rVal = (\pVal + \qVal - \eFourVal)*\invSixVal;
+\rTimesEightCubedVal = 8*\rVal*\rVal*\rVal;
+\evVal = \rTimesEightCubedVal + \eFourVal*\pVal*\qVal;
+if \evVal > 0 then {
+  \sVal = \eTwoBOverACubedVal*abs(\py)*\tVal;
+  \sqrtEvVal = sqrt(\evVal);
+  \cOneVal = \sqrtEvVal + \sVal;
+  \cTwoVal = \sqrtEvVal - \sVal;
+  \uVal = \rVal + 0.5*(\cOneVal*\cOneVal)^(1/3) + 0.5*(\cTwoVal*\cTwoVal)^(1/3);
+  \vVal = sqrt(\uVal*\uVal + \eFourVal*\qVal);
+  \wVal = \eTwoHalfVal*(\uVal + \vVal - \qVal)/\vVal;
+  \kVal = (\uVal + \vVal)/(sqrt(\wVal*\wVal + \uVal + \vVal) + \wVal);
+  \DVal = \kVal*\tVal/(\kVal + \e2);
+  \distVal = sqrt(\DVal*\DVal + \py*\py);
+  \height = (\kVal - \bSqOverASqVal)*\distVal/\kVal;
+  \latDeg = 2*atan(\py/(\distVal + \DVal));
+} else {
+  if \qVal > 0 then {
+    \sVal = \eTwoBOverACubedVal*abs(\py)*\tVal;
+    \upDeg = (2/3)*atan(\sVal/(sqrt(-\evVal) + sqrt(-\rTimesEightCubedVal)));
+    \uVal = -4*\rVal*sin(\upDeg)*cos(30 + \upDeg);
+    \vVal = sqrt(\uVal*\uVal + \eFourVal*\qVal);
+    \wVal = \eTwoHalfVal*(\uVal + \vVal - \qVal)/\vVal;
+    \kVal = (\uVal + \vVal)/(sqrt(\wVal*\wVal + \uVal + \vVal) + \wVal);
+    \DVal = \kVal*\tVal/(\kVal + \e2);
+    \distVal = sqrt(\DVal*\DVal + \py*\py);
+    \height = (\kVal - \bSqOverASqVal)*\distVal/\kVal;
+    \latDeg = 2*atan(\py/(\distVal + \DVal));
+  } else {
+    \height = -\bOverEVal*sqrt(\e2 - \pVal);
+    \latDeg = 2*atan(sqrt(\eFourVal - \pVal)/(-\eTwoOverBVal*\height + \bOverAVal*sqrt(\pVal)));
+  };
+};
+\latRad = rad(\latDeg);
+    \phiDeg = \latDeg; % deg(\phiRad);
+    \sinphi = sin(\phiDeg);
+    \cosphi = cos(\phiDeg);
+    \alt = \height;
+    %
+    coordinate \footpoint;
+    \footpoint = ({\px - \alt * \cosphi}, {\py - \alt *\sinphi});
+    coordinate \axispoint;
+    \axispoint = ({\px - \py / tan(\phiDeg)}, 0);
+    %
+    \ae = \a * sqrt(\e2);
+    \alphaRad = ln(1/sqrt(\e2) + sqrt(1/(\e2) - 1)); % arcosh(1/e)
+    \alphaDeg = deg(\alphaRad);
+    \Ce = \a * \e2 * sin(\alphaDeg) * cos(\alphaDeg)
+      / sqrt(1 - \e2 * cos(\alphaDeg)^2);
+    \xCap = \a+1; % desired x cutoff
+    %\phiMaxBoundDeg = acos(\Ce / (\a * sqrt(\e2))) - \alphaDeg;
+    \phiMaxXDeg = atan((cos(\alphaDeg) - \Ce/\xCap)/sin(\alphaDeg));
+    %
+    % Intersection angle between evolute and circle rho = a e
+\betaVal = (\b/\a)^(2/3);
+\eTwoThirdVal = (sqrt(\e2))^(2/3);
+%
+\psiLo = 0;
+\psiHi = 90;
+%
+for \iter in {1,...,40} {
+  \psiMid = 0.5*(\psiLo + \psiHi);
+  \fMid = cos(\psiMid)^(2/3) + \betaVal*sin(\psiMid)^(2/3) - \eTwoThirdVal;
+  if \fMid > 0 then {
+    \psiLo = \psiMid;
+  } else {
+    \psiHi = \psiMid;
+  };
+};
+%
+\psiEvolAeDeg = 0.5*(\psiLo + \psiHi);
+% Secant-evolute intersection
+\psiLo = 0;
+\psiHi = \psiEvolAeDeg;
+for \iter in {1,...,50} {
+  \psiMid = 0.5*(\psiLo + \psiHi);
+  \rhoSecMid = \Ce/cos(\alphaDeg + \psiMid);
+  \rhoEvolMid = \a*\e2 / ((cos(\psiMid)^(2/3) + (1-\e2)^(1/3)*sin(\psiMid)^(2/3))^(3/2));
+  \fMid = \rhoSecMid - \rhoEvolMid;
+  if \fMid > 0 then {
+    \psiHi = \psiMid;
+  } else {
+    \psiLo = \psiMid;
+  };
+};
+\psiIntDeg = 0.5*(\psiLo + \psiHi);
+}
+    
+%\tikzmath{
+%	\rho = 1;
+%	\sin_psi = \rho * sin(60);
+%	\cos_psi = \rho * cos(60);
+%}
+
+\begin{tikzpicture}[line width=0.25mm,
+brc/.style = {decorate, thin, decoration={brace,raise=0.75mm, amplitude=1mm}},
+shorten <>/.style = {shorten >=#1pt, shorten <=#1pt}
+]
+\coordinate (O) at (0,0);
+\coordinate (p) at (\px cm,\py cm);
+
+\clip (-0.5cm,-0.5cm) rectangle (\a cm+2cm, \b cm + 1.75cm);
+
+% Fill region of convergence.
+\fill[black!10]
+%  ({0}:{\Ce/cos(\alphaDeg)})                         % secant meets x-axis
+%  plot[domain=0:\psiIntDeg,samples=200,variable=\t]
+%    ({\t}:{\Ce/cos(\alphaDeg+\t)})                   % secant bound
+%  --
+%  plot[domain=\psiIntDeg:\psiEvolAeDeg,samples=200,variable=\psi]
+  plot[domain=0:\psiEvolAeDeg,samples=200,variable=\psi]
+    ({\psi}:{\a*\e2/((cos(\psi)^(2/3) + (1-\e2)^(1/3)*sin(\psi)^(2/3))^(3/2))})
+  --
+  ({\psiEvolAeDeg}:{\ae}) -|
+%  plot[domain=\psiEvolAeDeg:90,samples=200,variable=\t]
+%    ({\t}:{\ae})                                     % circle rho = ae
+%  --
+  (0,0) -- cycle;
+  \begin{scope}
+\clip
+%  ({0}:{\Ce/cos(\alphaDeg)})                         % secant meets x-axis
+%  plot[domain=0:\psiIntDeg,samples=200,variable=\t]
+%    ({\t}:{\Ce/cos(\alphaDeg+\t)})                   % secant bound
+%  --
+%  plot[domain=\psiIntDeg:\psiEvolAeDeg,samples=200,variable=\psi]
+  plot[domain=0:\psiEvolAeDeg,samples=200,variable=\psi]
+    ({\psi}:{\a*\e2/((cos(\psi)^(2/3) + (1-\e2)^(1/3)*sin(\psi)^(2/3))^(3/2))})
+  --
+  ({\psiEvolAeDeg}:{\ae}) -|
+%  plot[domain=\psiEvolAeDeg:90,samples=200,variable=\t]
+%    ({\t}:{\ae})                                     % circle rho = ae
+%  --
+  (0,0) -- cycle;
+  \shade[shading=axis, top color=white, bottom color=black!10] ($({\psiEvolAeDeg}:{\ae}) + (0.4 cm, 0)$) rectangle (0, \ae cm - 0.4 cm);
+  \end{scope}
+
+% Shaded regions in quadrant 2-4.
+% 2nd quadrant
+\begin{scope}[xscale=-1]
+\clip
+%  ({0}:{\Ce/cos(\alphaDeg)})                         % secant meets x-axis
+%  plot[domain=0:\psiIntDeg,samples=200,variable=\t]
+%    ({\t}:{\Ce/cos(\alphaDeg+\t)})                   % secant bound
+%  --
+%  plot[domain=\psiIntDeg:\psiEvolAeDeg,samples=200,variable=\psi]
+  plot[domain=0:\psiEvolAeDeg,samples=200,variable=\psi]
+    ({\psi}:{\a*\e2/((cos(\psi)^(2/3) + (1-\e2)^(1/3)*sin(\psi)^(2/3))^(3/2))})
+  --
+  ({\psiEvolAeDeg}:{\ae}) -|
+%  plot[domain=\psiEvolAeDeg:90,samples=200,variable=\t]
+%    ({\t}:{\ae})                                     % circle rho = ae
+%  --
+  (0,0) -- cycle;
+  % Shade from y-axis and left.
+  \shade[shading=axis, left color=white, right color=black!10] (0,0) rectangle (0.4cm, \ae cm);
+  % Shade up.
+  \shade[shading=axis, shading angle=135, top color=white, bottom color=black!10, blend mode=lighten] ($({\psiEvolAeDeg}:{\ae}) + (-0.3 cm, 0)$) rectangle (0, \ae cm - 0.4 cm);
+\end{scope}
+% 3rd quadrant
+\begin{scope}[xscale=-1, yscale=-1]
+\clip
+%  ({0}:{\Ce/cos(\alphaDeg)})                         % secant meets x-axis
+%  plot[domain=0:\psiIntDeg,samples=200,variable=\t]
+%    ({\t}:{\Ce/cos(\alphaDeg+\t)})                   % secant bound
+%  --
+%  plot[domain=\psiIntDeg:\psiEvolAeDeg,samples=200,variable=\psi]
+  plot[domain=0:\psiEvolAeDeg,samples=200,variable=\psi]
+    ({\psi}:{\a*\e2/((cos(\psi)^(2/3) + (1-\e2)^(1/3)*sin(\psi)^(2/3))^(3/2))})
+  --
+  ({\psiEvolAeDeg}:{\ae}) -|
+%  plot[domain=\psiEvolAeDeg:90,samples=200,variable=\t]
+%    ({\t}:{\ae})                                     % circle rho = ae
+%  --
+  (0,0) -- cycle;
+\shade[inner color=black!10, outer color=white] (0,0) circle[radius=0.4cm];
+\end{scope}
+
+% 4th quadrant
+\begin{scope}[yscale=-1]
+\clip
+%  ({0}:{\Ce/cos(\alphaDeg)})                         % secant meets x-axis
+%  plot[domain=0:\psiIntDeg,samples=200,variable=\t]
+%    ({\t}:{\Ce/cos(\alphaDeg+\t)})                   % secant bound
+%  --
+%  plot[domain=\psiIntDeg:\psiEvolAeDeg,samples=200,variable=\psi]
+  plot[domain=0:\psiEvolAeDeg,samples=200,variable=\psi]
+    ({\psi}:{\a*\e2/((cos(\psi)^(2/3) + (1-\e2)^(1/3)*sin(\psi)^(2/3))^(3/2))})
+  --
+  ({\psiEvolAeDeg}:{\ae}) -|
+%  plot[domain=\psiEvolAeDeg:90,samples=200,variable=\t]
+%    ({\t}:{\ae})                                     % circle rho = ae
+%  --
+  (0,0) -- cycle;
+\shade[shading=axis, bottom color=white, top color=black!10] (0,0) rectangle (\ae cm, 0.4cm);
+\end{scope}
+%
+\node[rotate=90] at (80:\b cm + 0.175cm) {\tiny{region of convergence}};
+
+
+
+% Coordinate systems.
+\draw[->, line width=0.2mm] (-\a cm -1cm,0) -- (\a cm+1cm,0) node[anchor=north west,xshift=-1mm] {$x$};
+\draw[->, line width=0.2mm] (0,-\b cm - 0.7cm) -- (0,\b cm +0.7cm) node[anchor=south east,yshift=-1mm] {$y$};
+% Ellipse.
+\draw (O) ellipse ({\a cm} and {\b cm});
+\draw[brc] (\a cm - 0.4 mm,0) -- (0.4mm, 0) node[midway, below=1.5mm] {$a$};
+\draw[brc] (0, 0.4mm) -- (0, \b cm - 0.4mm) node[midway, left=1.5mm] {$b$};
+%\node at (-\a*0.5 cm + 0.5cm,-\b*0.5 cm+0.1cm) {$e^2 = 1 - b^2/a^2$};
+\node (ellipse_text) at (15:\a cm + 1.1cm) {\small $\tfrac{x^2}{a^2} + \tfrac{y^2}{b^2}=1$};
+\draw[->] ($(ellipse_text.south west) + (0.1cm, 0.0cm)$) -- +(-145:0.35cm);
+% Point, foot point and axis point.
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (p) {};
+\node[anchor=west] at (p) {$(u,v)$};
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (O) {};
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (\axispoint) {};
+\node[circle, fill=black, minimum size=1mm, inner sep=0] at (\footpoint) {};
+\draw (p) -- (\footpoint) -- (\axispoint);
+\draw [brc] (p) -- ($(\footpoint) + (\phiDeg:0.3mm)$) node[midway, yshift=\cosphi*3.5mm, xshift=-\sinphi*3.5mm] {$h$};
+% Lines and annotations.
+\draw[brc] (O) -- (p) node[midway, yshift=\cospsi*3.3mm, xshift=-\sinpsi*3.3mm] {$\rho$};
+\draw (O) -- (p);
+\draw[thin] ($(O) + (0.4cm, 0)$) arc (0:\psiDeg:0.4cm);
+\node at ($(O) + (\psiDeg/2:0.7cm)$) {$\psi$};
+\draw[thin] ($(\axispoint) + (0.4cm, 0)$) arc (0:\phiDeg:0.4cm);
+\node at ($(\axispoint) + (\phiDeg/2:0.6cm)$) {$\phi$};
+\draw ($(\footpoint) - (\phiDeg:2mm)$) -- ++(\phiDeg-90:2mm) -- ++(\phiDeg:2mm);
+
+% Evolute of the ellipse
+%\draw[thick]
+%  plot[domain=0:90,samples=200,variable=\t]
+%    ({\t}:{\a*\e2/( (cos(\t)^2)^(1/3) + (1-\e2)^(1/3)*(sin(\t)^2)^(1/3) )^(3/2)});
+%\node (evolute) at (48:\b cm +1.2cm) {\scriptsize{evolute}};
+\node (evolute) at (\a*0.91 cm+0.5mm,\b*1.3 cm) {\small $\left(\frac{a x}{a^2-b^2}\right)^{2/3}\!+\,\left(\frac{b y}{a^2-b^2}\right)^{2/3}\!=1$};
+\draw[->] ($(evolute.west)+(0.1cm,-0.1cm)$) -- +(-170:0.4cm);
+\draw[thick, dotted]
+  plot[domain=0:90,samples=200,variable=\t]
+    ({\a*\e2*cos(\t)^3},{\a*\e2/sqrt(1-\e2)*sin(\t)^3});
+\draw[thick, dotted]
+  plot[domain=0:90,samples=200,variable=\t]
+    ({\a*\e2*cos(\t)^3},-{\a*\e2/sqrt(1-\e2)*sin(\t)^3});
+\draw[thick, dotted]
+  plot[domain=0:90,samples=200,variable=\t]
+    (-{\a*\e2*cos(\t)^3},{\a*\e2/sqrt(1-\e2)*sin(\t)^3});
+\draw[thick, dotted]
+  plot[domain=0:90,samples=200,variable=\t]
+    (-{\a*\e2*cos(\t)^3},-{\a*\e2/sqrt(1-\e2)*sin(\t)^3});
+    
+% Circle with radius ae.
+%\node (ae) at (50:\a cm+0.2cm) {$\rho=ae$};
+%\draw[->] ($(ae) + (-0.15cm, -0.15cm)$) -- +(-0.25cm,-0.25cm);
+%\draw[thick, dotted] (O) circle[radius=\ae cm];
+
+% Secant bound.
+%\node (secant) at (26:\a cm+1.5cm) {$\rho=\frac{C(e)}{\cos(\alpha+\psi)}$};
+%\draw[->] ($(secant) + (-160: 0.7cm)$) -- +(-160:0.5cm);
+%\draw[thick,dotted]
+%  plot[domain=0:\phiMaxXDeg,samples=200,variable=\t]
+%    ({\t}:{\Ce/cos(\alphaDeg+\t)});
+%\draw[thick,dotted]
+%  plot[domain=0:\phiMaxXDeg,samples=200,variable=\t]
+%    ({-\t}:{\Ce/cos(\alphaDeg+\t)});
+%\draw[thick,dotted]
+%  plot[domain=0:\phiMaxXDeg,samples=200,variable=\t]
+%    ({180-\t}:{\Ce/cos(\alphaDeg+\t)});
+%\draw[thick,dotted]
+%  plot[domain=0:\phiMaxXDeg,samples=200,variable=\t]
+%    ({\t-180}:{\Ce/cos(\alphaDeg+\t)});
+
+\end{tikzpicture}
+
+\end{document}
