@@ -67,6 +67,7 @@ install(FILES
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Unit tests.
+include(CTest)
 add_subdirectory(tests)
 
 # Convergence sweep binary for the inside-evolute series.

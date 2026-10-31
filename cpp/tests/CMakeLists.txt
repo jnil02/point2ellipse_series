@@ -48,7 +48,6 @@ target_compile_definitions(test_series_values
         )
 
 
-include(CTest)
 add_test(NAME test_coefficients COMMAND test_coefficients)
 add_test(NAME test_series_values COMMAND test_series_values)
 
