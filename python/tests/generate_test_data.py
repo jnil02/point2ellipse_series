@@ -133,10 +133,12 @@ SPECS = [
          [('k', lambda: 1, lambda: M + 1),
           ('l', lambda k: 0, lambda k: (k - 1) // 2 + 1),
           ('n', lambda k, l: (k - 1) % 2, lambda k, l: k // 2 + 1)]),
+    # Python's reciprocal-sine series also use n = 0 and n = 1.
+    # Export only n >= 2, the domain needed by the C++ height series.
     Spec(c_sin_phi_inv_evo,
          [('l', lambda: 0, lambda: M + 1),
           ('k', lambda l: l, lambda l: M + 1),
-          ('n', lambda l, k: 0, lambda l, k: k + 1)],
+          ('n', lambda l, k: 2, lambda l, k: k + 1)],
          order=('k', 'l', 'n')),
     Spec(c_N_evo,
          [('l', lambda: 0, lambda: M + 1),

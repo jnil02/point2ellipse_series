@@ -191,6 +191,10 @@ def c_sin_phi_inv_evo(k: int, l: int, n: int) -> sp.core.numbers.Rational:
     Coefficient of the intermediate sin(ψ)/sin(φ) series used in deriving the
     height h.
 
+    Supports 0 <= l <= k and 0 <= n <= k, including the n = 0 and n = 1
+    cases used by the reciprocal-sine series. The C++ counterpart supports
+    only 2 <= n <= k, as required by its height-series implementation.
+
     :param k: σ (= ρ/(a·e²)) power.
     :param l: sin(ψ) power.
     :param n: ε (= b/a) power.
