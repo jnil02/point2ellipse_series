@@ -6,10 +6,18 @@ rational coefficients for the point-to-ellipse relation:
 **Part I — expansion far from the center:**
 Nilsson, J.-O. *Point-to-ellipse Fourier series.*
 arXiv: [2507.08807](https://doi.org/10.48550/arXiv.2507.08807) \[math.GM]
-(a copy is included: [2507.08807v1.pdf](2507.08807v1.pdf)).
+The repository includes [the arXiv v1 PDF](2507.08807v1.pdf).
+The [LaTeX source](doc/part_I_expansion_about_inf/point2ellipse_series.tex)
+contains minor corrections made since that version.
 
-**Part II — expansion about the center (inside-evolute series):** *in 
-preparation.* (preliminary version [point2ellipse_inverse_v0.pdf](point2ellipse_inverse_v0.pdf))
+**Part II — expansion about the center (inside-evolute series):** submitted to
+arXiv; the [submitted PDF](point2ellipse_inverse_v0.pdf) is included pending
+availability of the arXiv version. It will be replaced with the arXiv PDF once
+available.
+
+The manuscript sources under `doc/` may accumulate corrections independently
+of the root-level PDFs; corrected versions may subsequently be submitted to
+arXiv. See [the manuscript build instructions](doc/README.md).
 
 ## Introduction
 
@@ -19,7 +27,9 @@ or by solving the quartic directly. These works instead give general **series
 expansions**: Part I valid far from the center, Part II inside the ellipse's
 evolute. This repository provides their implementations: exact symbolic
 computation of the rational coefficients and evaluation of the truncated series.
-For the mathematics, see the articles.
+For the mathematics, including precise definitions, branch conventions, and
+domains of convergence and closest-point validity (with coordinate-axis
+exceptions), see the manuscripts.
 
 ## Python (reference implementation)
 
@@ -81,9 +91,10 @@ cmake --build cpp/build
 ctest --test-dir cpp/build --output-on-failure
 ```
 
-`PYTHONPATH=python` makes the reference modules available to the generators
-outside an IDE. Both generators write their CSV files to the repository-root
-`test_data/` directory.
+The first two commands run the Python generators immediately, writing CSV
+files to the repository-root `test_data/` directory for the C++ tests to read.
+`PYTHONPATH=python` makes the reference modules available only for that command;
+it does not permanently change your environment or configure CMake.
 
 ## Dependencies
 

@@ -9,3 +9,28 @@ test_data/
 cpp/build/
 __pycache__/
 *.pyc
+
+# LaTeX temporary files (keep manuscript and figure PDFs).
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+
+# CMake build directories and generated files.
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+cmake-build-*/
+build/
