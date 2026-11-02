@@ -11,20 +11,21 @@ rho_evo / N) two figures are produced:
                      across the full (psi, rho) grid, with the evolute and the
                      ellipse boundary (h = 0) overlaid.
 
-Usage:
-    python python/plot_sweep_evo.py
+Usage (from the repository root):
+    python3 python/analysis/plot_sweep_evo.py
 """
 
 import csv
 import io
 import math
-import os
+from pathlib import Path
 import re
 import numpy as np
 import matplotlib.pyplot as plt
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "../..", "test_data", "sweep_evo_m.csv")
-OUT_DIR  = os.path.join(os.path.dirname(__file__), "../..", "test_data")
+# Resolve input and output paths relative to this script, not the working directory.
+OUT_DIR = (Path(__file__).resolve().parent / '../../test_data').resolve()
+CSV_PATH = OUT_DIR / 'sweep_evo_m.csv'
 
 PSI_PLOT  = 85  # which psi angle (degrees) to inspect
 N_COUNT   = 6   # how many N curves in the left plot  (evenly spaced from data)
@@ -142,7 +143,7 @@ for col in err_cols:
     ax2.grid(True, which="both", alpha=0.3)
 
     plt.tight_layout()
-    out_path = os.path.join(OUT_DIR, f"sweep_evo_{col}.png")
+    out_path = OUT_DIR / f"sweep_evo_{col}.png"
     plt.savefig(out_path, dpi=150)
     print(f"Saved {out_path}")
     plt.close(fig)
@@ -239,7 +240,7 @@ for col in err_cols:
     ax_polar.legend(loc="upper right", bbox_to_anchor=(1.0, 1.0),
                     bbox_transform=fig_polar.transFigure)
 
-    out_path_polar = os.path.join(OUT_DIR, f"sweep_evo_{col}_polar.png")
+    out_path_polar = OUT_DIR / f"sweep_evo_{col}_polar.png"
     fig_polar.savefig(out_path_polar, dpi=150, bbox_inches="tight")
     print(f"Saved {out_path_polar}")
     plt.close(fig_polar)

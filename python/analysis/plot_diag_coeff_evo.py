@@ -10,20 +10,21 @@ Two figures are produced:
   diag_coeff_evo_abs.png    – log|C_m| vs m, one line per ψ.
                                Slope = log(1/R) confirms the ROC.
 
-Usage:
-    python python/plot_diag_coeff_evo.py
+Usage (from the repository root):
+    python3 python/analysis/plot_diag_coeff_evo.py
 """
 
 import csv
 import io
 import math
-import os
+from pathlib import Path
 import re
 import numpy as np
 import matplotlib.pyplot as plt
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "test_data", "diag_coeff_evo.csv")
-OUT_DIR  = os.path.join(os.path.dirname(__file__), "..", "test_data")
+# Resolve input and output paths relative to this script, not the working directory.
+OUT_DIR = (Path(__file__).resolve().parent / '../../test_data').resolve()
+CSV_PATH = OUT_DIR / 'diag_coeff_evo.csv'
 
 ABS_FLOOR = 1e-300
 
@@ -103,7 +104,7 @@ ax1.set_ylim(0, 1.5)
 ax1.legend(fontsize=8)
 ax1.grid(True, alpha=0.3)
 
-out1 = os.path.join(OUT_DIR, "diag_coeff_evo_ratio.png")
+out1 = OUT_DIR / "diag_coeff_evo_ratio.png"
 fig1.savefig(out1, dpi=150, bbox_inches="tight")
 print(f"Saved {out1}")
 plt.close(fig1)
@@ -128,7 +129,7 @@ ax2.set_ylabel("|C_m|")
 ax2.legend(fontsize=8)
 ax2.grid(True, which="both", alpha=0.3)
 
-out2 = os.path.join(OUT_DIR, "diag_coeff_evo_abs.png")
+out2 = OUT_DIR / "diag_coeff_evo_abs.png"
 fig2.savefig(out2, dpi=150, bbox_inches="tight")
 print(f"Saved {out2}")
 plt.close(fig2)

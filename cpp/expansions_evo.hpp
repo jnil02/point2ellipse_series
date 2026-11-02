@@ -9,7 +9,7 @@
 
 namespace point_to_ellipse_series {
 
-/** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (sparse).
+/** Inside-evolute series for (phi - sgn(psi)*pi/2) / (sgn(psi)*cos(psi)) in sin-powers (sparse).
  *
  * Matches Python expansions_evo.phi_evo_sparse.
  *
@@ -37,7 +37,7 @@ inline T phi_evo_sparse(int L, int K,
 	return s;
 }
 
-/** Inside-evolute series for (phi - sgn*pi/2) / (sgn*|cos(psi)|) in sin-powers (dense).
+/** Inside-evolute series for (phi - sgn(psi)*pi/2) / (sgn(psi)*cos(psi)) in sin-powers (dense).
  *
  * Matches Python expansions_evo.phi_evo_dense.
  *
@@ -137,7 +137,7 @@ inline T sin_phi_evo_dense(int K,
 	return s;
 }
 
-/** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (sparse).
+/** Inside-evolute series for cos(phi) / cos(psi) in sin-powers (sparse).
  *
  * Matches Python expansions_evo.cos_phi_evo_sparse.
  *
@@ -166,7 +166,7 @@ inline T cos_phi_evo_sparse(int L, int K,
 }
 
 
-/** Inside-evolute series for cos(phi) / |cos(psi)| in sin-powers (dense).
+/** Inside-evolute series for cos(phi) / cos(psi) in sin-powers (dense).
  *
  * Matches Python expansions_evo.cos_phi_evo_dense.
  *
