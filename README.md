@@ -10,10 +10,10 @@ The repository includes [the arXiv v1 PDF](2507.08807v1.pdf).
 The [LaTeX source](doc/part_I_expansion_about_inf/point2ellipse_series.tex)
 contains minor corrections made since that version.
 
-**Part II — expansion about the center (inside-evolute series):** submitted to
-arXiv; the [submitted PDF](point2ellipse_inverse_v0.pdf) is included pending
-availability of the arXiv version. It will be replaced with the arXiv PDF once
-available.
+**Part II — expansion about the center (inside-evolute series):**
+Nilsson, J.-O. *Point-to-ellipse series -- Part II: Expansion about the center.*
+arXiv: [2610.40690](https://doi.org/10.48550/arXiv.2610.40690) \[math.GM]
+The repository includes [the arXiv v1 PDF](2610.40690v1.pdf).
 
 The manuscript sources under `doc/` may accumulate corrections independently
 of the root-level PDFs; corrected versions may subsequently be submitted to
@@ -109,6 +109,13 @@ it does not permanently change your environment or configure CMake.
 - **C++ tests:** Catch2 v2, with its single header available as `<catch.hpp>`
   on the compiler's include path. The current default build includes the tests,
   so this dependency is needed for the build command above.
+
+## Citation
+
+For the mathematical series expansions, cite the relevant manuscript listed
+above. To cite the implementation, see [CITATION.cff](CITATION.cff).
+The [manuscript documentation](doc/README.md#series-implementations) points to
+the series and coefficient implementations for each part.
 
 ## License
 

@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: >-
+  If you use this implementation, please cite this repository using the metadata
+  below. For the mathematical series expansions, please cite the relevant
+  manuscript listed in references.
+type: software
+title: Point-to-ellipse series
+authors:
+  - family-names: Nilsson
+    given-names: John-Olof
+repository-code: https://github.com/jnil02/point2ellipse_series
+license: BSD-2-Clause
+references:
+  - type: unpublished
+    title: Point-to-ellipse Fourier series
+    authors:
+      - family-names: Nilsson
+        given-names: John-Olof
+    year: 2025
+    doi: 10.48550/arXiv.2507.08807
+  - type: unpublished
+    title: "Point-to-ellipse series -- Part II: Expansion about the center"
+    authors:
+      - family-names: Nilsson
+        given-names: John-Olof
+    year: 2026
+    doi: 10.48550/arXiv.2610.40690

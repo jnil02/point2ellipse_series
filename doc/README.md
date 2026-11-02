@@ -1,13 +1,28 @@
 # Manuscript sources
 
-The root-level PDFs are versioned snapshots: `2507.08807v1.pdf` is Part I's
-arXiv v1, and `point2ellipse_inverse_v0.pdf` is Part II's submitted version,
-pending replacement with the arXiv PDF once available.
+The root-level PDFs are versioned snapshots:
+[2507.08807v1.pdf](../2507.08807v1.pdf) is Part I's arXiv v1, and
+[2610.40690v1.pdf](../2610.40690v1.pdf) is Part II's arXiv v1.
 
 The sources in this directory may contain subsequent corrections and need not
 match those snapshots. Part I already includes minor corrections, with a list
 of edits in its source comments. Corrections may accumulate before a revised
 version is submitted to arXiv.
+
+## Series implementations
+
+Each manuscript presents its series expansions in a single theorem. The
+corresponding truncated series and exact rational coefficients are implemented
+in the following files:
+
+| Manuscript | Python series / coefficients | C++ series / coefficients |
+| --- | --- | --- |
+| Part I: expansion far from the center | [expansions.py](../python/expansions.py), [coefficients.py](../python/coefficients.py) | [expansions.hpp](../cpp/expansions.hpp), [coefficients.cpp](../cpp/coefficients.cpp) |
+| Part II: expansion about the center | [expansions_evo.py](../python/expansions_evo.py), [coefficients_evo.py](../python/coefficients_evo.py) | [expansions_evo.hpp](../cpp/expansions_evo.hpp), [coefficients_evo.cpp](../cpp/coefficients_evo.cpp) |
+
+The numerical tests check these implementations; they are not numerical results
+reported in the manuscripts. See the manuscripts for the formulas and their
+mathematical conventions.
 
 ## Building
 
