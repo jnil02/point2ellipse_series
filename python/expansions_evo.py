@@ -4,7 +4,7 @@ Symbolic inside-evolute series expansions for the point-to-ellipse relation.
 
 import sympy as sp
 
-from symbols import rho_ae2, sin_psi, cos_psi, b_a
+from symbols import sigma, sin_psi, cos_psi, epsilon
 from coefficients_evo import c_phi_evo, c_phi_pow_evo, c_sin_phi_evo, d_sin_phi_evo, \
     c_cos_phi_evo, c_sin_phi_inv_evo, c_N_evo, c_h_evo, d_phi_evo, d_cos_phi_evo, cp_evo, d_h_evo
 
@@ -23,7 +23,7 @@ def phi_evo_sparse(L, K):
     for l in range(0, L + 1):
         for k in range(l + 1, K + 1):
             for n in range(1, k + 1):
-                d += sin_psi ** l * rho_ae2 ** k * b_a ** n * c_phi_evo(k, l, n)
+                d += sin_psi ** l * sigma ** k * epsilon ** n * c_phi_evo(k, l, n)
     return d
 
 
@@ -32,7 +32,7 @@ def phi_evo_dense(K):
 
     Series in rho / (ae^2). All coefficients are non-zero, i.e. dense.
 
-    :param K: maximum rho_ae2 power (the single truncation parameter).
+    :param K: maximum sigma power (the single truncation parameter).
     :return: symbolic series.
     """
     d = sp.S.Zero
@@ -43,9 +43,9 @@ def phi_evo_dense(K):
         for l in range(0, r + 1):
             for n in range(0, r + 1):
                 cm += (sin_psi ** (2 * l)
-                       * b_a ** (2 * n)
+                       * epsilon ** (2 * n)
                        * d_phi_evo(k, l, n))
-        d += cm * b_a ** (1 + s) * sin_psi ** (s) * rho_ae2 ** k
+        d += cm * epsilon ** (1 + s) * sin_psi ** (s) * sigma ** k
     return d
 
 
@@ -64,7 +64,7 @@ def phi_pow_evo(i, L, K):
     for l in range(0, L + 1):
         for k in range(l + i, K + 1):
             for n in range(i, k + 1):
-                d += sin_psi ** l * rho_ae2 ** k * b_a ** n * c_phi_pow_evo(k, l, n, i)
+                d += sin_psi ** l * sigma ** k * epsilon ** n * c_phi_pow_evo(k, l, n, i)
     return cos_psi ** i * d
 
 
@@ -82,7 +82,7 @@ def sin_phi_evo_sparse(L, K):
     for l in range(0, L + 1):
         for k in range(l, K + 1):
             for n in range(0, k + 1):
-                s += c_sin_phi_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += c_sin_phi_evo(k, l, n) * epsilon ** n * sigma ** k * sin_psi ** l
     return s
 
 
@@ -99,8 +99,8 @@ def sin_phi_evo_dense(K):
         cm = sp.S.Zero
         for l in range(0, k // 2 + 1):
             for n in range(1, k // 2 + 1):
-                cm += d_sin_phi_evo(k, l, n) * b_a ** (2 * n) * sin_psi ** (2 * l)
-        s += cm * b_a ** (k % 2) * sin_psi ** (k % 2) * rho_ae2 ** (k)
+                cm += d_sin_phi_evo(k, l, n) * epsilon ** (2 * n) * sin_psi ** (2 * l)
+        s += cm * epsilon ** (k % 2) * sin_psi ** (k % 2) * sigma ** (k)
     return s
 
 
@@ -118,7 +118,7 @@ def cos_phi_evo_sparse(L, K):
     for l in range(0, L + 1):
         for k in range(l, K + 1):
             for n in range(1, k + 1):
-                s += c_cos_phi_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += c_cos_phi_evo(k, l, n) * epsilon ** n * sigma ** k * sin_psi ** l
     return s
 
 def cos_phi_evo_dense(K):
@@ -136,8 +136,8 @@ def cos_phi_evo_dense(K):
         q = (k - 1) // 2
         for l in range(0, q + 1):
             for n in range(p, k // 2 + 1):
-                cm += d_cos_phi_evo(k, l, n) * b_a ** (2 * n) * sin_psi ** (2 * l)
-        s += cm * b_a ** (k % 2) * sin_psi ** ((k - 1) % 2) * rho_ae2 ** (k)
+                cm += d_cos_phi_evo(k, l, n) * epsilon ** (2 * n) * sin_psi ** (2 * l)
+        s += cm * epsilon ** (k % 2) * sin_psi ** ((k - 1) % 2) * sigma ** (k)
     return s
 
 
@@ -155,7 +155,7 @@ def sin_phi_inv_evo(L, K):
     for l in range(0, L + 1):
         for k in range(l, K + 1):
             for n in range(0, k + 1):
-                s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += c_sin_phi_inv_evo(k, l, n) * epsilon ** n * sigma ** k * sin_psi ** l
     return s
 
 
@@ -175,7 +175,7 @@ def sin_phi_inv_evo2(L, K):
     for l in range(0, L + 1):
         for k in range(l, K + 1):
             for n in range(1, k + 1):
-                s += c_sin_phi_inv_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += c_sin_phi_inv_evo(k, l, n) * epsilon ** n * sigma ** k * sin_psi ** l
     return s
 
 
@@ -195,7 +195,7 @@ def sin_phi_inv_evo3(L, K):
     for l in range(1, L + 1):
         for k in range(l, K + 1):
             for n in range(1, k + 1 + 1):
-                s += cp_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += cp_evo(k, l, n) * epsilon ** n * sigma ** k * sin_psi ** l
     return s
 
 
@@ -213,7 +213,7 @@ def Na_evo2(L, K):
     for l in range(0, L + 1):
         for k in range(l, K+1):
             for n in range(1, k+2):
-                s += c_N_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += c_N_evo(k, l, n) * epsilon ** n * sigma ** k * sin_psi ** l
     return s
 
 
@@ -231,7 +231,7 @@ def h_evo_sparse(L, K):
     for l in range(0, L + 1):
         for k in range(l, K + 1):
             for n in range(1, k + 1 + 1):
-                s += c_h_evo(k, l, n) * b_a ** n * rho_ae2 ** k * sin_psi ** l
+                s += c_h_evo(k, l, n) * epsilon ** n * sigma ** k * sin_psi ** l
     return s
 
 
@@ -249,6 +249,6 @@ def h_evo_dense(K):
         sn = k % 2
         for l in range(0, (k // 2) + 1):
             for n in range(0, (k // 2) + 1):
-                cm += d_h_evo(k, l, n) * b_a ** (2 * n) * sin_psi ** (2 * l)
-        s += cm * b_a ** (1+sn) * sin_psi ** sn * rho_ae2 ** (k)
+                cm += d_h_evo(k, l, n) * epsilon ** (2 * n) * sin_psi ** (2 * l)
+        s += cm * epsilon ** (1+sn) * sin_psi ** sn * sigma ** (k)
     return s

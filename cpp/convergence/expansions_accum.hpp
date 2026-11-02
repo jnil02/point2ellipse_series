@@ -11,7 +11,7 @@
  *
  * Usage:
  *
- *   EvoBasePowers<mpreal> pows(sin_psi, rho_ae2, b_a, MAX_ORDER);
+ *   EvoBasePowers<mpreal> pows(sin_psi, sigma, epsilon, MAX_ORDER);
  *   PhiEvoAccum<mpreal>   phi_acc(pows);
  *   HEvoAccum<mpreal>    h_acc(pows);
  *   for (int N = 1; N <= MAX_ORDER; ++N) {
@@ -36,10 +36,10 @@
 template<typename T>
 struct EvoBasePowers {
 	std::vector<T> sin_;  // sin_[i] = sin_psi_v^i,  i = 0..max_order
-	std::vector<T> rho_;  // rho_[i] = rho_ae2_v^i,  i = 0..max_order
-	std::vector<T> b_;    // b_[i]   = b_a_v^i,       i = 0..max_order+1
+	std::vector<T> rho_;  // rho_[i] = sigma_v^i,  i = 0..max_order
+	std::vector<T> b_;    // b_[i]   = epsilon_v^i,       i = 0..max_order+1
 
-	EvoBasePowers(const T& sin_psi_v, const T& rho_ae2_v, const T& b_a_v,
+	EvoBasePowers(const T& sin_psi_v, const T& sigma_v, const T& epsilon_v,
 				  int max_order) {
 		sin_.resize(max_order + 1);
 		rho_.resize(max_order + 1);
@@ -51,11 +51,11 @@ struct EvoBasePowers {
 
 		rho_[0] = T(1);
 		for (int i = 1; i <= max_order; ++i)
-			rho_[i] = rho_[i - 1] * rho_ae2_v;
+			rho_[i] = rho_[i - 1] * sigma_v;
 
 		b_[0] = T(1);
 		for (int i = 1; i <= max_order + 1; ++i)
-			b_[i] = b_[i - 1] * b_a_v;
+			b_[i] = b_[i - 1] * epsilon_v;
 	}
 };
 

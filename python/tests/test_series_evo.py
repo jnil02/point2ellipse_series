@@ -13,13 +13,13 @@ import pytest
 
 from pytest_util import assert_close
 from ellipse import mp_polar_to_cartesian, mp_cartesian_to_ellipse, mp_e2, mp_a
-from symbols import sin_psi, rho_ae2, b_a, rho
+from symbols import sin_psi, sigma, epsilon, rho
 import expansions_evo
 
 # Order of the tested series.
 MAX_ORDER_EVO = 11
 
-# convergence parameter rho_ae2 = rho/(a*e2) ≈ 0.117, so rho_ae2^12 ≈ 5e-12.
+# convergence parameter sigma = rho/(a*e2) ≈ 0.117, so sigma^12 ≈ 5e-12.
 TOL_EVO = mp.mpf("1e-9")
 
 # One test point per quadrant, in polar coords inside the ellipse evolute. psi
@@ -43,8 +43,8 @@ def ref_evo(request):
         sgn         = sgn,
         abs_sin_psi = abs(mp.sin(psi)),
         cos_psi     = mp.cos(psi),
-        rho_ae2_val = _RHO_EVO / (mp_a * mp_e2),
-        b_a_val     = mp.sqrt(mp.mpf(1) - mp_e2),
+        sigma_val   = _RHO_EVO / (mp_a * mp_e2),
+        epsilon_val = mp.sqrt(mp.mpf(1) - mp_e2),
     )
 
 
@@ -56,8 +56,8 @@ def ev_evo(expr, ref):
     """
     result = (expr
               .subs(sin_psi, ref["abs_sin_psi"])
-              .subs(rho_ae2, ref["rho_ae2_val"])
-              .subs(b_a,     ref["b_a_val"])
+              .subs(sigma, ref["sigma_val"])
+              .subs(epsilon, ref["epsilon_val"])
               .subs(rho,     ref["rho"])
               )
     return mp.mpf(result._mpf_)
@@ -105,5 +105,5 @@ def test_h_evo(ref_evo):
 
 def test_h_evo_dense(ref_evo):
     expected = ref_evo["h"]
-    result = ev_evo(expansions_evo.h_evo_dense(MAX_ORDER_EVO) - b_a + rho * sin_psi / mp_a, ref_evo) * mp_a
+    result = ev_evo(expansions_evo.h_evo_dense(MAX_ORDER_EVO) - epsilon + rho * sin_psi / mp_a, ref_evo) * mp_a
     assert_close("h [m]  evo_dense", expected, result, TOL_EVO * mp_a)

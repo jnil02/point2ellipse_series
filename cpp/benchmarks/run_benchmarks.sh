@@ -24,8 +24,8 @@ done
 
 # Representative point: ellipse with b/a=0.97 (~WGS-84 flattening), moderate rho.
 SIN_PSI=0.5
-RHO_AE2=0.3
-B_A=0.97
+SIGMA=0.3
+EPSILON=0.97
 
 echo "=== Coefficient benchmarks (cold, one call per process) ==="
 echo -e "function\targs\twall_ms"
@@ -51,20 +51,20 @@ echo -e "series\tN\tK\twall_ms"
 
 echo "--- phi_evo_dense ---"
 for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-    "$BENCH_SERIES" phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
+    "$BENCH_SERIES" phi_evo_dense $N $N $SIN_PSI $SIGMA $EPSILON
 done
 
 echo "--- sin_phi_evo_dense ---"
 for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-    "$BENCH_SERIES" sin_phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
+    "$BENCH_SERIES" sin_phi_evo_dense $N $N $SIN_PSI $SIGMA $EPSILON
 done
 
 echo "--- cos_phi_evo_dense ---"
 for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-    "$BENCH_SERIES" cos_phi_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
+    "$BENCH_SERIES" cos_phi_evo_dense $N $N $SIN_PSI $SIGMA $EPSILON
 done
 
 echo "--- h_evo_dense ---"
 for N in 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
-    "$BENCH_SERIES" h_evo_dense $N $N $SIN_PSI $RHO_AE2 $B_A
+    "$BENCH_SERIES" h_evo_dense $N $N $SIN_PSI $SIGMA $EPSILON
 done

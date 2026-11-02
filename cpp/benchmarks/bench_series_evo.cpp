@@ -7,13 +7,13 @@
  * wall time that matters for the convergence sweep.
  *
  * Usage:
- *   bench_series_evo <series> <N> <K> <sin_psi> <rho_ae2> <b_a> [prec_bits]
+ *   bench_series_evo <series> <N> <K> <sin_psi> <sigma> <epsilon> [prec_bits]
  *
  * Supported series:
- *   phi_evo_dense      N K sin_psi rho_ae2 b_a
- *   sin_phi_evo_dense  N K sin_psi rho_ae2 b_a
- *   cos_phi_evo_dense  N K sin_psi rho_ae2 b_a
- *   h_evo_dense        N K sin_psi rho_ae2 b_a
+ *   phi_evo_dense      N K sin_psi sigma epsilon
+ *   sin_phi_evo_dense  N K sin_psi sigma epsilon
+ *   cos_phi_evo_dense  N K sin_psi sigma epsilon
+ *   h_evo_dense        N K sin_psi sigma epsilon
  *
  * Optional last argument sets the mpreal working precision in bits (default 256).
  *
@@ -55,7 +55,7 @@ static double elapsed_ms(Clock::time_point t0) {
 
 int main(int argc, char* argv[]) {
 	if (argc < 7) {
-		std::cerr << "Usage: bench_series_evo <series> <N> <K> <sin_psi> <rho_ae2> <b_a> [prec_bits]\n";
+		std::cerr << "Usage: bench_series_evo <series> <N> <K> <sin_psi> <sigma> <epsilon> [prec_bits]\n";
 		return 1;
 	}
 
@@ -63,15 +63,15 @@ int main(int argc, char* argv[]) {
 	const int    N        = std::atoi(argv[2]);
 	const int    K        = std::atoi(argv[3]);
 	const double sin_psi_ = std::atof(argv[4]);
-	const double rho_ae2_ = std::atof(argv[5]);
-	const double b_a_     = std::atof(argv[6]);
+	const double sigma_   = std::atof(argv[5]);
+	const double epsilon_ = std::atof(argv[6]);
 	const int    prec     = (argc >= 8) ? std::atoi(argv[7]) : 256;
 
 	mpfr::mpreal::set_default_prec(prec);
 
 	const mpfr::mpreal sp(sin_psi_);
-	const mpfr::mpreal ra(rho_ae2_);
-	const mpfr::mpreal ba(b_a_);
+	const mpfr::mpreal ra(sigma_);
+	const mpfr::mpreal ba(epsilon_);
 
 	auto print = [&](double ms) {
 		std::cout << series << "\t" << N << "\t" << K << "\t" << ms << "\n";

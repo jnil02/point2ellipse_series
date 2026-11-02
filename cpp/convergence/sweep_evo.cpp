@@ -106,7 +106,7 @@ int main() {
 	const int MAX_ORDER = 35;   // N = K = 1 .. MAX_ORDER
 
 	const mpreal a     = mp_a();
-	const mpreal b_a_v = mp_b() / a;
+	const mpreal epsilon_v = mp_b() / a;
 	const mpreal ae2   = a * mp_e2();
 	const mpreal pi    = const_pi();
 
@@ -142,9 +142,9 @@ int main() {
 			auto [true_phi, true_h] = mp_cartesian_to_ellipse(x, y);
 
 			// Shared series inputs.
-			const mpreal rho_ae2_v = rho / ae2;
+			const mpreal sigma_v = rho / ae2;
 
-			EvoBasePowers<mpreal> pows(abs_sin_psi, rho_ae2_v, b_a_v, MAX_ORDER);
+			EvoBasePowers<mpreal> pows(abs_sin_psi, sigma_v, epsilon_v, MAX_ORDER);
 			PhiEvoAccum<mpreal>   phi_acc(pows);
 			HEvoAccum<mpreal>    h_acc(pows);
 

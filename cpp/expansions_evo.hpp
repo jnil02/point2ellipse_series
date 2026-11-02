@@ -15,25 +15,25 @@ namespace point_to_ellipse_series {
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T phi_evo_sparse(int L, int K,
 						const T &abs_sin_psi,
-						const T &rho_ae2,
-						const T &b_a) {
+						const T &sigma,
+						const T &epsilon) {
 	T s(0);
 	for (int l = 0; l <= L; ++l)
 		for (int k = l + 1; k <= K; ++k)
 			for (int n = 1; n <= k; ++n)
 				s += to<T>(c_phi_evo(k, l, n))
-					 * ipow<T>(b_a, n)
+					 * ipow<T>(epsilon, n)
 					 * ipow<T>(abs_sin_psi, l)
-					 * ipow<T>(rho_ae2, k);
+					 * ipow<T>(sigma, k);
 	return s;
 }
 
@@ -42,17 +42,17 @@ inline T phi_evo_sparse(int L, int K,
  * Matches Python expansions_evo.phi_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T phi_evo_dense(int K,
 					   const T &abs_sin_psi,
-					   const T &rho_ae2,
-					   const T &b_a) {
+					   const T &sigma,
+					   const T &epsilon) {
 	T s(0);
 	for (int k = 1; k <= K; ++k) {
 
@@ -63,12 +63,12 @@ inline T phi_evo_dense(int K,
 		for (int l = 0; l <= q; ++l) {
 			for (int n = 0; n <= q; ++n)
 				cm += to<T>(d_phi_evo(k, l, n))
-					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(epsilon, 2 * n)
 					  * ipow<T>(abs_sin_psi, 2 * l);
 		}
-		s += cm * ipow<T>(b_a, p + 1)
+		s += cm * ipow<T>(epsilon, p + 1)
 			 * ipow<T>(abs_sin_psi, p)
-			 * ipow<T>(rho_ae2, k);
+			 * ipow<T>(sigma, k);
 	}
 	return s;
 }
@@ -79,25 +79,25 @@ inline T phi_evo_dense(int K,
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T sin_phi_evo_sparse(int L, int K,
 							const T &abs_sin_psi,
-							const T &rho_ae2,
-							const T &b_a) {
+							const T &sigma,
+							const T &epsilon) {
 	T s(0);
 	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
 			for (int n = 0; n <= k; ++n)
 				s += to<T>(c_sin_phi_evo(k, l, n))
-					 * ipow<T>(b_a, n)
+					 * ipow<T>(epsilon, n)
 					 * ipow<T>(abs_sin_psi, l)
-					 * ipow<T>(rho_ae2, k);
+					 * ipow<T>(sigma, k);
 	return s;
 }
 
@@ -107,17 +107,17 @@ inline T sin_phi_evo_sparse(int L, int K,
  * Matches Python expansions_evo.sin_phi_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T sin_phi_evo_dense(int K,
 						   const T &abs_sin_psi,
-						   const T &rho_ae2,
-						   const T &b_a) {
+						   const T &sigma,
+						   const T &epsilon) {
 	T s(0);
 	for (int k = 2; k <= K; ++k) {
 		T cm(0);
@@ -126,13 +126,13 @@ inline T sin_phi_evo_dense(int K,
 		for (int l = 0; l <= q; ++l) {
 			for (int n = 1; n <= q; ++n) {
 				cm += to<T>(d_sin_phi_evo(k, l, n))
-					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(epsilon, 2 * n)
 					  * ipow<T>(abs_sin_psi, 2 * l);
 			}
 		}
-		s += cm * ipow<T>(b_a, p)
+		s += cm * ipow<T>(epsilon, p)
 			 * ipow<T>(abs_sin_psi, p)
-			 * ipow<T>(rho_ae2, k);
+			 * ipow<T>(sigma, k);
 	}
 	return s;
 }
@@ -143,25 +143,25 @@ inline T sin_phi_evo_dense(int K,
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T cos_phi_evo_sparse(int L, int K,
 							const T &abs_sin_psi,
-							const T &rho_ae2,
-							const T &b_a) {
+							const T &sigma,
+							const T &epsilon) {
 	T d(0);
 	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
 			for (int n = 1; n <= k; ++n)
 				d += to<T>(c_cos_phi_evo(k, l, n))
-					 * ipow<T>(b_a, n)
+					 * ipow<T>(epsilon, n)
 					 * ipow<T>(abs_sin_psi, l)
-					 * ipow<T>(rho_ae2, k);
+					 * ipow<T>(sigma, k);
 	return d;
 }
 
@@ -171,17 +171,17 @@ inline T cos_phi_evo_sparse(int L, int K,
  * Matches Python expansions_evo.cos_phi_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T cos_phi_evo_dense(int K,
 						   const T &abs_sin_psi,
-						   const T &rho_ae2,
-						   const T &b_a) {
+						   const T &sigma,
+						   const T &epsilon) {
 	T s(0);
 	for (int k = 1; k <= K; ++k) {
 		T cm(0);
@@ -190,13 +190,13 @@ inline T cos_phi_evo_dense(int K,
 		for (int l = 0; l <= q; ++l) {
 			for (int n = p; n <= k / 2; ++n) {
 				cm += to<T>(d_cos_phi_evo(k, l, n))
-					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(epsilon, 2 * n)
 					  * ipow<T>(abs_sin_psi, 2 * l);
 			}
 		}
-		s += cm * ipow<T>(b_a, 1 - p)
+		s += cm * ipow<T>(epsilon, 1 - p)
 			 * ipow<T>(abs_sin_psi, p)
-			 * ipow<T>(rho_ae2, k);
+			 * ipow<T>(sigma, k);
 	}
 
 	return s;
@@ -208,25 +208,25 @@ inline T cos_phi_evo_dense(int K,
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
  * @param L     sin power series truncation order.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T h_evo_sparse(int L, int K,
 					  const T &abs_sin_psi,
-					  const T &rho_ae2,
-					  const T &b_a) {
+					  const T &sigma,
+					  const T &epsilon) {
 	T s(0);
 	for (int l = 0; l <= L; ++l)
 		for (int k = l; k <= K; ++k)
 			for (int n = 1; n <= k + 1; ++n)
 				s += to<T>(c_h_evo(k, l, n))
-					 * ipow<T>(b_a, n)
+					 * ipow<T>(epsilon, n)
 					 * ipow<T>(abs_sin_psi, l)
-					 * ipow<T>(rho_ae2, k);
+					 * ipow<T>(sigma, k);
 	return s;
 }
 
@@ -235,17 +235,17 @@ inline T h_evo_sparse(int L, int K,
  * Matches Python expansions_evo.h_evo_dense.
  *
  * @tparam T    Value type: SymEngine::Expression for symbolic, mpfr::mpreal for numeric.
- * @param K     rho_ae2 power series truncation order.
+ * @param K     sigma power series truncation order.
  * @param abs_sin_psi   Value/expression for |sin(psi)|.
- * @param rho_ae2   Value/expression for rho/(a*e²).
- * @param b_a       Value/expression for b/a.
+ * @param sigma   Value/expression for rho/(a*e²).
+ * @param epsilon Value/expression for b/a.
  * @return Series result as type T.
  */
 template<typename T>
 inline T h_evo_dense(int K,
 					 const T &abs_sin_psi,
-					 const T &rho_ae2,
-					 const T &b_a) {
+					 const T &sigma,
+					 const T &epsilon) {
 	T s(0);
 
 	for (int k = 2; k <= K; ++k) {
@@ -255,13 +255,13 @@ inline T h_evo_dense(int K,
 		for (int l = 0; l <= q; ++l) {
 			for (int n = 0; n <= q; ++n) {
 				cm += to<T>(d_h_evo(k, l, n))
-					  * ipow<T>(b_a, 2 * n)
+					  * ipow<T>(epsilon, 2 * n)
 					  * ipow<T>(abs_sin_psi, 2 * l);
 			}
 		}
-		s += cm * ipow<T>(b_a, 1 + p)
+		s += cm * ipow<T>(epsilon, 1 + p)
 			 * ipow<T>(abs_sin_psi, p)
-			 * ipow<T>(rho_ae2, k);
+			 * ipow<T>(sigma, k);
 	}
 	return s;
 }

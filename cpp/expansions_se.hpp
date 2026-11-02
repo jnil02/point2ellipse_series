@@ -23,7 +23,10 @@ using point_to_ellipse_series::cos_phi_in_cos_mul;
 using point_to_ellipse_series::h_in_sin_pow;
 using point_to_ellipse_series::h_in_cos_mul;
 
-inline Expression sigma(int J, const Expression& delta) {
+/** Implements the sigma series of https://arxiv.org/abs/2405.06572,
+ * paired with tau_series below.
+ */
+inline Expression sigma_series(int J, const Expression& delta) {
 	Expression d(0);
 	for (int j = 0; j < J; j += 2) {
 		int j2 = j / 2;
@@ -34,7 +37,10 @@ inline Expression sigma(int J, const Expression& delta) {
 	return d;
 }
 
-inline Expression tau(int J, const Expression& omega, const Expression& delta) {
+/** Implements the tau series of https://arxiv.org/abs/2405.06572,
+ * paired with sigma_series (the manuscript's sigma series).
+ */
+inline Expression tau_series(int J, const Expression& omega, const Expression& delta) {
 	Expression d(0);
 	for (int j = 1; j < J; j += 2) {
 		int j2 = (j - 1) / 2;
@@ -80,23 +86,23 @@ inline Expression cos_phi_in_cos_mul(int N, int K, int L) {
 	return cos_phi_in_cos_mul<Expression>(N, K, L, psi, varrho, e2);
 }
 
-/** Series expansion of sin(phi) / sin(psi) - 1 in sin-powers but with common sigma/tau components. */
+/** Series expansion of sin(phi) / sin(psi) - 1 in sin-powers but with common sigma_series/tau_series components. */
 inline Expression sin_phi_in_sin_pow2(int N, int K, int J) {
 	Expression sin_psi2 = pow(sin_psi, 2);
 	Expression o = phi_in_sin_pow(N, K);
 	Expression d = sin_psi2 * (Expression(1) - sin_psi2) * pow(o, 2);
-	Expression s = sigma(J, d);
-	Expression t = tau(J, o, d);
+	Expression s = sigma_series(J, d);
+	Expression t = tau_series(J, o, d);
 	return s + (Expression(1) - sin_psi2) * t;
 }
 
-/** Series expansion of cos(phi) / cos(psi) - 1 in sin-powers but with common sigma/tau components. */
+/** Series expansion of cos(phi) / cos(psi) - 1 in sin-powers but with common sigma_series/tau_series components. */
 inline Expression cos_phi_in_sin_pow2(int N, int K, int J) {
 	Expression sin_psi2 = pow(sin_psi, 2);
 	Expression o = phi_in_sin_pow(N, K);
 	Expression d = sin_psi2 * (Expression(1) - sin_psi2) * pow(o, 2);
-	Expression s = sigma(J, d);
-	Expression t = tau(J, o, d);
+	Expression s = sigma_series(J, d);
+	Expression t = tau_series(J, o, d);
 	return s - sin_psi2 * t;
 }
 

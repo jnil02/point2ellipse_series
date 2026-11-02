@@ -156,8 +156,11 @@ def cos_phi_in_sin_pow(N: int, K: int) -> sp.core.Expr:
                 d = d + d_cos(n, k, l) * e2 ** l * varrho ** k * sin_psi ** (2 * n)
     return d
 
-def sigma(J: int, delta: sp.core.Expr) -> sp.core.Expr:
-    """ Symbolic "sigma" series up to given order.
+def sigma_series(J: int, delta: sp.core.Expr) -> sp.core.Expr:
+    """Symbolic cosine series in delta up to given order.
+
+    Implements the sigma series of https://arxiv.org/abs/2405.06572,
+    paired with tau_series below.
 
     :param J: Maximum delta power.
     :param delta: Expression for delta.
@@ -169,8 +172,11 @@ def sigma(J: int, delta: sp.core.Expr) -> sp.core.Expr:
         d = d + sp.Rational(sp.Integer(-1) ** j2, sp.factorial(j)) * delta ** j2
     return d
 
-def tau(J: int, omega: sp.core.Expr, delta: sp.core.Expr):
-    """ Symbolic "tau" series up to given order.
+def tau_series(J: int, omega: sp.core.Expr, delta: sp.core.Expr):
+    """Symbolic "tau" series up to given order.
+
+    Implements the tau series of https://arxiv.org/abs/2405.06572,
+    paired with sigma_series (the manuscript's sigma series).
 
     :param J: Maximum delta power.
     :param omega: Expression for "omega".
@@ -186,7 +192,7 @@ def tau(J: int, omega: sp.core.Expr, delta: sp.core.Expr):
 def sin_phi_in_sin_pow2(N: int, K: int, J: int):
     """Symbolic sin-power series expansion of sin(phi)/sin(psi) up to given order.
 
-    Using sigma and tau series.
+    Using sigma_series and tau_series.
 
     :param N: Maximum sin²-power.
     :param K: Maximum varrho power.
@@ -195,14 +201,14 @@ def sin_phi_in_sin_pow2(N: int, K: int, J: int):
     sin_psi2 = sin_psi ** 2
     o = phi_in_sin_pow(N, K)
     d = sin_psi2 * (sp.Integer(1) - sin_psi2) * o ** 2
-    s = sigma(J, d)
-    t = tau(J, o, d)
+    s = sigma_series(J, d)
+    t = tau_series(J, o, d)
     return s + (sp.Integer(1) - sin_psi2) * t
 
 def cos_phi_in_sin_pow2(N: int, K: int, J: int):
     """Symbolic sin-power series expansion of sin(phi)/sin(psi) up to given order.
 
-    Using sigma and tau series.
+    Using sigma_series and tau_series.
 
     :param N: Maximum sin²-power.
     :param K: Maximum varrho power.
@@ -211,6 +217,6 @@ def cos_phi_in_sin_pow2(N: int, K: int, J: int):
     sin_psi2 = sin_psi ** 2
     o = phi_in_sin_pow(N, K)
     d = sin_psi2 * (sp.Integer(1) - sin_psi2) * o ** 2
-    s = sigma(J, d)
-    t = tau(J, o, d)
+    s = sigma_series(J, d)
+    t = tau_series(J, o, d)
     return s - sin_psi2 * t

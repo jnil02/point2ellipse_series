@@ -3,14 +3,14 @@
  *
  * For a set of fixed ψ angles, computes the per-slab coefficient
  *
- *   C_m(sin ψ, b/a)  =  addOrder(m) evaluated with rho_ae2 = 1
+ *   C_m(sin ψ, b/a)  =  addOrder(m) evaluated with sigma = 1
  *
- * i.e. the slab value with the rho_ae2^m factor removed.  By the
+ * i.e. the slab value with the sigma^m factor removed.  By the
  * Cauchy-Hadamard theorem the ratio |C_{m+1}/C_m| converges to 1/R where
- * R is the radius of convergence of the series in rho_ae2.
+ * R is the radius of convergence of the series in sigma.
  *
  * The evolute is the governing singularity at every ψ: the ae branch point
- * (|rho_ae2| = 1/e) is not on the physical series branch, so it never limits
+ * (|sigma| = 1/e) is not on the physical series branch, so it never limits
  * convergence.  Hence
  *
  *   R = ρ_evo(ψ)/(ae²)   →   ratio → ae²/ρ_evo(ψ)   for all ψ.
@@ -52,7 +52,7 @@ int main() {
 
 	const mpreal pi   = const_pi();
 	const mpreal a    = mp_a();
-	const mpreal b_a  = mp_b() / a;
+	const mpreal epsilon  = mp_b() / a;
 
 	const std::vector<double> psi_degs_d = {10, 30, 45, 60, 70, 75, 80};
 
@@ -67,8 +67,8 @@ int main() {
 
 		std::cerr << "psi = " << psi_deg_d << "°\n";
 
-		// rho_ae2_v = 1 → pows_.rho_[m] = 1  →  addOrder(m) returns C_m exactly
-		EvoBasePowers<mpreal> pows(abs_sin, mpreal(1), b_a, MAX_ORDER);
+		// sigma_v = 1 → pows_.rho_[m] = 1  →  addOrder(m) returns C_m exactly
+		EvoBasePowers<mpreal> pows(abs_sin, mpreal(1), epsilon, MAX_ORDER);
 		PhiEvoAccum<mpreal>   phi_acc(pows);
 
 		mpreal prev_abs(0);

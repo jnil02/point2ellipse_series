@@ -21,7 +21,7 @@ using point_to_ellipse_series::cos_phi_evo_dense;
 using point_to_ellipse_series::h_evo_sparse;
 using point_to_ellipse_series::h_evo_dense;
 
-struct SRow { int order; double sin_psi, rho_ae2, b_a, value; };
+struct SRow { int order; double sin_psi, sigma, epsilon, value; };
 
 static std::vector<SRow> load(const std::string& path) {
 	std::ifstream f(path);
@@ -37,8 +37,8 @@ static std::vector<SRow> load(const std::string& path) {
 		SRow r{};
 		std::getline(ss, tok, ','); r.order   = std::stoi(tok);
 		std::getline(ss, tok, ','); r.sin_psi = std::stod(tok);
-		std::getline(ss, tok, ','); r.rho_ae2 = std::stod(tok);
-		std::getline(ss, tok, ','); r.b_a     = std::stod(tok);
+		std::getline(ss, tok, ','); r.sigma = std::stod(tok);
+		std::getline(ss, tok, ','); r.epsilon     = std::stod(tok);
 		std::getline(ss, tok, ','); r.value   = std::stod(tok);
 		rows.push_back(r);
 	}
@@ -50,7 +50,7 @@ static void check(const std::string& csv,
 	auto rows = load(std::string(TEST_DATA_DIR) + "/" + csv);
 	REQUIRE(!rows.empty());
 	for (auto& r : rows) {
-		double got = fn(r.order, r.sin_psi, r.rho_ae2, r.b_a);
+		double got = fn(r.order, r.sin_psi, r.sigma, r.epsilon);
 		double tol = 1e-9 * std::max(1.0, std::abs(r.value));   // abs+rel
 		INFO(csv << "  py=" << r.value << " cpp=" << got);
 		CHECK(std::abs(got - r.value) < tol);
@@ -62,7 +62,7 @@ static void check(const std::string& csv,
 	auto rows = load(std::string(TEST_DATA_DIR) + "/" + csv);
 	REQUIRE(!rows.empty());
 	for (auto& r : rows) {
-		double got = fn(r.order, r.order, r.sin_psi, r.rho_ae2, r.b_a);
+		double got = fn(r.order, r.order, r.sin_psi, r.sigma, r.epsilon);
 		double tol = 1e-9 * std::max(1.0, std::abs(r.value));   // abs+rel
 		INFO(csv << "  py=" << r.value << " cpp=" << got);
 		CHECK(std::abs(got - r.value) < tol);
@@ -100,7 +100,7 @@ TEST_CASE("PhiEvoAccum matches phi_evo_dense", "[series][evo][accum]") {
 	auto rows = load(std::string(TEST_DATA_DIR) + "/phi_evo_dense_series.csv");
 	REQUIRE(!rows.empty());
 	for (auto& r : rows) {
-		EvoBasePowers<double> pows(r.sin_psi, r.rho_ae2, r.b_a, r.order);
+		EvoBasePowers<double> pows(r.sin_psi, r.sigma, r.epsilon, r.order);
 		PhiEvoAccum<double>   acc(pows);
 		for (int N = 1; N <= r.order; ++N) acc.addOrder(N);
 		double tol = 1e-9 * std::max(1.0, std::abs(r.value));
@@ -113,7 +113,7 @@ TEST_CASE("HEvoAccum matches h_evo_dense", "[series][evo][accum]") {
 	auto rows = load(std::string(TEST_DATA_DIR) + "/h_evo_dense_series.csv");
 	REQUIRE(!rows.empty());
 	for (auto& r : rows) {
-		EvoBasePowers<double> pows(r.sin_psi, r.rho_ae2, r.b_a, r.order);
+		EvoBasePowers<double> pows(r.sin_psi, r.sigma, r.epsilon, r.order);
 		HEvoAccum<double>    acc(pows);
 		for (int N = 0; N <= r.order; ++N) acc.addOrder(N);
 		double tol = 1e-9 * std::max(1.0, std::abs(r.value));

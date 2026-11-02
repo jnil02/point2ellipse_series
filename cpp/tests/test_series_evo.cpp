@@ -86,12 +86,12 @@ struct RefEvo {
 		// below are correct in every quadrant without an explicit reflection.
 		cos_psi     = mpfr::cos(psi);
 
-		const mpreal rho_ae2_val = rho / (mp_a() * mp_e2());
-		const mpreal b_a_val     = mp_b() / mp_a();
+		const mpreal sigma_val = rho / (mp_a() * mp_e2());
+		const mpreal epsilon_val     = mp_b() / mp_a();
 
 		subs[symbol("sin_psi")] = real_mpfr(mpfr_class(abs_sin_psi.toString(), BITS));
-		subs[symbol("rho_ae2")] = real_mpfr(mpfr_class(rho_ae2_val.toString(), BITS));
-		subs[symbol("b_a")]     = real_mpfr(mpfr_class(b_a_val.toString(),     BITS));
+		subs[symbol("sigma")] = real_mpfr(mpfr_class(sigma_val.toString(), BITS));
+		subs[symbol("epsilon")]     = real_mpfr(mpfr_class(epsilon_val.toString(),     BITS));
 	}
 };
 

@@ -3,13 +3,13 @@ Generates test data for series to ensure consistent definitions on the C++ side.
 """
 
 import math
-from symbols import sin_psi, rho_ae2, b_a
+from symbols import sin_psi, sigma, epsilon
 import expansions_evo as fs
 from generate_test_data import write_csv
 
 A, B   = 1.0, 0.5
 E2     = 1 - (B/A)**2
-B_A    = B/A
+EPSILON = B/A
 ORDER  = 8
 PSIS   = [44, 136, 224, 316]          # One per quadrant.
 
@@ -22,7 +22,7 @@ POINTS = []
 for pdeg in PSIS:
     psi = math.radians(pdeg)
     rho = 0.5 * evolute_rho(psi)
-    POINTS.append((math.sin(psi), rho/(A*E2), B_A))   # (sin_psi, rho_ae2, b_a)
+    POINTS.append((math.sin(psi), rho/(A*E2), EPSILON))   # (sin_psi, sigma, epsilon)
 
 # series under test: (filename, sympy callable returning expr in the 3 symbols)
 SERIES = [
@@ -39,8 +39,8 @@ SERIES = [
 for name, make in SERIES:
     expr = make()
     rows = []
-    for s, r, ba in POINTS:
-        val = float(expr.subs({sin_psi: s, rho_ae2: r, b_a: ba}))
-        rows.append((ORDER, repr(s), repr(r), repr(ba), repr(val)))
+    for s, sigma_val, epsilon_val in POINTS:
+        val = float(expr.subs({sin_psi: s, sigma: sigma_val, epsilon: epsilon_val}))
+        rows.append((ORDER, repr(s), repr(sigma_val), repr(epsilon_val), repr(val)))
     write_csv(name + '_series.csv', rows,
-              ['order', 'sin_psi', 'rho_ae2', 'b_a', 'value'])
+              ['order', 'sin_psi', 'sigma', 'epsilon', 'value'])
