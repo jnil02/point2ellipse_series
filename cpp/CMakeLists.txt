@@ -64,11 +64,14 @@ install(TARGETS ptecoef_shared ptecoef_static
 
 install(FILES
         coefficients.hpp
+        coefficients_evo.hpp
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 # Unit tests.
 include(CTest)
-add_subdirectory(tests)
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
 
 # Convergence sweep binary for the inside-evolute series.
 # Default ellipse: unit ellipse a=1, b=0.5 (large evolute; convenient for convergence/ROC studies).
