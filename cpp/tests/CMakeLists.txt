@@ -1,121 +1,47 @@
-add_executable(test_coefficients
-        test_coefficients.cpp
-        test_stirling.cpp
-        ../coefficients.cpp
-        ../coefficients_evo.cpp
+# Catch2 v2 single header.
+add_library(PTE::Catch2 INTERFACE IMPORTED)
+target_include_directories(PTE::Catch2 INTERFACE ${CATCH2_INCLUDE_DIR})
+
+# Add a Catch2 test executable linked against the in-tree coefficient library
+# (whose PUBLIC include directory gives the local headers priority over
+# installed, potentially old, ones) and register it with CTest.
+#
+#   pte_add_test(<name> SOURCES <src>... [LIBS <lib>...] [DEFS <def>...])
+function(pte_add_test name)
+    cmake_parse_arguments(ARG "" "" "SOURCES;LIBS;DEFS" ${ARGN})
+    add_executable(${name} ${ARG_SOURCES})
+    target_link_libraries(${name} PRIVATE ptecoef_static PTE::Catch2 ${ARG_LIBS})
+    target_compile_definitions(${name} PRIVATE ${ARG_DEFS})
+    add_test(NAME ${name} COMMAND ${name})
+endfunction()
+
+# Coefficients cross-checked against the Python-generated CSV fixtures.
+pte_add_test(test_coefficients
+        SOURCES test_coefficients.cpp test_stirling.cpp
+        DEFS TEST_DATA_DIR="${PTE_TEST_DATA_DIR}"
         )
 
-target_include_directories(test_coefficients
-        PRIVATE
-        # Points to root/cpp/. This is to give local header files priority over
-        # installed (potentially old) header files.
-        ${CMAKE_CURRENT_SOURCE_DIR}/..
+# Series values cross-checked against the Python-generated CSV fixtures.
+pte_add_test(test_series_values
+        SOURCES test_series_values.cpp
+        DEFS TEST_DATA_DIR="${PTE_TEST_DATA_DIR}"
         )
 
-target_link_libraries(test_coefficients
-        PRIVATE
-        gmpxx
-        gmp
+# Far-field series against the closed-form reference (WGS84).
+pte_add_test(test_series
+        SOURCES test_series.cpp
+        LIBS PTE::SymEngine
+        DEFS ELLIPSE_A="6378137.0" ELLIPSE_INV_F="298.257223563"
         )
 
-target_compile_definitions(test_coefficients
-        PRIVATE
-        TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
+# Inside-evolute series against the closed-form reference (WGS84).
+pte_add_test(test_series_evo
+        SOURCES test_series_evo.cpp
+        LIBS PTE::SymEngine
+        DEFS ELLIPSE_A="6378137.0" ELLIPSE_INV_F="298.257223563"
         )
 
-add_executable(test_series_values
-        test_series_values.cpp
-        ../coefficients.cpp
-        ../coefficients_evo.cpp
+# Lazy-expression machinery.
+pte_add_test(test_lexpr
+        SOURCES test_lexpr.cpp
         )
-
-target_include_directories(test_series_values
-        PRIVATE
-        # Points to root/cpp/. This is to give local header files priority over
-        # installed (potentially old) header files.
-        ${CMAKE_CURRENT_SOURCE_DIR}/..
-        )
-
-target_link_libraries(test_series_values
-        PRIVATE
-        gmpxx
-        gmp
-        )
-
-target_compile_definitions(test_series_values
-        PRIVATE
-        TEST_DATA_DIR="${CMAKE_SOURCE_DIR}/../test_data"
-        )
-
-
-add_test(NAME test_coefficients COMMAND test_coefficients)
-add_test(NAME test_series_values COMMAND test_series_values)
-
-add_executable(test_series
-        test_series.cpp
-        ../coefficients.cpp
-        ../coefficients_evo.cpp
-        )
-
-target_include_directories(test_series
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/..
-        )
-
-target_link_libraries(test_series
-        PRIVATE
-        symengine
-        mpfr
-        gmp
-        )
-
-target_compile_definitions(test_series
-        PRIVATE
-        ELLIPSE_A="6378137.0"
-        ELLIPSE_INV_F="298.257223563"
-        )
-
-add_test(NAME test_series COMMAND test_series)
-
-add_executable(test_series_evo
-        test_series_evo.cpp
-        ../coefficients.cpp
-        ../coefficients_evo.cpp
-        )
-
-target_include_directories(test_series_evo
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/..
-        )
-
-target_link_libraries(test_series_evo
-        PRIVATE
-        symengine
-        mpfr
-        gmp
-        )
-
-target_compile_definitions(test_series_evo
-        PRIVATE
-        ELLIPSE_A="6378137.0"
-        ELLIPSE_INV_F="298.257223563"
-        )
-
-add_test(NAME test_series_evo COMMAND test_series_evo)
-
-add_executable(test_lexpr
-        test_lexpr.cpp
-        )
-
-target_include_directories(test_lexpr
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/..
-        )
-
-target_link_libraries(test_lexpr
-        PRIVATE
-        gmpxx
-        gmp
-        )
-
-add_test(NAME test_lexpr COMMAND test_lexpr)
