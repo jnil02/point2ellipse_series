@@ -45,3 +45,8 @@ pte_add_test(test_series_evo
 pte_add_test(test_lexpr
         SOURCES test_lexpr.cpp
         )
+
+# Coefficient-cache key (Cantor pairing) and overflow detection.
+pte_add_test(test_cache
+        SOURCES test_cache.cpp
+        )
