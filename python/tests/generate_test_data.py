@@ -28,7 +28,8 @@ def write_csv(filename, rows, header):
     TEST_DATA_DIR.mkdir(parents=True, exist_ok=True)
     path = TEST_DATA_DIR / filename
     with open(path, 'w', newline='') as f:
-        writer = csv.writer(f)
+        # LF line endings (csv defaults to CRLF) to match the repository.
+        writer = csv.writer(f, lineterminator='\n')
         writer.writerow(header)
         writer.writerows(rows)
     print(f"Written {len(rows)} rows to {path}")

@@ -153,6 +153,24 @@ target_compile_definitions(bench_series_evo
 # ---------------------------------------------------------------------------
 
 include(CTest)
+
+# Regenerate the tracked CSV fixtures from the Python reference (needs Python 3
+# with SymPy and mpmath). Not part of the default build:
+#   cmake --build <build-dir> --target generate_test_data
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_Interpreter_FOUND)
+    set(PTE_PYTHON_DIR "${PROJECT_SOURCE_DIR}/../python")
+    add_custom_target(generate_test_data
+            COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=${PTE_PYTHON_DIR}"
+                    ${Python3_EXECUTABLE} ${PTE_PYTHON_DIR}/tests/generate_test_data.py
+            COMMAND ${CMAKE_COMMAND} -E env "PYTHONPATH=${PTE_PYTHON_DIR}"
+                    ${Python3_EXECUTABLE} ${PTE_PYTHON_DIR}/tests/generate_series_test_data.py
+            WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/.."
+            COMMENT "Regenerating the CSV fixtures in test_data/ from the Python reference"
+            VERBATIM
+            )
+endif()
+
 if(BUILD_TESTING)
     find_path(CATCH2_INCLUDE_DIR catch.hpp)
     if(CATCH2_INCLUDE_DIR)

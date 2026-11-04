@@ -4,7 +4,11 @@ cpp/.idea/
 cpp/cmake-build-debug/
 cpp/cmake-build-release/
 cpp/dev/
-test_data/
+# test_data/ holds the tracked Python-generated fixtures; ignore only the
+# convergence-study outputs and plots written there.
+test_data/sweep_evo*.csv
+test_data/diag_coeff_evo*.csv
+test_data/*.png
 .claude/
 cpp/build/
 __pycache__/
